@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Sensitive credentials (DO NOT COMMIT)
+.env
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# OS files
+Thumbs.db
+.DS_Store

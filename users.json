@@ -1,0 +1,23 @@
+[
+  {
+    "username": "admin",
+    "name": "ผู้ดูแลระบบ (Admin)",
+    "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "admin",
+    "created_at": "2026-11-06 20:00:00"
+  },
+  {
+    "username": "owner",
+    "name": "เจ้าของเพจ FixPack",
+    "password_hash": "43a0d17178a9d26c9e0fe9a74b0b45e38d32f27aed887a008a54bf6e033bf7b9",
+    "role": "owner",
+    "created_at": "2026-11-06 20:00:00"
+  },
+  {
+    "username": "staff",
+    "name": "ทีมงานคอนเทนต์",
+    "password_hash": "10176e7b7b24d317acfcf8d2064cfd2f24e154f7b5a96603077d5ef813d6a6b6",
+    "role": "staff",
+    "created_at": "2026-11-06 20:00:00"
+  }
+]
