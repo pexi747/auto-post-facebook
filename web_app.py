@@ -635,6 +635,7 @@ def get_local_ip():
 
 def run_server(host: str = "0.0.0.0", port: int = 5050):
     import uvicorn
+    import traceback
     local_ip = get_local_ip()
     print("\n" + "="*65)
     print("🌐 เว็บแดชบอร์ด FixPack Auto-Pilot พร้อมใช้งานแล้ว!")
@@ -642,7 +643,13 @@ def run_server(host: str = "0.0.0.0", port: int = 5050):
     print(f"📱 เข้าจากมือถือในวง Wi-Fi เดียวกัน: http://{local_ip}:{port}")
     print("🌍 เข้าจากอินเตอร์เน็ตภายนอก:      ดูวิธีเปิดอุโมงค์ออนไลน์ใน README.md")
     print("="*65 + "\n")
-    uvicorn.run(app, host=host, port=port)
+    try:
+        uvicorn.run(app, host=host, port=port, log_level="info")
+    except BaseException as e:
+        with open("server_exit.log", "w", encoding="utf-8") as f:
+            f.write(f"Server exited with exception: {type(e).__name__}: {e}\n")
+            f.write(traceback.format_exc())
+        raise
 
 if __name__ == "__main__":
     run_server()
