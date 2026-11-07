@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - FixPack Auto-Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        <!-- Header with FixPack Brand -->
+        <div class="bg-[#0B3B60] p-6 text-center text-white relative">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-md mb-3 p-1">
+                <img src="/static/profile.jpg" alt="FixPack Logo" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/80?text=FixPack'">
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">FixPack Auto-Pilot</h1>
+            <p class="text-sm text-orange-400 mt-1">ระบบวางแผนและโพสต์ Facebook อัตโนมัติ</p>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-8">
+            {% if error %}
+            <div class="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-base"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form action="/login" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้ใช้งาน (Username)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" name="username" required placeholder="เช่น admin, owner, staff" 
+                               class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0B3B60] focus:border-transparent text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน (Password)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" required placeholder="••••••••" 
+                               class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0B3B60] focus:border-transparent text-sm">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full py-3 px-4 bg-[#FF5B00] hover:bg-[#e05000] text-white font-semibold rounded-xl shadow-md transition duration-200 flex items-center justify-center gap-2 mt-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+
+            <!-- Quick Account Guide -->
+            <div class="mt-8 pt-6 border-t border-slate-200 text-xs text-slate-600">
+                <p class="font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-id-card text-[#0B3B60]"></i> บัญชีทดสอบสำหรับระดับสิทธิ์ต่างๆ:
+                </p>
+                <div class="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div class="flex justify-between items-center">
+                        <span><strong class="text-[#0B3B60]">admin</strong> (รหัส: admin123)</span>
+                        <span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">สิทธิ์สูงสุด/ตั้งค่า CI</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span><strong class="text-[#0B3B60]">owner</strong> (รหัส: owner123)</span>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">เจ้าของเพจ/โพสต์/AI</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span><strong class="text-[#0B3B60]">staff</strong> (รหัส: staff123)</span>
+                        <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-medium">ทีมงานคอนเทนต์</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
