@@ -11,6 +11,12 @@ import json
 import requests
 from typing import List, Dict, Any, Optional
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 PAGES_CONFIG_FILE = "managed_pages.json"
 
 def load_pages_data() -> Dict[str, Any]:
@@ -130,9 +136,15 @@ def update_env_active_page(page_id: str, access_token: str):
     try:
         with open(env_path, "w", encoding="utf-8") as f:
             f.writelines(new_lines)
-        print(f"📝 [Auto-Env] อัปเดต .env อัตโนมัติ: FACEBOOK_PAGE_ID={page_id}")
+        try:
+            print(f"[Auto-Env] Updated .env: FACEBOOK_PAGE_ID={page_id}")
+        except Exception:
+            pass
     except Exception as e:
-        print(f"⚠️ ไม่สามารถบันทึก .env: {e}")
+        try:
+            print(f"[Auto-Env Warning] Failed to write .env: {e}")
+        except Exception:
+            pass
 
     # อัปเดต os.environ ทันที เพื่อให้ทุก Service ใช้งานได้เลยโดยไม่ต้องรีสตาร์ท
     os.environ["FACEBOOK_PAGE_ID"] = str(page_id)

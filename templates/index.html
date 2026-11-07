@@ -127,6 +127,29 @@
 
         <!-- ================= TAB 1: CALENDAR & QUEUE ================= -->
         <section id="tab-calendar" class="tab-content space-y-6">
+            <!-- Active Brand DNA Banner -->
+            <div class="bg-gradient-to-r from-white via-slate-50 to-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="{{ active_page.picture_url or '/static/profile.jpg' }}" class="w-14 h-14 rounded-2xl object-cover border-2 shadow-xs shrink-0" style="border-color: {{ active_page.accent_color or '#FF5B00' }};" onerror="this.src='/static/profile.jpg'">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-base sm:text-lg font-bold text-slate-800">{{ active_page.brand_name or active_page.name }}</h2>
+                            <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-blue-100 text-[#0B3B60]">
+                                {{ active_page.brand_dna.business_type if active_page.brand_dna else (active_page.category or 'เพจธุรกิจ') }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1 line-clamp-1">
+                            🎯 <strong>กลุ่มเป้าหมาย:</strong> {{ active_page.brand_dna.target_audience if active_page.brand_dna else 'ลูกค้าทั่วไป' }} &bull; 
+                            🗣️ <strong>โทนเสียง:</strong> {{ active_page.brand_dna.tone_of_voice if active_page.brand_dna else 'เป็นกันเอง น่าเชื่อถือ' }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 self-stretch md:self-auto justify-end shrink-0">
+                    <button type="button" onclick="learnBrandNow()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-[#0B3B60] bg-blue-50 hover:bg-blue-100 border border-blue-200 transition flex items-center justify-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-brain text-purple-600"></i> ให้ AI ศึกษาข้อมูลเพจนี้ใหม่จาก Facebook
+                    </button>
+                </div>
+            </div>
             <!-- Metric Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">

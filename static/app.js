@@ -890,6 +890,57 @@ document.addEventListener('click', (e) => {
     }
 });
 
+
+async function learnBrandNow() {
+    const activeName = document.getElementById('current-page-label') ? document.getElementById('current-page-label').textContent : 'เพจ';
+    const confirm = await Swal.fire({
+        title: `ให้ AI ศึกษาข้อมูลแบรนด์ "${activeName}" ใหม่?`,
+        html: `ระบบจะดึงข้อมูลเกี่ยวกับเพจ คำอธิบาย หมวดหมู่ และโพสต์ล่าสุดจาก Facebook เพื่อสกัดอัตลักษณ์ (Brand DNA) กลุ่มเป้าหมาย จุดเด่น และโทนเสียงให้อัตโนมัติ`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#0B3B60',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '🧠 เริ่มให้ AI ศึกษาข้อมูล',
+        cancelButtonText: 'ยกเลิก'
+    });
+    if (!confirm.isConfirmed) return;
+
+    Swal.fire({
+        title: 'กำลังสแกนและศึกษาข้อมูลเพจ...',
+        html: 'AI กำลังวิเคราะห์ข้อมูลเพจและโพสต์จาก Facebook เพื่อปรับแนวทางการคิดคอนเทนต์...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/brand/learn_now', { method: 'POST' });
+        const result = await res.json();
+        Swal.close();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'AI ศึกษาข้อมูลแบรนด์สำเร็จ!',
+                html: `
+                    <div class="text-left text-xs space-y-1.5 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p><strong>🎯 ประเภทธุรกิจ:</strong> ${result.brand_dna.business_type || '-'}</p>
+                        <p><strong>👥 กลุ่มเป้าหมาย:</strong> ${result.brand_dna.target_audience || '-'}</p>
+                        <p><strong>🗣️ โทนเสียง:</strong> ${result.brand_dna.tone_of_voice || '-'}</p>
+                        <p class="text-emerald-600 font-semibold mt-2">✅ AI พร้อมคิดคอนเทนต์และวิเคราะห์รูปภาพตรงตามแบรนด์นี้แล้ว!</p>
+                    </div>
+                `,
+                confirmButtonColor: '#0B3B60'
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire('ข้อผิดพลาด', result.error || 'ไม่สามารถวิเคราะห์เพจได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
 async function switchActivePage(pageId) {
     Swal.fire({
         title: 'กำลังสลับเพจ...',

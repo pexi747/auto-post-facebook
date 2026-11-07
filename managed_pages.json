@@ -5,256 +5,1244 @@
       "id": "764713456731551",
       "name": "FixPack งานเล็กซ่อมครบจบในแพ็กเดียว",
       "category": "บริการในท้องถิ่น / งานซ่อมบ้าน",
-      "access_token": "EAAQKQJd75dUBS4MsoLc3hZCj8CkI1BvRcheDeZBFyKElw6oPr6o2URECB6orSx63e6duxPZACkhuElXiXHZBhkYXpnTTw0lE2l2b3Fz60GoSFpZCthMetIuDR0u40TZAE1gE6K5fF3ldzkcJxQvWnYNNUx2TEx6SuigPaniohXfPAWn9a748jcjrYZB7miISAjIeETCnDHv",
+      "access_token": "EAAQKQJd75dUBSxbcS2KfWkTG85mct8zZCYeZCRsK3SQ6imFb0LUnXtxeMlpr808PodHknOaNNXbWbf2QJKDzd78dj9HWaGSIlGjZBFmQ2iTho1MsQnU4iJX0GlwjAF9rlJepJpuxK9BZAGuY4IPO5T1ZCWVHwZBSOmBFRXeTA5CRcRDyCxOCnDKFNZAPQ7z5aMyGbZCJN87L",
       "brand_name": "FixPack",
-      "tagline": "งานเล็กซ่อมครบ จบในแพ็กเดียว",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "งานเล็กซ่อมครบ จบในแพ็กเดียว ราคาตายตัว ไม่ทิ้งงาน",
+      "primary_color": "#1E3A8A",
+      "accent_color": "#FF6B00",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เหมา 3 งาน เพียง 1,500.-",
       "daily_post_time": "09:30",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk12-5.fna.fbcdn.net/v/t39.30808-1/545661554_3336428963162883_2269126391436792452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeH-3sarOLj_gvOahKvXKDLDFGID5cLg_s0UYgPlwuD-zZYya1LZMIO8k_HapsMbL9auS4RYbGA0xKdIaH0sfLZE&_nc_ohc=DYVYLdxJeZAQ7kNvwEOCv7l&_nc_oc=Adp-FhJW64sLK2fUougoFtkWIGocioWAISuLktI-Je9TxjFBXNwa6aCtyn6Ckyo1unku9Er8BuhcbVD7l_u0UrLS&_nc_zt=24&_nc_ht=scontent.fbkk12-5.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQKgxrq3hRyYxCYosRNx4KMpJzaFv2fa0H50VJD3zW_ZVHpbC1fqnoXZv5h6tbUBogH7h5T7cpt97Q&oh=00_AQQZgosXUP8AKKvWyl-R-TH4gtkyMRf2H-Ua-mFYrJhl2w&oe=6AF45F16"
+      "picture_url": "https://scontent.fbkk3-3.fna.fbcdn.net/v/t39.30808-1/545661554_3336428963162883_2269126391436792452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeH-3sarOLj_gvOahKvXKDLDFGID5cLg_s0UYgPlwuD-zZYya1LZMIO8k_HapsMbL9auS4RYbGA0xKdIaH0sfLZE&_nc_ohc=DYVYLdxJeZAQ7kNvwEJV-f7&_nc_oc=Adq6NSseAU-dzIttWy_SqZ7l6TBGmUd_5WiIzJHr7FIa0Xcw2W8yhkFoeglDF6Abclc&_nc_zt=24&_nc_ht=scontent.fbkk3-3.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQKOV6yzaTVJUN3XT7q5sduNDMe5tI0JB3cgB-lfjr-d9red_XglTmdROjbGR2rxzvZhBAskrUnBXw&oh=00_AQQ7nmrZisl7iS6-wVMTHtdMg9sYeW19lKgQ9yY0nVysoQ&oe=6AF49756",
+      "brand_dna": {
+        "brand_name": "FixPack",
+        "business_type": "บริการช่างซ่อมแซมบ้านและคอนโดแบบเหมาแพ็กเกจงานเล็ก",
+        "tagline": "งานเล็กซ่อมครบ จบในแพ็กเดียว ราคาตายตัว ไม่ทิ้งงาน",
+        "target_audience": "เจ้าของบ้านและคอนโด, พนักงานออฟฟิศยุคใหม่, ผู้หญิงหรือผู้สูงอายุที่อยู่บ้านคนเดียวและไม่มีความรู้ด้านงานช่าง",
+        "core_services": [
+          "ซ่อมแซมระบบประปาและสุขภัณฑ์ (ก๊อกน้ำหยด ท่อรั่ว ชักโครกตัน)",
+          "ซ่อมแซมระบบไฟฟ้าในบ้าน (ไฟกระพริบ เปลี่ยนปลั๊ก/สวิตช์ ติดตั้งโคมไฟ)",
+          "ซ่อมแซมงานไม้และโครงสร้างเล็ก (ประตูฝืด บานพับหลุด รางเลื่อนติดขัด)",
+          "งานซ่อมแซมทั่วไป (กระเบื้องร่อน อุดรอยร้าว ยิงซิลิโคนกันซึม)"
+        ],
+        "selling_points": [
+          "เน้นรับงานซ่อมเล็กๆ น้อยๆ ที่ช่างใหญ่ทั่วไปไม่ค่อยยอมรับงาน",
+          "ราคาเหมาจ่ายตายตัว โปร่งใส ชัดเจน ไม่มีค่าบริการแฝง",
+          "บริการไว้วางใจได้ ช่างตรงเวลา สุภาพ ไม่ทิ้งงาน"
+        ],
+        "tone_of_voice": "น่าเชื่อถือ เป็นกันเอง ใส่ใจ ห่วงใยเรื่องบ้าน เหมือนมีเพื่อนช่างมืออาชีพประจำตัว",
+        "primary_color": "#1E3A8A",
+        "accent_color": "#FF6B00",
+        "price_tag": "เหมา 3 งาน เพียง 1,500.-",
+        "sample_hooks": [
+          "ก๊อกหยด ไฟกระพริบ ประตูฝืด? งานเล็กช่างใหญ่ไม่รับ ให้ FixPack จัดการ!",
+          "ค่าน้ำพุ่งปรี๊ดแบบไร้สาเหตุ! 4 สัญญาณเตือนท่อรั่วซึมที่ต้องรีบเช็กด่วน 💸",
+          "หมดปัญหาง้อช่าง! ซ่อมบ้านงานเล็ก เหมา 3 รายการ จบไวแค่ 1,500 บาท"
+        ],
+        "hashtags": [
+          "#FixPack",
+          "#ช่างซ่อมบ้าน",
+          "#ซ่อมบ้านงานเล็ก",
+          "#บริการช่างเหมาจ่าย"
+        ],
+        "model": "gemini-3.5-flash"
+      },
+      "business_type": "บริการช่างซ่อมแซมบ้านและคอนโดแบบเหมาแพ็กเกจงานเล็ก",
+      "target_audience": "เจ้าของบ้านและคอนโด, พนักงานออฟฟิศยุคใหม่, ผู้หญิงหรือผู้สูงอายุที่อยู่บ้านคนเดียวและไม่มีความรู้ด้านงานช่าง",
+      "core_services": [
+        "ซ่อมแซมระบบประปาและสุขภัณฑ์ (ก๊อกน้ำหยด ท่อรั่ว ชักโครกตัน)",
+        "ซ่อมแซมระบบไฟฟ้าในบ้าน (ไฟกระพริบ เปลี่ยนปลั๊ก/สวิตช์ ติดตั้งโคมไฟ)",
+        "ซ่อมแซมงานไม้และโครงสร้างเล็ก (ประตูฝืด บานพับหลุด รางเลื่อนติดขัด)",
+        "งานซ่อมแซมทั่วไป (กระเบื้องร่อน อุดรอยร้าว ยิงซิลิโคนกันซึม)"
+      ],
+      "selling_points": [
+        "เน้นรับงานซ่อมเล็กๆ น้อยๆ ที่ช่างใหญ่ทั่วไปไม่ค่อยยอมรับงาน",
+        "ราคาเหมาจ่ายตายตัว โปร่งใส ชัดเจน ไม่มีค่าบริการแฝง",
+        "บริการไว้วางใจได้ ช่างตรงเวลา สุภาพ ไม่ทิ้งงาน"
+      ],
+      "tone_of_voice": "น่าเชื่อถือ เป็นกันเอง ใส่ใจ ห่วงใยเรื่องบ้าน เหมือนมีเพื่อนช่างมืออาชีพประจำตัว",
+      "sample_hooks": [
+        "ก๊อกหยด ไฟกระพริบ ประตูฝืด? งานเล็กช่างใหญ่ไม่รับ ให้ FixPack จัดการ!",
+        "ค่าน้ำพุ่งปรี๊ดแบบไร้สาเหตุ! 4 สัญญาณเตือนท่อรั่วซึมที่ต้องรีบเช็กด่วน 💸",
+        "หมดปัญหาง้อช่าง! ซ่อมบ้านงานเล็ก เหมา 3 รายการ จบไวแค่ 1,500 บาท"
+      ],
+      "sample_hashtags": [
+        "#FixPack",
+        "#ช่างซ่อมบ้าน",
+        "#ซ่อมบ้านงานเล็ก",
+        "#บริการช่างเหมาจ่าย"
+      ]
     },
     {
       "id": "779225528611040",
       "name": "Auto Butler Car Service บริการซ่อมรถถึงบ้าน",
       "category": "รถยนต์ เครื่องบิน และเรือ",
-      "access_token": "EAAQKQJd75dUBSZBZB5vMRv1tuv7fzDYN9WcoD2H5A56ZBAAMk34pT1Aus3poIQoC3CjDSyZBcZCP9J1dYDchloZCweEy5aCDYPZCEky0ulWXyQwccYrvyJy7eiWIXYZAJk881gsh2hQNk5evy9WiuyOM8hzetPiKQUB0LysZBVYpqYEtPxnUTnTPjuOdl6ZBaaZATpx6Wz80Gyf",
+      "access_token": "EAAQKQJd75dUBS6FRdT15e7ZAdZBGe9EPLfOYju21HcuLxqNCZC4AFPdZCrrhEgqjLnGmqKRC3ik50z4YbAF1jW4l6ogZBUYmgS4UQADNh0YZCJUZBhq51uruPe81VZCoU0ZA55ZAGzvjlWOBBfZAIMn2SqSEBA0du6hgiOb69g3WyFkBHPbx0ZBKsibvEHjtaHa5jGC6yjff9MkI",
       "brand_name": "Auto Butler",
-      "tagline": "บริการซ่อมรถและดูแลยานยนต์ถึงบ้านคุณ",
-      "primary_color": "#1A202C",
+      "tagline": "ศูนย์บริการเคลื่อนที่ ไว้ใจได้เหมือนมีช่างประจำตัว",
+      "primary_color": "#1A365D",
       "accent_color": "#E53E3E",
       "phone": "066-097-1257",
-      "price_tag": "บริการถึงที่ 24 ชม.",
+      "price_tag": "เริ่มต้น 590.- (บริการเปลี่ยนถ่ายน้ำมันเครื่องนอกสถานที่)",
       "daily_post_time": "10:00",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk12-4.fna.fbcdn.net/v/t39.30808-1/653961262_122126929581037575_8595212072441982035_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHGwNzEMkwIULmn0o8_cU6DcwAmnnU6EINzACaedToQg5X01au_Zoc2kCjYuKbfH4sha7d-7NWaYxZL3D-BcMqO&_nc_ohc=NbaEfsBbZLUQ7kNvwGN6Xb8&_nc_oc=AdoiAFYA6E-U10zZLPLgm00V_kwJ00lkyqt2X1Qflaxso9w7sfA0ZuBf6MUhsARNwS9cp61_hwrPLTgubjap8q89&_nc_zt=24&_nc_ht=scontent.fbkk12-4.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQJ-bO8qFHzd0rA2UzXKPgFOWnT5g2cPH8YYnFOPKk7YavqDR1NRTHT1ZrG4aCD-uopisyQVqkpqUQ&oh=00_AQRPXBGE-bdMyI8cm6FyVXXT295LqJZ5m4-Lv5obAA2xMA&oe=6AF4827C"
+      "picture_url": "https://scontent.fbkk34-3.fna.fbcdn.net/v/t39.30808-1/653961262_122126929581037575_8595212072441982035_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHGwNzEMkwIULmn0o8_cU6DcwAmnnU6EINzACaedToQg5X01au_Zoc2kCjYuKbfH4sha7d-7NWaYxZL3D-BcMqO&_nc_ohc=NbaEfsBbZLUQ7kNvwFEvnPL&_nc_oc=AdpLaC2Ry1RAAI2m7xs4salj-ABW0-aA9mZRFUUiLMpdmWUaO2gqknXNbke0_D6BWN4&_nc_zt=24&_nc_ht=scontent.fbkk34-3.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQIFqaPOzaWpr5HQW-6NJOyKjN0UtZFZWvYPmhmAl_ypWE_Ah3xKFcNbOdh81ecvuOScMpfWokjnVA&oh=00_AQRDDFbT5D_dFZ7DwxWXr0LHRbMq5AQ97OMa_aLqxMKcaQ&oe=6AF4BABC",
+      "brand_dna": {
+        "brand_name": "Auto Butler",
+        "business_type": "บริการซ่อมและดูแลรักษารถยนต์นอกสถานที่แบบครบวงจร",
+        "tagline": "ศูนย์บริการเคลื่อนที่ ไว้ใจได้เหมือนมีช่างประจำตัว",
+        "target_audience": "เจ้าของรถที่ไม่มีเวลาเข้าอู่, พนักงานออฟฟิศที่เน้นความสะดวกสบาย, ผู้ใช้งานรถยนต์ที่ต้องการที่ปรึกษาด้านการซ่อมที่โปร่งใส",
+        "core_services": [
+          "บริการตรวจเช็กสภาพรถยนต์และระบบเบื้องต้น",
+          "เปลี่ยนถ่ายน้ำมันเครื่องและไส้กรองถึงบ้าน",
+          "บริการเปลี่ยนแบตเตอรี่ฉุกเฉินและนอกสถานที่",
+          "บริการเปลี่ยนยางและสลับยางนอกสถานที่"
+        ],
+        "selling_points": [
+          "ช่างเทคนิคมาตรฐานสูง วิเคราะห์ตรงจุดไม่มั่วเปลี่ยนอะไหล่",
+          "ราคาประเมินชัดเจน โปร่งใส ไม่มีค่าใช้จ่ายแฝง",
+          "สะดวกสบาย จองคิวผ่านระบบออนไลน์ ซ่อมถึงหน้าบ้านคุณ"
+        ],
+        "tone_of_voice": "น่าเชื่อถือ จริงใจ สุขุม และเชี่ยวชาญ (Professional & Trustworthy)",
+        "primary_color": "#1A365D",
+        "accent_color": "#E53E3E",
+        "price_tag": "เริ่มต้น 590.- (บริการเปลี่ยนถ่ายน้ำมันเครื่องนอกสถานที่)",
+        "sample_hooks": [
+          "อย่าเพิ่งเปลี่ยนอะไหล่ ถ้ายังไม่รู้ 'ต้นเหตุ' ที่แท้จริง!",
+          "ทำไมต้องเสียเวลาลางานไปอู่? ให้เราดูแลรถคุณถึงหน้าบ้าน",
+          "จากอาการที่เล่า... สู่การวิเคราะห์ที่แม่นยำ ประหยัดทั้งเงินและเวลา"
+        ],
+        "hashtags": [
+          "#AutoButler",
+          "#ซ่อมรถนอกสถานที่",
+          "#ช่างรถใจดี",
+          "#ดูแลรถถึงบ้าน"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการซ่อมและดูแลรักษารถยนต์นอกสถานที่แบบครบวงจร",
+      "target_audience": "เจ้าของรถที่ไม่มีเวลาเข้าอู่, พนักงานออฟฟิศที่เน้นความสะดวกสบาย, ผู้ใช้งานรถยนต์ที่ต้องการที่ปรึกษาด้านการซ่อมที่โปร่งใส",
+      "core_services": [
+        "บริการตรวจเช็กสภาพรถยนต์และระบบเบื้องต้น",
+        "เปลี่ยนถ่ายน้ำมันเครื่องและไส้กรองถึงบ้าน",
+        "บริการเปลี่ยนแบตเตอรี่ฉุกเฉินและนอกสถานที่",
+        "บริการเปลี่ยนยางและสลับยางนอกสถานที่"
+      ],
+      "selling_points": [
+        "ช่างเทคนิคมาตรฐานสูง วิเคราะห์ตรงจุดไม่มั่วเปลี่ยนอะไหล่",
+        "ราคาประเมินชัดเจน โปร่งใส ไม่มีค่าใช้จ่ายแฝง",
+        "สะดวกสบาย จองคิวผ่านระบบออนไลน์ ซ่อมถึงหน้าบ้านคุณ"
+      ],
+      "tone_of_voice": "น่าเชื่อถือ จริงใจ สุขุม และเชี่ยวชาญ (Professional & Trustworthy)",
+      "sample_hooks": [
+        "อย่าเพิ่งเปลี่ยนอะไหล่ ถ้ายังไม่รู้ 'ต้นเหตุ' ที่แท้จริง!",
+        "ทำไมต้องเสียเวลาลางานไปอู่? ให้เราดูแลรถคุณถึงหน้าบ้าน",
+        "จากอาการที่เล่า... สู่การวิเคราะห์ที่แม่นยำ ประหยัดทั้งเงินและเวลา"
+      ],
+      "sample_hashtags": [
+        "#AutoButler",
+        "#ซ่อมรถนอกสถานที่",
+        "#ช่างรถใจดี",
+        "#ดูแลรถถึงบ้าน"
+      ]
     },
     {
       "id": "726035460593915",
       "name": "FastFix ซ่อมด่วนถึงที่ รวดเร็ว โปร่งใส มั่นใจทุกเส้นทางนทาง",
       "category": "บริการฉุกเฉิน / ซ่อมด่วน",
-      "access_token": "EAAQKQJd75dUBSz6VX9WMZCA9Tl722BsweZAh05jw88mN5JrPnsRXJMajOjXIxPtF84qNZCRZCwXjNZC4kIeY5jZBJ0a0TP0P38Q8i80UWdWZAt5RIHPMzklcNyJP6wL5krBZBIBYlPF5YQzumSUNuZAfj1VOv5OWOtstbZCw14r3CHktAZC0UWHWTHPahFrqdhyiZBagJ3Bw9vDc",
+      "access_token": "EAAQKQJd75dUBS0A0sZB8VS3c2qXNcUxeD51brDqM9NeH9ZAE1ZConxH5htcB8jR8TUZCc2BKMA3ZBeOKHq2GXSd48Cw3yNmCUICZAKFLNIcnEP61RFAPocHhDEnKPYiFHds35zKsZCAFd8NYY9Nk3JQKqeiwZCLgzZBZBRjgi8Ists7MiH3ZB46XjABd6z1fQ4U1lkzw2FNTVnX",
       "brand_name": "FastFix",
-      "tagline": "ซ่อมด่วนถึงที่ รวดเร็ว โปร่งใส มั่นใจทุกเส้นทาง",
-      "primary_color": "#C53030",
-      "accent_color": "#DD6B20",
+      "tagline": "ซ่อมตรงจุด จบที่หน้าบ้าน คุณมั่นใจ เราดูแล",
+      "primary_color": "#0B3B60",
+      "accent_color": "#FF5B00",
       "phone": "066-097-1257",
-      "price_tag": "ช่างด่วนพร้อมให้บริการ",
+      "price_tag": "ค่าบริการเริ่มต้น 390.- โปร่งใส ตรวจเช็กฟรีไม่มีมัดจำ",
       "daily_post_time": "11:00",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk12-6.fna.fbcdn.net/v/t39.30808-1/539699228_122113751252969120_2043073500704065522_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeG-R15bLm0wMqcpkAcUb6LAwSpDqsLXKv_BKkOqwtcq_wgOP0PEHrO2vCJDeRDkNXVReiWa7AMTB1FYZ2AnS2EO&_nc_ohc=YZ0D0a8hUpAQ7kNvwEmyEBs&_nc_oc=AdodUxHoscZxu_31YckQdE0EkAUlcXERSjYe2FdTn2HYBuFcfeZVbjDJhDWUpkklm3Q2pkEVyv-qkL47oe9-NVHB&_nc_zt=24&_nc_ht=scontent.fbkk12-6.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQK7YZuH5661c1rxuukCwaQOIYfsv3ZpR8JhmCvpc5PAzikr-MeI4Q0i0-hnO_h39VmU0feox_6JIg&oh=00_AQR1-bKUpEh-GA8Iti8G3OZHi3JLpwuI5HT61YNybP2wSg&oe=6AF457AC"
+      "picture_url": "https://scontent.fbkk34-2.fna.fbcdn.net/v/t39.30808-1/539699228_122113751252969120_2043073500704065522_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeG-R15bLm0wMqcpkAcUb6LAwSpDqsLXKv_BKkOqwtcq_wgOP0PEHrO2vCJDeRDkNXVReiWa7AMTB1FYZ2AnS2EO&_nc_ohc=YZ0D0a8hUpAQ7kNvwHoEH6s&_nc_oc=AdrNzmp7Pw80StkMKsCni1RMunZykbZnhyM5zKx6ZZDSpuVE7wsmKn7c5F8YKmDsI_M&_nc_zt=24&_nc_ht=scontent.fbkk34-2.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQLqvapZY5JUgKleeZ82eSxfwyvgRqdcQ9O45G7IddsMkKEbbJCw9teL4xBIVofaJBHfaEhA4FtMUQ&oh=00_AQSXQi7JgbwVF4Q_NOBY4iBu2mPV_EgwGCofHCF8JjWc-A&oe=6AF48FEC",
+      "brand_dna": {
+        "brand_name": "FastFix",
+        "business_type": "บริการซ่อมบำรุงรถยนต์และช่วยเหลือฉุกเฉินถึงที่ 24 ชม.",
+        "tagline": "ซ่อมตรงจุด จบที่หน้าบ้าน คุณมั่นใจ เราดูแล",
+        "target_audience": "เจ้าของรถยนต์ที่ไม่มีเวลาเข้าศูนย์, ผู้หญิงที่ขับรถคนเดียว, คนวัยทำงานที่ต้องการความสะดวกสบายและรวดเร็ว",
+        "core_services": [
+          "บริการเปลี่ยนแบตเตอรี่และยางฉุกเฉิน 24 ชม.",
+          "บริการเช็กระยะและเปลี่ยนถ่ายน้ำมันเครื่องนอกสถานที่",
+          "บริการล้างแอร์รถยนต์แบบไม่ถอดตู้",
+          "บริการเติมน้ำมันและแก้ไขปัญหาเครื่องยนต์เบื้องต้น"
+        ],
+        "selling_points": [
+          "ช่างมืออาชีพผ่านการคัดกรอง งานจบจริงไม่ทิ้งงาน",
+          "ราคาประเมินก่อนเริ่มงาน โปร่งใสไม่มีบวกเพิ่ม",
+          "ถึงไวใน 30 นาที พร้อมระบบ Tracking ติดตามสถานะช่าง"
+        ],
+        "tone_of_voice": "น่าเชื่อถือ มืออาชีพ จริงใจ รวดเร็ว และเป็นที่พึ่งได้ในยามคับขัน",
+        "primary_color": "#0B3B60",
+        "accent_color": "#FF5B00",
+        "price_tag": "ค่าบริการเริ่มต้น 390.- โปร่งใส ตรวจเช็กฟรีไม่มีมัดจำ",
+        "sample_hooks": [
+          "รถดับกลางทาง อย่าเพิ่งจ่ายแพง! ให้ FastFix เช็กให้ก่อน จบที่หน้าบ้านคุณ",
+          "ลืมเรื่องเข้าศูนย์ที่ต้องรอคิวเป็นวัน FastFix เปลี่ยนถ่ายน้ำมันเครื่องให้คุณถึงหน้าประตูบ้าน",
+          "กลัวช่างฟันราคา? ที่ FastFix เราประเมินงบชัดเจนก่อนซ่อม จบปัญหาเครื่องสั่น เกียร์กระตุกแบบไม่ต้องลุ้น"
+        ],
+        "hashtags": [
+          "#FastFix",
+          "#ซ่อมรถถึงบ้าน",
+          "#ช่างซ่อมรถฉุกเฉิน",
+          "#ดูแลรถครบวงจร"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการซ่อมบำรุงรถยนต์และช่วยเหลือฉุกเฉินถึงที่ 24 ชม.",
+      "target_audience": "เจ้าของรถยนต์ที่ไม่มีเวลาเข้าศูนย์, ผู้หญิงที่ขับรถคนเดียว, คนวัยทำงานที่ต้องการความสะดวกสบายและรวดเร็ว",
+      "core_services": [
+        "บริการเปลี่ยนแบตเตอรี่และยางฉุกเฉิน 24 ชม.",
+        "บริการเช็กระยะและเปลี่ยนถ่ายน้ำมันเครื่องนอกสถานที่",
+        "บริการล้างแอร์รถยนต์แบบไม่ถอดตู้",
+        "บริการเติมน้ำมันและแก้ไขปัญหาเครื่องยนต์เบื้องต้น"
+      ],
+      "selling_points": [
+        "ช่างมืออาชีพผ่านการคัดกรอง งานจบจริงไม่ทิ้งงาน",
+        "ราคาประเมินก่อนเริ่มงาน โปร่งใสไม่มีบวกเพิ่ม",
+        "ถึงไวใน 30 นาที พร้อมระบบ Tracking ติดตามสถานะช่าง"
+      ],
+      "tone_of_voice": "น่าเชื่อถือ มืออาชีพ จริงใจ รวดเร็ว และเป็นที่พึ่งได้ในยามคับขัน",
+      "sample_hooks": [
+        "รถดับกลางทาง อย่าเพิ่งจ่ายแพง! ให้ FastFix เช็กให้ก่อน จบที่หน้าบ้านคุณ",
+        "ลืมเรื่องเข้าศูนย์ที่ต้องรอคิวเป็นวัน FastFix เปลี่ยนถ่ายน้ำมันเครื่องให้คุณถึงหน้าประตูบ้าน",
+        "กลัวช่างฟันราคา? ที่ FastFix เราประเมินงบชัดเจนก่อนซ่อม จบปัญหาเครื่องสั่น เกียร์กระตุกแบบไม่ต้องลุ้น"
+      ],
+      "sample_hashtags": [
+        "#FastFix",
+        "#ซ่อมรถถึงบ้าน",
+        "#ช่างซ่อมรถฉุกเฉิน",
+        "#ดูแลรถครบวงจร"
+      ]
     },
     {
       "id": "143476616231351",
       "name": "Clean4U",
       "category": "บริการดูแลรักษาบ้าน / ทำความสะอาด",
-      "access_token": "EAAQKQJd75dUBSZBZAlyGganySryjQtZANovkVXo9ZCvkFjpckpNiQKJyyFEpeea3MAWjleERRp0ZAoN7ZBBvuxE19nTb7dkDuFZAcWXNKRzPcI5WzXRss0xw1JdAz8GE5FQ8is4T011retnjqkdpdnmxUNFnCIW9WUbXtljjEwFsFZAXaSFPyj6JRWJHkwpupw5xjwYPnv4ZD",
+      "access_token": "EAAQKQJd75dUBS3yeZBERADYZBjeSv4fp3yd6G5P758j9pQOljy6L0Yx2LN7bsxMVvrf44DTc9ylXsArwhzo8xlCHZAvo6SP86QFawbvPFiykGZCSN0dcM8ZAZB04R2ZBgppN5PtuW60yHWUikuOiFwkZAmnftjvzDq3lowjmOqAZADjznDLD4tgqV9XWLJ5k7oseuypQZAeZAwZD",
       "brand_name": "Clean4U",
-      "tagline": "บริการทำความสะอาดบ้าน คอนโด ออฟฟิศ สะอาดหมดจด",
-      "primary_color": "#2B6CB0",
-      "accent_color": "#38B2AC",
+      "tagline": "สะอาดหมดจด ใส่ใจทุกตารางนิ้ว",
+      "primary_color": "#007BFF",
+      "accent_color": "#28A745",
       "phone": "066-097-1257",
-      "price_tag": "เริ่มต้นเพียง 590.-",
+      "price_tag": "เริ่มต้นเพียง 599.- ต่อครั้ง",
       "daily_post_time": "08:30",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk12-1.fna.fbcdn.net/v/t39.30808-1/299143569_201218138909285_1937805248786650946_n.jpg?stp=dst-jpg_p200x200_tt6&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeEnFkgoiztTRXDXd8ce5m68G5OZOdTkqQ4bk5k51OSpDmRe_E5eDoRQDACgCBq7Qdyd_fwaxULqp5D-lWFcOFMl&_nc_ohc=nBPiJ9bkLecQ7kNvwHudqQQ&_nc_oc=Ado82EikuvQxv98nZG_Uo24IefUc8kwNYNW0Vz36KrymmCui3OOsAsoqQ6Ne9M7waE-Acs1Z0x2OxdpZ7dbFab4a&_nc_zt=24&_nc_ht=scontent.fbkk12-1.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQLatOK3-WiC0MqPy2q61QlR-2Z_HAdKS4o9xMPAzcZtjHGuddONLzNMaQeRD1IdKVi5E_QxIbXe1w&oh=00_AQRA3VYy9RyCUUAXXW5F8y2gTX7pkWahNJwke1sbIUlyag&oe=6AF45DE0"
+      "picture_url": "https://scontent.fbkk3-1.fna.fbcdn.net/v/t39.30808-1/299143569_201218138909285_1937805248786650946_n.jpg?stp=dst-jpg_p200x200_tt6&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeEnFkgoiztTRXDXd8ce5m68G5OZOdTkqQ4bk5k51OSpDmRe_E5eDoRQDACgCBq7Qdyd_fwaxULqp5D-lWFcOFMl&_nc_ohc=nBPiJ9bkLecQ7kNvwFkA993&_nc_oc=AdrfwK-32TMg2v6NFSoeTyUYv1zwQC9gGSOP6DI1iwFT9sLtSanzBYM79hl6xgIYyfs&_nc_zt=24&_nc_ht=scontent.fbkk3-1.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQLda72mrgdAnloAyRKI-aSj73gTjYX-bXZBSNvxqNSYOTBB3Hrk5aM6B-fNod2Tl8PCkX9HlfaR2Q&oh=00_AQTh9xVaf7q05gVvOyO4YL7DIs7Td3M6xu-f4ouRo7ZXgQ&oe=6AF49620",
+      "brand_dna": {
+        "brand_name": "Clean4U",
+        "business_type": "บริการทำความสะอาดบ้าน คอนโด และออฟฟิศแบบมืออาชีพ",
+        "tagline": "สะอาดหมดจด ใส่ใจทุกตารางนิ้ว",
+        "target_audience": "เจ้าของบ้านและคอนโดที่ไม่มีเวลาทำความสะอาด, คนวัยทำงานที่เน้นความสะดวกสบาย, เจ้าของธุรกิจและออฟฟิศ",
+        "core_services": [
+          "บริการทำความสะอาดบ้านพักอาศัยและคอนโด",
+          "บริการทำความสะอาดสำนักงานและออฟฟิศ",
+          "บริการทำความสะอาดหลังการก่อสร้างหรือรีโนเวท",
+          "บริการบิ๊กคลีนนิ่ง (Big Cleaning) ตามวาระโอกาส"
+        ],
+        "selling_points": [
+          "ทีมงานผ่านการอบรมและคัดกรองประวัติ มั่นใจได้ในความปลอดภัย",
+          "ใช้น้ำยาทำความสะอาดมาตรฐานสากล อ่อนโยนต่อพื้นผิวและผู้อยู่อาศัย",
+          "ตรวจสอบความเรียบร้อยทุกครั้งก่อนส่งมอบงาน เก็บงานละเอียดทุกจุด"
+        ],
+        "tone_of_voice": "มืออาชีพ ไว้วางใจได้ กระฉับกระเฉง และใส่ใจในรายละเอียด",
+        "primary_color": "#007BFF",
+        "accent_color": "#28A745",
+        "price_tag": "เริ่มต้นเพียง 599.- ต่อครั้ง",
+        "sample_hooks": [
+          "เหนื่อยจากการทำงาน? ให้ Clean4U ดูแลบ้านคุณให้สะอาดเหมือนใหม่",
+          "เปลี่ยนคอนโดรกๆ ให้กลายเป็นพื้นที่พักผ่อนที่สมบูรณ์แบบด้วยบริการจาก Clean4U",
+          "ออฟฟิศสะอาด เพิ่ม Productivity! ทีมงานมืออาชีพพร้อมให้บริการถึงที่"
+        ],
+        "hashtags": [
+          "#Clean4U",
+          "#บริการทำความสะอาด",
+          "#ทำความสะอาดบ้าน",
+          "#BigCleaning"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการทำความสะอาดบ้าน คอนโด และออฟฟิศแบบมืออาชีพ",
+      "target_audience": "เจ้าของบ้านและคอนโดที่ไม่มีเวลาทำความสะอาด, คนวัยทำงานที่เน้นความสะดวกสบาย, เจ้าของธุรกิจและออฟฟิศ",
+      "core_services": [
+        "บริการทำความสะอาดบ้านพักอาศัยและคอนโด",
+        "บริการทำความสะอาดสำนักงานและออฟฟิศ",
+        "บริการทำความสะอาดหลังการก่อสร้างหรือรีโนเวท",
+        "บริการบิ๊กคลีนนิ่ง (Big Cleaning) ตามวาระโอกาส"
+      ],
+      "selling_points": [
+        "ทีมงานผ่านการอบรมและคัดกรองประวัติ มั่นใจได้ในความปลอดภัย",
+        "ใช้น้ำยาทำความสะอาดมาตรฐานสากล อ่อนโยนต่อพื้นผิวและผู้อยู่อาศัย",
+        "ตรวจสอบความเรียบร้อยทุกครั้งก่อนส่งมอบงาน เก็บงานละเอียดทุกจุด"
+      ],
+      "tone_of_voice": "มืออาชีพ ไว้วางใจได้ กระฉับกระเฉง และใส่ใจในรายละเอียด",
+      "sample_hooks": [
+        "เหนื่อยจากการทำงาน? ให้ Clean4U ดูแลบ้านคุณให้สะอาดเหมือนใหม่",
+        "เปลี่ยนคอนโดรกๆ ให้กลายเป็นพื้นที่พักผ่อนที่สมบูรณ์แบบด้วยบริการจาก Clean4U",
+        "ออฟฟิศสะอาด เพิ่ม Productivity! ทีมงานมืออาชีพพร้อมให้บริการถึงที่"
+      ],
+      "sample_hashtags": [
+        "#Clean4U",
+        "#บริการทำความสะอาด",
+        "#ทำความสะอาดบ้าน",
+        "#BigCleaning"
+      ]
     },
     {
       "id": "314673895657408",
       "name": "Fast4U Logistic ขนส่ง ส่งของ กระจายสินค้า จัดหา คนขับรถ เก็บเช็ควางบิล",
       "category": "บริการขนส่ง / โลจิสติกส์",
-      "access_token": "EAAQKQJd75dUBS3NiMEpNgXWNj1gaPLY6xfwAPXnFjpmUmlun6Uiohz4trvjeJ8uYp4pC5GfEZCZBPu8PPcXo30WZC6PaSdLQW9DPA2XtmpOEp9oggUGZBSaWWPX2QKU8BfAr7qlds1fT8qT5QEL5nvlMlyN6juob5uKDzefmOPWaBHJ4q4olIljEaA6pHVanJKyJZC05L",
+      "access_token": "EAAQKQJd75dUBSZBH4di937efQIMvDbiVPafSjOj5ZBBe4zH4XcNozwInd9NQNoaQNdyCf7EhmePZC1ORVaZBsULYZBfgZCZC1kcT4ScmSLWYtUZAeeQZBmej8G3ZAklMtUeqwSQSwZAwu5UqeKZCzcDnG3cQZCZAiJYzI3SpvsHZApmgYQwzfAEdwlVK6dn5oBASAHqoLQ8PnZBCt5n2",
       "brand_name": "Fast4U",
-      "tagline": "ขนส่ง ส่งของ กระจายสินค้า จัดหาคนขับรถ เก็บเช็ควางบิล",
-      "primary_color": "#2C5282",
-      "accent_color": "#ED8936",
+      "tagline": "Fast4U ขนส่งมือโปร เชื่อมต่อทุกปลายทาง มั่นใจได้ทุกเที่ยววิ่ง",
+      "primary_color": "#0056B3",
+      "accent_color": "#FFC107",
       "phone": "066-097-1257",
-      "price_tag": "บริการขนส่งมาตรฐาน",
+      "price_tag": "เริ่มต้นเพียง 500.- (ประเมินราคาตามระยะทางและประเภทรถ)",
       "daily_post_time": "09:00",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk8-2.fna.fbcdn.net/v/t39.30808-1/571041758_1431504848982872_7474940638194850097_n.jpg?stp=cp1_dst-jpg_s200x200_tt6&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeG2Ka3my_k4rqmapnAuGGQ3edUKY5LRslp51QpjktGyWk_JEDJ_tUqJTPq4L5dYXI1jyTY3bqv8ZSavFhgNskA9&_nc_ohc=1-nQax6OT4YQ7kNvwEM2a-E&_nc_oc=AdqE_eNRDFnv4eNVaMBtHJwJ1x2_BC8mgkK3tZxAfO7tRcWdpN7YPLIPuOJQ_f5kTTI73NNU9XxlG1asUHQX5GGb&_nc_zt=24&_nc_ht=scontent.fbkk8-2.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQLhkWyVgQKp0lNsLenyvOnxvunzX0BQkfW7escdL3DZEDmKpv3aY6F7Oo5V5aqK2psXJrwB-7PkbA&oh=00_AQQxQryL9JL_7xN2i2Z9ygezRgIn9Pr94zvyaUqJk4gExg&oe=6AF45C78"
+      "picture_url": "https://scontent.fbkk34-2.fna.fbcdn.net/v/t39.30808-1/571041758_1431504848982872_7474940638194850097_n.jpg?stp=cp1_dst-jpg_s200x200_tt6&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeG2Ka3my_k4rqmapnAuGGQ3edUKY5LRslp51QpjktGyWk_JEDJ_tUqJTPq4L5dYXI1jyTY3bqv8ZSavFhgNskA9&_nc_ohc=1-nQax6OT4YQ7kNvwGhvJY_&_nc_oc=AdpgfvBVPvMmh9r1OIrrABvsepg2Mfo9heNd-Bw_gnKVFXGvw9QKNgT0QpzSEk5qnKc&_nc_zt=24&_nc_ht=scontent.fbkk34-2.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQLWvMTkgxva4-378-GJ0rSP0qjpJ2nd8-L3LzalCyH6weeqodhHgAsu4q4ulzaxerIafI7Zh-XJFQ&oh=00_AQRNWTbcf_rxCgvvsf1qVNDRxI0kwarP0K2RKJkTii_ccw&oe=6AF494B8",
+      "brand_dna": {
+        "brand_name": "Fast4U",
+        "business_type": "บริการขนส่งและกระจายสินค้าครบวงจรแบบ B2B",
+        "tagline": "Fast4U ขนส่งมือโปร เชื่อมต่อทุกปลายทาง มั่นใจได้ทุกเที่ยววิ่ง",
+        "target_audience": "เจ้าของธุรกิจ SME, ผู้ประกอบการ E-commerce, ฝ่ายจัดซื้อและโลจิสติกส์บริษัท",
+        "core_services": [
+          "บริการกระจายสินค้าทั่วประเทศ",
+          "จัดหาคนขับรถมืออาชีพ (Outsource Driver)",
+          "บริการวางบิลและจัดเก็บเช็ค",
+          "ที่ปรึกษาด้านการจัดการโลจิสติกส์"
+        ],
+        "selling_points": [
+          "บริการครบจบในที่เดียวตั้งแต่ขนส่งยันงานเอกสาร",
+          "รถขนส่งทุกขนาด รองรับทุกความต้องการธุรกิจ",
+          "มืออาชีพไว้ใจได้ ปลอดภัยตรงเวลา"
+        ],
+        "tone_of_voice": "เป็นมืออาชีพ มั่นใจ จริงใจ และมีความรวดเร็ว (Professional, Reliable, Efficient)",
+        "primary_color": "#0056B3",
+        "accent_color": "#FFC107",
+        "price_tag": "เริ่มต้นเพียง 500.- (ประเมินราคาตามระยะทางและประเภทรถ)",
+        "sample_hooks": [
+          "ธุรกิจโตแต่ปวดหัวเรื่องขนส่ง? ให้ Fast4U จัดการให้!",
+          "ลดต้นทุนค่าขนส่ง พร้อมคนขับมืออาชีพที่ไว้ใจได้ เริ่มต้นที่นี่",
+          "หมดกังวลเรื่องงานเอกสารและเก็บเช็ค เราดูแลให้ครบทุกขั้นตอน"
+        ],
+        "hashtags": [
+          "#Fast4U",
+          "#ขนส่งสินค้า",
+          "#กระจายสินค้า",
+          "#โลจิสติกส์มืออาชีพ"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการขนส่งและกระจายสินค้าครบวงจรแบบ B2B",
+      "target_audience": "เจ้าของธุรกิจ SME, ผู้ประกอบการ E-commerce, ฝ่ายจัดซื้อและโลจิสติกส์บริษัท",
+      "core_services": [
+        "บริการกระจายสินค้าทั่วประเทศ",
+        "จัดหาคนขับรถมืออาชีพ (Outsource Driver)",
+        "บริการวางบิลและจัดเก็บเช็ค",
+        "ที่ปรึกษาด้านการจัดการโลจิสติกส์"
+      ],
+      "selling_points": [
+        "บริการครบจบในที่เดียวตั้งแต่ขนส่งยันงานเอกสาร",
+        "รถขนส่งทุกขนาด รองรับทุกความต้องการธุรกิจ",
+        "มืออาชีพไว้ใจได้ ปลอดภัยตรงเวลา"
+      ],
+      "tone_of_voice": "เป็นมืออาชีพ มั่นใจ จริงใจ และมีความรวดเร็ว (Professional, Reliable, Efficient)",
+      "sample_hooks": [
+        "ธุรกิจโตแต่ปวดหัวเรื่องขนส่ง? ให้ Fast4U จัดการให้!",
+        "ลดต้นทุนค่าขนส่ง พร้อมคนขับมืออาชีพที่ไว้ใจได้ เริ่มต้นที่นี่",
+        "หมดกังวลเรื่องงานเอกสารและเก็บเช็ค เราดูแลให้ครบทุกขั้นตอน"
+      ],
+      "sample_hashtags": [
+        "#Fast4U",
+        "#ขนส่งสินค้า",
+        "#กระจายสินค้า",
+        "#โลจิสติกส์มืออาชีพ"
+      ]
     },
     {
       "id": "1159754457405610",
       "name": "ทิพยสุข ก่อสร้าง",
       "category": "งานปรับปรุงที่อยู่อาศัย / ก่อสร้าง",
-      "access_token": "EAAQKQJd75dUBSypGuMigrasAY5Y1FQxZClBG46HW3ZCeObFVANuTNEikpMJuYEmpLfXLAjSFuGQH3ZAEH3z6ZBYmwyMjg8yhTKNGeZCCvw0jtq97gw6qlw1pmN1v9KzZA9E3iXAw3d7tO1rncm3PjLdpcWS3QagCc8MWI9x254ZCadXDZBRMk066exZBBwczAD63GcnHJsFzR",
+      "access_token": "EAAQKQJd75dUBSyZC95ZBSm4qjT7PoZCx67ZC15dDFf53zZCFrngVknLhwDuVpFCRm1sJwKAafJ5FGhmUCHaAUSEUzqTyBbqWDxgzLkkORlyrphGXSjVGO7WZBZAqQ565RBbHGYk5IdyZCoTsJGEOqXHbbcu8a7Rpwvcbh41iLuISoRlfOImQhKhbJ9TAFOHBkgZB6NhdgqqAI",
       "brand_name": "ทิพยสุข ก่อสร้าง",
-      "tagline": "รับเหมาก่อสร้าง ต่อเติม รีโนเวทบ้านครบวงจร",
-      "primary_color": "#2D3748",
-      "accent_color": "#D69E2E",
+      "tagline": "เนรมิตพื้นที่ในฝัน ด้วยมาตรฐานงานช่างที่วางใจได้",
+      "primary_color": "#2C5F2D",
+      "accent_color": "#FFD700",
       "phone": "066-097-1257",
-      "price_tag": "ประเมินราคาฟรีถึงหน้างาน",
+      "price_tag": "ประเมินราคาตามหน้างานจริง เริ่มต้นหลักพัน",
       "daily_post_time": "10:30",
       "auto_pilot_enabled": true,
-      "picture_url": "https://scontent.fbkk8-1.fna.fbcdn.net/v/t39.30808-1/178890798_4044242798956747_217396744853500171_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeElHXlQ3rt7--nG7qjN1aGOTLwMLOdOca9MvAws505xryTIeKbmiw0rkiiyUQ3Ka0JyGcjzETlzzNSnmKccCDVv&_nc_ohc=l0Oshr3Bt6cQ7kNvwFF6jIS&_nc_oc=AdqSg79mmFWLkNsYbfFdpvUPOaU6jiV85gfzqX4q0scBqKIBlZCuRAdaer4MXx47_fl3xgRtKtQQgEcwccKDUcjb&_nc_zt=24&_nc_ht=scontent.fbkk8-1.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQKQS5KlAy3m9b1e40zbCyZR98-lNjTX1vnkZ2Pa709M8HOT7faBi9qBCQZ5-lehYaFpJQ5W6mzIyw&oh=00_AQQLYTYA17iUQjxfKaRU2Ek0uu-RG1eZVMGd96lXHDpOEA&oe=6AF47799"
+      "picture_url": "https://scontent.fbkk34-3.fna.fbcdn.net/v/t39.30808-1/178890798_4044242798956747_217396744853500171_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeElHXlQ3rt7--nG7qjN1aGOTLwMLOdOca9MvAws505xryTIeKbmiw0rkiiyUQ3Ka0JyGcjzETlzzNSnmKccCDVv&_nc_ohc=l0Oshr3Bt6cQ7kNvwFLn85a&_nc_oc=AdpOnhztMhHFs9j5yIVITIKIYS2BE0CEvdWuxis1Qxz0t6p3ggFBErDRraebreudeTM&_nc_zt=24&_nc_ht=scontent.fbkk34-3.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQJa6atgvAvJCnvItVKk69bAnF4uwHHu5KnyW0sJVLRdY1rw2cbsRbi5BoLMtpCOcvHy7XkTPUTu_Q&oh=00_AQTKY14IC_gRDwcSMRnVyMp1YfF5u3D1R5RfDS5t8C_9PA&oe=6AF4AFD9",
+      "brand_dna": {
+        "brand_name": "ทิพยสุข ก่อสร้าง",
+        "business_type": "บริการรับเหมาก่อสร้าง ต่อเติม และรีโนเวทที่อยู่อาศัยแบบครบวงจร",
+        "tagline": "เนรมิตพื้นที่ในฝัน ด้วยมาตรฐานงานช่างที่วางใจได้",
+        "target_audience": "เจ้าของบ้านและผู้อยู่อาศัยที่ต้องการซ่อมแซม ต่อเติมครัว หรือปรับปรุงพื้นที่ใช้สอยภายในบ้าน",
+        "core_services": [
+          "บริการต่อเติมครัวและเคาน์เตอร์",
+          "งานปูกระเบื้องและพื้นผิวอาคาร",
+          "งานซ่อมแซมและปรับปรุงที่อยู่อาศัย",
+          "งานรีโนเวทบ้านและอาคารทั่วไป"
+        ],
+        "selling_points": [
+          "ช่างฝีมือประณีต รับผิดชอบงานตรงเวลา",
+          "ดูแลงานโดยช่างเปี๊ยก ประสบการณ์สูง",
+          "ให้คำปรึกษาและประเมินราคางานอย่างโปร่งใส"
+        ],
+        "tone_of_voice": "มีความเป็นมืออาชีพ อบอุ่น จริงใจ และน่าเชื่อถือเสมือนคนในครอบครัว",
+        "primary_color": "#2C5F2D",
+        "accent_color": "#FFD700",
+        "price_tag": "ประเมินราคาตามหน้างานจริง เริ่มต้นหลักพัน",
+        "sample_hooks": [
+          "ครัวพัง? พื้นร้าว? ให้ช่างเปี๊ยกช่วยเนรมิตบ้านคุณใหม่ให้เหมือนเดิม",
+          "ต่อเติมครัวให้สวย ถูกใจ ใช้งานได้จริง จบงานไม่มีทิ้งงานแน่นอน",
+          "เปลี่ยนมุมบ้านเดิมๆ ให้เป็นมุมโปรด ด้วยฝีมือทีมงานทิพยสุข"
+        ],
+        "hashtags": [
+          "#ทิพยสุขก่อสร้าง",
+          "#รับเหมาต่อเติม",
+          "#รีโนเวทบ้าน",
+          "#ช่างเปี๊ยกทิพยสุข"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการรับเหมาก่อสร้าง ต่อเติม และรีโนเวทที่อยู่อาศัยแบบครบวงจร",
+      "target_audience": "เจ้าของบ้านและผู้อยู่อาศัยที่ต้องการซ่อมแซม ต่อเติมครัว หรือปรับปรุงพื้นที่ใช้สอยภายในบ้าน",
+      "core_services": [
+        "บริการต่อเติมครัวและเคาน์เตอร์",
+        "งานปูกระเบื้องและพื้นผิวอาคาร",
+        "งานซ่อมแซมและปรับปรุงที่อยู่อาศัย",
+        "งานรีโนเวทบ้านและอาคารทั่วไป"
+      ],
+      "selling_points": [
+        "ช่างฝีมือประณีต รับผิดชอบงานตรงเวลา",
+        "ดูแลงานโดยช่างเปี๊ยก ประสบการณ์สูง",
+        "ให้คำปรึกษาและประเมินราคางานอย่างโปร่งใส"
+      ],
+      "tone_of_voice": "มีความเป็นมืออาชีพ อบอุ่น จริงใจ และน่าเชื่อถือเสมือนคนในครอบครัว",
+      "sample_hooks": [
+        "ครัวพัง? พื้นร้าว? ให้ช่างเปี๊ยกช่วยเนรมิตบ้านคุณใหม่ให้เหมือนเดิม",
+        "ต่อเติมครัวให้สวย ถูกใจ ใช้งานได้จริง จบงานไม่มีทิ้งงานแน่นอน",
+        "เปลี่ยนมุมบ้านเดิมๆ ให้เป็นมุมโปรด ด้วยฝีมือทีมงานทิพยสุข"
+      ],
+      "sample_hashtags": [
+        "#ทิพยสุขก่อสร้าง",
+        "#รับเหมาต่อเติม",
+        "#รีโนเวทบ้าน",
+        "#ช่างเปี๊ยกทิพยสุข"
+      ]
     },
     {
       "id": "683304728207966",
       "name": "PrimeiGarage สร้างโรงรถด้วยเทคโนโลยีอัจริยะ",
       "category": "บริการในท้องถิ่น",
-      "access_token": "EAAQKQJd75dUBSZBKmDPNdZAjaMiUTLeEZAgOgFJ1tQXBXXHh5fw7cMAayHa1N1vkTPPf6nIRaFSSswRdRi1rQQQ79ifzySZBD6wb7nvz79gAok0XQC2eSxBm60QnwOIBEL1UqZBlRU4zWeLNhZAIkNtgepaQncWD9ECpOyLZCIA21qbhtkSOgOKhnUucjr0JZC5zgZBpCbodn",
-      "picture_url": "https://scontent.fbkk12-3.fna.fbcdn.net/v/t39.30808-1/658160054_122156971736977225_5502635740173344085_n.jpg?stp=c63.63.1875.1875a_dst-jpg_s200x200_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHao3dZCyk-BTr-ErjjFXHfgCDTejex-xOAINN6N7H7E8f49QazsHMINbzB66PbtuFO2KDoIraH_zG1xlBW6IfV&_nc_ohc=U_ixrHULA-oQ7kNvwFKGOXy&_nc_oc=AdryDDCykg59sydGMDxtzBTB-RIgy-khC71tIqM9_1sG_t-FLfxnqy2lAfd3MQupyKFxamsAycHq_SCe3aKdVoEO&_nc_zt=24&_nc_ht=scontent.fbkk12-3.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQJLQn_0mCwkK2KRPAMu9LWRXnmPr9DApiyHbUkJ575Z4A_6zU9GXonwBd17fle7avjZV8nR4QVV1g&oh=00_AQRDOmWt7-J5_8R5o_ROGSrYLq9qPUBiTIHxUrI1ZuxUYQ&oe=6AF46A04",
+      "access_token": "EAAQKQJd75dUBS4dwZCjXL4PZB5yN2byZCmOdQzcgEMk0WDe5HSFfBFVRRMaoVHi0ZCPopPyceZBg7byFJs3HUHcSTx0z97mDL7g7cvCcAxqmH2CMjZBw7PeZB6Cc9pNwm3XZAVowdW6s4lLWwYHyVq55ZAIXFTXNuHZB4pQllJEHI1lM7x0P1x0TjuSKNHmZBJh37d8ma3gj9l1",
+      "picture_url": "https://scontent.fbkk3-4.fna.fbcdn.net/v/t39.30808-1/658160054_122156971736977225_5502635740173344085_n.jpg?stp=c63.63.1875.1875a_dst-jpg_s200x200_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHao3dZCyk-BTr-ErjjFXHfgCDTejex-xOAINN6N7H7E8f49QazsHMINbzB66PbtuFO2KDoIraH_zG1xlBW6IfV&_nc_ohc=U_ixrHULA-oQ7kNvwG1WOQs&_nc_oc=Adp5jRUZzezLKG41diOOP24qdkajD1c9adzpDfq2R0ZuZmn0JVZbpxpysLkcAg49V7E&_nc_zt=24&_nc_ht=scontent.fbkk3-4.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQI1gyfl3L9iwf9ewi5fBjJarsPFCIb18I62Np4TvqtPwQA0O6iri78ilpNElbvFzYhyOd6JGdDR8w&oh=00_AQT-n1NPDzxNSn-Tr5x308GM3opOazJxc1VGxp8w0DDp_Q&oe=6AF4A244",
       "brand_name": "PrimeiGarage",
-      "tagline": "PrimeiGarage สร้างโรงรถด้วยเทคโนโลยีอัจริยะ",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "ยกระดับพื้นที่บ้าน ให้ฉลาดและปลอดภัยกว่าที่เคย",
+      "primary_color": "#1A2A3A",
+      "accent_color": "#00D1FF",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "แพ็กเกจต่อเติมเริ่มต้น 150,000.- (พร้อมประเมินหน้างานฟรี)",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "PrimeiGarage",
+        "business_type": "บริการต่อเติมบ้านและโรงรถอัจฉริยะด้วยเทคโนโลยี IoT",
+        "tagline": "ยกระดับพื้นที่บ้าน ให้ฉลาดและปลอดภัยกว่าที่เคย",
+        "target_audience": "เจ้าของบ้านยุคใหม่, ผู้ที่ชื่นชอบเทคโนโลยี Smart Home, เจ้าของบ้านที่ต้องการต่อเติมพื้นที่อย่างมีมาตรฐาน",
+        "core_services": [
+          "บริการต่อเติมบ้านและโรงรถโครงสร้างเหล็ก",
+          "ติดตั้งระบบควบคุมบ้านอัจฉริยะ (IoT Integration)",
+          "วางระบบความปลอดภัยและกล้องวงจรปิดอัจฉริยะ",
+          "งานปรับปรุงซ่อมแซมและแก้ปัญหารอยร้าวเชิงวิศวกรรม"
+        ],
+        "selling_points": [
+          "มาตรฐานงานก่อสร้างแม่นยำด้วยทีมวิศวกรและช่างฝีมืออาชีพ",
+          "เชื่อมต่อระบบบ้านอัจฉริยะที่ใช้งานได้จริงในชีวิตประจำวัน",
+          "กระบวนการทำงานโปร่งใส อัปเดตหน้างานทุกขั้นตอนไม่มีทิ้งงาน"
+        ],
+        "tone_of_voice": "มีความเชี่ยวชาญ (Expert), น่าเชื่อถือ (Trustworthy), ทันสมัย (Modern), และใส่ใจในรายละเอียด (Detail-oriented)",
+        "primary_color": "#1A2A3A",
+        "accent_color": "#00D1FF",
+        "price_tag": "แพ็กเกจต่อเติมเริ่มต้น 150,000.- (พร้อมประเมินหน้างานฟรี)",
+        "sample_hooks": [
+          "รอยร้าวซ่อมไปก็กลับมา? นี่คือเหตุผลที่คุณต้องรู้วิธีแก้จากต้นเหตุ",
+          "เปลี่ยนโรงรถธรรมดา ให้เป็น Smart Space สั่งงานได้ผ่านมือถือ",
+          "เบื้องหลังบ้านสวยไม่ใช่แค่สีที่ทา แต่คือมาตรฐานงานก่อสร้างที่มองไม่เห็น"
+        ],
+        "hashtags": [
+          "#PrimeiGarage",
+          "#โรงรถอัจฉริยะ",
+          "#SmartHomeThailand",
+          "#ต่อเติมบ้านมาตรฐานวิศวกรรม"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการต่อเติมบ้านและโรงรถอัจฉริยะด้วยเทคโนโลยี IoT",
+      "target_audience": "เจ้าของบ้านยุคใหม่, ผู้ที่ชื่นชอบเทคโนโลยี Smart Home, เจ้าของบ้านที่ต้องการต่อเติมพื้นที่อย่างมีมาตรฐาน",
+      "core_services": [
+        "บริการต่อเติมบ้านและโรงรถโครงสร้างเหล็ก",
+        "ติดตั้งระบบควบคุมบ้านอัจฉริยะ (IoT Integration)",
+        "วางระบบความปลอดภัยและกล้องวงจรปิดอัจฉริยะ",
+        "งานปรับปรุงซ่อมแซมและแก้ปัญหารอยร้าวเชิงวิศวกรรม"
+      ],
+      "selling_points": [
+        "มาตรฐานงานก่อสร้างแม่นยำด้วยทีมวิศวกรและช่างฝีมืออาชีพ",
+        "เชื่อมต่อระบบบ้านอัจฉริยะที่ใช้งานได้จริงในชีวิตประจำวัน",
+        "กระบวนการทำงานโปร่งใส อัปเดตหน้างานทุกขั้นตอนไม่มีทิ้งงาน"
+      ],
+      "tone_of_voice": "มีความเชี่ยวชาญ (Expert), น่าเชื่อถือ (Trustworthy), ทันสมัย (Modern), และใส่ใจในรายละเอียด (Detail-oriented)",
+      "sample_hooks": [
+        "รอยร้าวซ่อมไปก็กลับมา? นี่คือเหตุผลที่คุณต้องรู้วิธีแก้จากต้นเหตุ",
+        "เปลี่ยนโรงรถธรรมดา ให้เป็น Smart Space สั่งงานได้ผ่านมือถือ",
+        "เบื้องหลังบ้านสวยไม่ใช่แค่สีที่ทา แต่คือมาตรฐานงานก่อสร้างที่มองไม่เห็น"
+      ],
+      "sample_hashtags": [
+        "#PrimeiGarage",
+        "#โรงรถอัจฉริยะ",
+        "#SmartHomeThailand",
+        "#ต่อเติมบ้านมาตรฐานวิศวกรรม"
+      ]
     },
     {
       "id": "509657852238408",
       "name": "Private Pleasant บริการรับสร้าง ต่อเติม รีโนเวทห้องสำหรับผู้สูงอายุ",
       "category": "ธุรกิจในครัวเรือน",
-      "access_token": "EAAQKQJd75dUBS4T2xONCvEzEUzBV8zPQ8M9Gmr8LolBNzmaJ1P3GavmTLAJhmVNkcERmR761ZCueGWq0Vj7QBgDero26pkHoglZB9cIMXbLSBj1X1sBJOuV9ZC4JhQGa6oYU7ZB45AdEJ6IU9LKe6j3WCR20iZCz3ZBez12hnMzGoVLCq4CiZAoVGLCH2Ts53ATEX5p1ZBZBn",
-      "picture_url": "https://scontent.fbkk8-4.fna.fbcdn.net/v/t39.30808-1/476078831_122106533912747318_2165258723440811417_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeFl-IycF73nkjvqi6YL2DiTEdZZdMfJiuYR1ll0x8mK5hg4mIOeEUdmT-tUUGA3wOeMh9Xna1kL4X4GLr8nqopJ&_nc_ohc=EUAzOfb2630Q7kNvwGPb1Nv&_nc_oc=AdqVEILonrvGe7muI7XsJ5n_DWM2drjEx-HXnif640upbzUcUc-jLOmriZIcFSN_Beb7nmca52vIhxQjSsG4wTAr&_nc_zt=24&_nc_ht=scontent.fbkk8-4.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQI8HCDH-oGYjjSY-MI6MVgc3BnL5tn9I4gjCGI_dWzUpPIFzWX54k-HAnm4KlLmPKPNMZT4YxVhCw&oh=00_AQQb6IrwsIzc98-SxZVs_agNp9OESMvHNDpzrztAxeFuxg&oe=6AF48259",
-      "brand_name": "Private",
-      "tagline": "Private Pleasant บริการรับสร้าง ต่อเติม รีโนเวทห้องสำหรับผู้สูงอายุ",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "access_token": "EAAQKQJd75dUBSZCAfZBCq10zE3zR0mhpBwS92ZCz8AdA2gvJBAIcO3J7HZBOXMJiEoq04cRi9bVrsQfrhjqvej1V5C0EFdQZCVeBtjWYiDuEc18gR9muGEt98pOve5UyP2Wd4NgNObA5XSXZBJFJ5kWk7ABeQZBWi5ZChEGdE4GshT3Kk5ZAJ8vqEiHyaKVA5AYTjwBBtniVb",
+      "picture_url": "https://scontent.fbkk34-3.fna.fbcdn.net/v/t39.30808-1/476078831_122106533912747318_2165258723440811417_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeFl-IycF73nkjvqi6YL2DiTEdZZdMfJiuYR1ll0x8mK5hg4mIOeEUdmT-tUUGA3wOeMh9Xna1kL4X4GLr8nqopJ&_nc_ohc=EUAzOfb2630Q7kNvwFPzxt8&_nc_oc=AdpI0txv0NhEEzAFb1hYSSlz_eBY3H_3RwVxprTPgdnD6JjtS7jHLZYq9pTxY6ZBh90&_nc_zt=24&_nc_ht=scontent.fbkk34-3.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQKtduKrbRnlzP2ZpHFxL8230yZRtNSLGmwXZBjIvXhqJScg-e4YwpHC-C1bIgGrm1kfmF9tIvX5jQ&oh=00_AQRcHlxNvxUGQk2eH47wRvScIG-hCdRqN_WNKQXnHOdlmw&oe=6AF4BA99",
+      "brand_name": "Private Pleasant",
+      "tagline": "ออกแบบความสุข ปรับทุกพื้นที่เพื่อคนที่คุณรัก",
+      "primary_color": "#4A7C59",
+      "accent_color": "#F4B942",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "ประเมินหน้างานฟรี พร้อมปรึกษาการปรับงบประมาณให้เหมาะสม",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "Private Pleasant",
+        "business_type": "บริการออกแบบและปรับปรุงที่อยู่อาศัยเพื่อผู้สูงอายุโดยเฉพาะ",
+        "tagline": "ออกแบบความสุข ปรับทุกพื้นที่เพื่อคนที่คุณรัก",
+        "target_audience": "กลุ่มวัยทำงานอายุ 35-55 ปี ที่ดูแลผู้สูงอายุในครอบครัวและต้องการปรับปรุงบ้านให้ปลอดภัย",
+        "core_services": [
+          "บริการรีโนเวทห้องนอนและห้องน้ำผู้สูงอายุ",
+          "ติดตั้งอุปกรณ์ป้องกันอุบัติเหตุในบ้าน",
+          "ออกแบบพื้นที่ใช้สอย Universal Design",
+          "ให้คำปรึกษาด้านการปรับสภาพแวดล้อมเพื่อลดความเสี่ยงการล้ม"
+        ],
+        "selling_points": [
+          "เชี่ยวชาญด้านความปลอดภัยสูงสุด เน้นการป้องกันอุบัติเหตุจากแรงกระแทก",
+          "ทำความเข้าใจความต้องการของทุก Gen เพื่อลดความขัดแย้งในบ้าน",
+          "ใส่ใจรายละเอียดเชิงจิตวิทยาการอยู่อาศัยมากกว่าแค่การติดตั้งอุปกรณ์"
+        ],
+        "tone_of_voice": "อบอุ่น ห่วงใย เข้าอกเข้าใจ และมีความเป็นมืออาชีพที่น่าเชื่อถือ",
+        "primary_color": "#4A7C59",
+        "accent_color": "#F4B942",
+        "price_tag": "ประเมินหน้างานฟรี พร้อมปรึกษาการปรับงบประมาณให้เหมาะสม",
+        "sample_hooks": [
+          "แค่ติดราวจับไม่พอ! ทำไม 'แรงกระแทก' ถึงเป็นศัตรูเงียบในบ้านที่คุณไม่เคยรู้",
+          "ลูกหลานคุยกันไม่รู้เรื่อง? เมื่ออยากปรับบ้านให้ผู้สูงอายุ แต่ความต้องการคนละ Gen",
+          "อย่ารอให้เกิดอุบัติเหตุ...เปลี่ยนบ้านธรรมดา ให้เป็นพื้นที่ปลอดภัยของคนที่คุณรัก"
+        ],
+        "hashtags": [
+          "#PrivatePleasant",
+          "#บ้านเพื่อผู้สูงอายุ",
+          "#รีโนเวทบ้านผู้สูงวัย",
+          "#UniversalDesign"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการออกแบบและปรับปรุงที่อยู่อาศัยเพื่อผู้สูงอายุโดยเฉพาะ",
+      "target_audience": "กลุ่มวัยทำงานอายุ 35-55 ปี ที่ดูแลผู้สูงอายุในครอบครัวและต้องการปรับปรุงบ้านให้ปลอดภัย",
+      "core_services": [
+        "บริการรีโนเวทห้องนอนและห้องน้ำผู้สูงอายุ",
+        "ติดตั้งอุปกรณ์ป้องกันอุบัติเหตุในบ้าน",
+        "ออกแบบพื้นที่ใช้สอย Universal Design",
+        "ให้คำปรึกษาด้านการปรับสภาพแวดล้อมเพื่อลดความเสี่ยงการล้ม"
+      ],
+      "selling_points": [
+        "เชี่ยวชาญด้านความปลอดภัยสูงสุด เน้นการป้องกันอุบัติเหตุจากแรงกระแทก",
+        "ทำความเข้าใจความต้องการของทุก Gen เพื่อลดความขัดแย้งในบ้าน",
+        "ใส่ใจรายละเอียดเชิงจิตวิทยาการอยู่อาศัยมากกว่าแค่การติดตั้งอุปกรณ์"
+      ],
+      "tone_of_voice": "อบอุ่น ห่วงใย เข้าอกเข้าใจ และมีความเป็นมืออาชีพที่น่าเชื่อถือ",
+      "sample_hooks": [
+        "แค่ติดราวจับไม่พอ! ทำไม 'แรงกระแทก' ถึงเป็นศัตรูเงียบในบ้านที่คุณไม่เคยรู้",
+        "ลูกหลานคุยกันไม่รู้เรื่อง? เมื่ออยากปรับบ้านให้ผู้สูงอายุ แต่ความต้องการคนละ Gen",
+        "อย่ารอให้เกิดอุบัติเหตุ...เปลี่ยนบ้านธรรมดา ให้เป็นพื้นที่ปลอดภัยของคนที่คุณรัก"
+      ],
+      "sample_hashtags": [
+        "#PrivatePleasant",
+        "#บ้านเพื่อผู้สูงอายุ",
+        "#รีโนเวทบ้านผู้สูงวัย",
+        "#UniversalDesign"
+      ]
     },
     {
       "id": "116387371450633",
       "name": "กระทะไฮโซ",
       "category": "อาหารและเครื่องดื่ม",
-      "access_token": "EAAQKQJd75dUBS4Itjs56mxkmUpF4SMMRKsIy50x8EQ9S3M63eqtnB9VYKitGSwwPB16kRJwDJhWWzECapJoPXLJusFbxidZBU2CP0uddje2DLRf04Yo8PoYkZBDncRgh3L4hRQxZAN3dSKj7R3p3ud5vFZC2YS5SPvYluMq1cmorlxMf4QcgD3PlzXMfCrcqX2pDUe4ZD",
-      "picture_url": "https://scontent.fbkk8-1.fna.fbcdn.net/v/t39.30808-1/346069842_1228595158029868_991067664238556158_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeH4cYhkIgETmm-DdAu31JYbuP886_1VhAW4_zzr_VWEBZTZU-zQtoFzDPy5fe0lY1Wz1IACTP0pJyIB3D9YOqn9&_nc_ohc=Bt2hXiRtndwQ7kNvwHZfQWB&_nc_oc=AdoTsHmHBp-gqvtugUSj5rTRmANN_s16gIpd4Xc699mTRGm6D7V2WYIo7KiX9Cw0thIZ04UjG5oUC8MD2oNvb6HO&_nc_zt=24&_nc_ht=scontent.fbkk8-1.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQLr1NGPqCFS-iboV5H1V6u-nWL6Lx3u55_T5HooiC61CkoHrPOm7_cf2TaYQKYc-usvXD3m1tTfng&oh=00_AQQMploRykkY0mHGsaFFMS4F4FRwkZVah9w6UkCqqLi98w&oe=6AF474A7",
+      "access_token": "EAAQKQJd75dUBSzqw9VjOBrcaTZAh7Hos7v2SRwG3yXcQ32qn37lDR9q0Jz90E45eddegvNYAMTHKZCRl1uc5PzRZBnbxZCiOZCXpEDsBxII2aSeNhR5e8dnfedj5w1uc0c3wyYcZAV5wdyF2GkG8tJFcRwoyAI1HZAUVxxTA0zGqpMIDLVVoYdNQlo4H7W6sOyT6LhQT1cZD",
+      "picture_url": "https://scontent.fbkk34-2.fna.fbcdn.net/v/t39.30808-1/346069842_1228595158029868_991067664238556158_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeH4cYhkIgETmm-DdAu31JYbuP886_1VhAW4_zzr_VWEBZTZU-zQtoFzDPy5fe0lY1Wz1IACTP0pJyIB3D9YOqn9&_nc_ohc=Bt2hXiRtndwQ7kNvwHjDWpq&_nc_oc=Adp0g4JxdMhFhzkXPHUvqh0AtLfSaSjzqgGcvkMI4Ceyba1_DN6Jj2qz2pm057wXrS4&_nc_zt=24&_nc_ht=scontent.fbkk34-2.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQLdhAvHRA3iV2_ecrb-UYkPjZjP3yEJ8QlJAYM_HhxzrOTTG4OUt7kpGvODDOdfpV5Z4KEBlokgJA&oh=00_AQTPvZSrsX8bkz9P0aXQtJlkcuZTqTPTqXpzRCJJf4s1LA&oe=6AF4ACE7",
       "brand_name": "กระทะไฮโซ",
-      "tagline": "กระทะไฮโซ",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "ยกระดับเมนูทอด ให้เป็นความสุขระดับไฮเอนด์",
+      "primary_color": "#D4AF37",
+      "accent_color": "#2D3436",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เริ่มต้น 89.- ต่อเมนู",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "กระทะไฮโซ",
+        "business_type": "อาหารทอดสไตล์ฟิวชั่นพรีเมียม",
+        "tagline": "ยกระดับเมนูทอด ให้เป็นความสุขระดับไฮเอนด์",
+        "target_audience": "คนรุ่นใหม่วัยทำงาน, ผู้ที่ชื่นชอบอาหารแนวสตรีทฟู้ดแต่เน้นคุณภาพวัตถุดิบ, คนที่ชอบลองรสชาติแปลกใหม่",
+        "core_services": [
+          "เมนูของทอดฟิวชั่นรังสรรค์พิเศษ",
+          "ชุดอาหารว่างจัดเลี้ยงนอกสถานที่",
+          "เมนูทอดสูตรเฉพาะตัวที่ไม่ซ้ำใคร",
+          "เซตอาหารทานเล่นสำหรับงานอีเวนต์"
+        ],
+        "selling_points": [
+          "วัตถุดิบพรีเมียมคัดสรรคุณภาพ",
+          "รสชาติฟิวชั่นที่หาทานที่อื่นไม่ได้",
+          "ใส่ใจทุกขั้นตอนด้วยมาตรฐานความสะอาดแบบมืออาชีพ"
+        ],
+        "tone_of_voice": "อบอุ่น มีระดับ ทันสมัย และเป็นกันเอง",
+        "primary_color": "#D4AF37",
+        "accent_color": "#2D3436",
+        "price_tag": "เริ่มต้น 89.- ต่อเมนู",
+        "sample_hooks": [
+          "หยุด! ที่ความกรอบ กับเมนูฟิวชั่นที่โลกต้องจำ",
+          "ทอดแบบธรรมดาโลกไม่จำ... มาลองความอร่อยระดับไฮโซที่นี่",
+          "เปลี่ยนมื้อธรรมดาให้เป็นมื้อพิเศษ ด้วยความกรอบระดับพรีเมียม"
+        ],
+        "hashtags": [
+          "#กระทะไฮโซ",
+          "#อาหารทอดฟิวชั่น",
+          "#PremiumFriedFood",
+          "#อร่อยบอกต่อ"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "อาหารทอดสไตล์ฟิวชั่นพรีเมียม",
+      "target_audience": "คนรุ่นใหม่วัยทำงาน, ผู้ที่ชื่นชอบอาหารแนวสตรีทฟู้ดแต่เน้นคุณภาพวัตถุดิบ, คนที่ชอบลองรสชาติแปลกใหม่",
+      "core_services": [
+        "เมนูของทอดฟิวชั่นรังสรรค์พิเศษ",
+        "ชุดอาหารว่างจัดเลี้ยงนอกสถานที่",
+        "เมนูทอดสูตรเฉพาะตัวที่ไม่ซ้ำใคร",
+        "เซตอาหารทานเล่นสำหรับงานอีเวนต์"
+      ],
+      "selling_points": [
+        "วัตถุดิบพรีเมียมคัดสรรคุณภาพ",
+        "รสชาติฟิวชั่นที่หาทานที่อื่นไม่ได้",
+        "ใส่ใจทุกขั้นตอนด้วยมาตรฐานความสะอาดแบบมืออาชีพ"
+      ],
+      "tone_of_voice": "อบอุ่น มีระดับ ทันสมัย และเป็นกันเอง",
+      "sample_hooks": [
+        "หยุด! ที่ความกรอบ กับเมนูฟิวชั่นที่โลกต้องจำ",
+        "ทอดแบบธรรมดาโลกไม่จำ... มาลองความอร่อยระดับไฮโซที่นี่",
+        "เปลี่ยนมื้อธรรมดาให้เป็นมื้อพิเศษ ด้วยความกรอบระดับพรีเมียม"
+      ],
+      "sample_hashtags": [
+        "#กระทะไฮโซ",
+        "#อาหารทอดฟิวชั่น",
+        "#PremiumFriedFood",
+        "#อร่อยบอกต่อ"
+      ]
     },
     {
       "id": "108290645149750",
       "name": "สุขอาสา",
       "category": "องค์กรไม่แสวงหาผลกำไร",
-      "access_token": "EAAQKQJd75dUBS5NZAjeMZA0VR74W7nqM5i8xsEIHtxpiJLXY6xpYXmqtMGF69fgvFtkzwQAJKdHK3iwPAJWMPC6BOMLXf3Er6mHkvPkPUf85h58AXvoEsjK6XDP7OjGfA7KlyEKoa9VRugYZA0I79NIXHgJDSxVWJD7Hb2oMByjmsXpgC9SkCuIz4PtymlZC7ppCQgcZD",
-      "picture_url": "https://scontent.fbkk13-1.fna.fbcdn.net/v/t39.30808-1/277003858_108324475146367_6329815814469510551_n.jpg?stp=c6.0.345.345a_dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHDC4-MR4qAqQ0_xI0fPRIYrn08DwSZXxeufTwPBJlfF4qW5OXYnxkW1SgvOxFGWep3o8dLZP7KAFRRmoKo5KeA&_nc_ohc=YFKGNOc7Js0Q7kNvwHWGz1s&_nc_oc=AdqFW61X7ZjMwd6XlroHmBqbjfpoYon6udR5Ij59PSEErWI2NO3jd1fiPP31bJX8cwqNyQIO51ID_PL4ThD-mM30&_nc_zt=24&_nc_ht=scontent.fbkk13-1.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQIa4XjWR6nXyjOQbeZ-nCnE2vxexxYAOyD63gurbfgN8xqsQqJ575GMOz7PMblfdbPZKuPRKV5Gmg&oh=00_AQTNEc8boNAPkSbnaYJVS9QeApBqQVS-Lne_MugxMMBsrA&oe=6AF48C74",
+      "access_token": "EAAQKQJd75dUBS6ZAh5MR7ZCCZCHypZCJSmBBYGgOtNhv63knk26mwYJqW7XCJ4hd6ZA3HXHOqLimzFHnGAHlMND2vOFvDX5ZBxYmM4IA3TWQJlbZARI6oeIe0BAfAklFmUlEUgYMmt6K315fFOME7IY4IKBMsgm0AykNrUyFRFBdaZBlzeDU8ZAjbvhvcdh9yYi6ZBcIFYWOoZD",
+      "picture_url": "https://scontent.fbkk3-4.fna.fbcdn.net/v/t39.30808-1/277003858_108324475146367_6329815814469510551_n.jpg?stp=c6.0.345.345a_dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHDC4-MR4qAqQ0_xI0fPRIYrn08DwSZXxeufTwPBJlfF4qW5OXYnxkW1SgvOxFGWep3o8dLZP7KAFRRmoKo5KeA&_nc_ohc=YFKGNOc7Js0Q7kNvwEsww5D&_nc_oc=AdpIJabvlZfgszNkPFKzd4U_7zAqWTuQlFzV82vERwnSU59Iy1Vg_DSDHLqig1GoYuI&_nc_zt=24&_nc_ht=scontent.fbkk3-4.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQKjBocKJeqGXYmpX8krlcdP2LoW5E76L-1hmBEIGSz_ejIxstwMhRifwK3xGyonQuHgEpZnSRlU3w&oh=00_AQQ7T3c0q63ZlF9PNZDYgVMRm0xXDuK85iKWlXXWs4zDUA&oe=6AF48C74",
       "brand_name": "สุขอาสา",
-      "tagline": "สุขอาสา",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "ส่งต่อความสุข ด้วยมืออาสา",
+      "primary_color": "#00A884",
+      "accent_color": "#FFC107",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "ไม่มีค่าใช้จ่าย (เป็นพื้นที่เชื่อมโยงการให้)",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "สุขอาสา",
+        "business_type": "องค์กรไม่แสวงผลกำไรและเครือข่ายจิตอาสาเพื่อสังคม",
+        "tagline": "ส่งต่อความสุข ด้วยมืออาสา",
+        "target_audience": "คนรุ่นใหม่ที่มีใจรักบริการ, พนักงานบริษัทที่ต้องการทำกิจกรรม CSR, กลุ่มผู้สูงอายุที่มีพลัง, และผู้ที่ต้องการแบ่งปันโอกาส",
+        "core_services": [
+          "การจัดกิจกรรมอาสาสมัครพัฒนาชุมชน",
+          "โครงการรับบริจาคและส่งต่อสิ่งของจำเป็น",
+          "เวิร์กชอปแบ่งปันความรู้และทักษะสู่สังคม",
+          "โครงการช่วยเหลือกลุ่มเปราะบางและผู้ประสบภัย"
+        ],
+        "selling_points": [
+          "เครือข่ายอาสาสมัครที่โปร่งใสและตรวจสอบได้",
+          "สร้างผลกระทบเชิงบวกที่วัดผลได้จริง",
+          "พื้นที่ปลอดภัยสำหรับการแบ่งปันและแลกเปลี่ยนความสุข"
+        ],
+        "tone_of_voice": "อบอุ่น จริงใจ ให้กำลังใจ และสร้างแรงบันดาลใจ",
+        "primary_color": "#00A884",
+        "accent_color": "#FFC107",
+        "price_tag": "ไม่มีค่าใช้จ่าย (เป็นพื้นที่เชื่อมโยงการให้)",
+        "sample_hooks": [
+          "เปลี่ยนวันหยุดธรรมดา ให้เป็นวันแห่งการ 'ให้' ที่คุณจะไม่มีวันลืม",
+          "ความสุขที่แท้จริง ไม่ได้อยู่ที่เรามีเท่าไหร่ แต่อยู่ที่วันนี้เราได้แบ่งปันอะไรให้ใครบ้าง",
+          "มือเล็กๆ ของคุณ อาจเป็นจุดเริ่มต้นของรอยยิ้มที่ยิ่งใหญ่กว่าที่คิด"
+        ],
+        "hashtags": [
+          "#สุขอาสา",
+          "#ส่งต่อความสุข",
+          "#อาสาสมัคร",
+          "#พลังแห่งการให้"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "องค์กรไม่แสวงผลกำไรและเครือข่ายจิตอาสาเพื่อสังคม",
+      "target_audience": "คนรุ่นใหม่ที่มีใจรักบริการ, พนักงานบริษัทที่ต้องการทำกิจกรรม CSR, กลุ่มผู้สูงอายุที่มีพลัง, และผู้ที่ต้องการแบ่งปันโอกาส",
+      "core_services": [
+        "การจัดกิจกรรมอาสาสมัครพัฒนาชุมชน",
+        "โครงการรับบริจาคและส่งต่อสิ่งของจำเป็น",
+        "เวิร์กชอปแบ่งปันความรู้และทักษะสู่สังคม",
+        "โครงการช่วยเหลือกลุ่มเปราะบางและผู้ประสบภัย"
+      ],
+      "selling_points": [
+        "เครือข่ายอาสาสมัครที่โปร่งใสและตรวจสอบได้",
+        "สร้างผลกระทบเชิงบวกที่วัดผลได้จริง",
+        "พื้นที่ปลอดภัยสำหรับการแบ่งปันและแลกเปลี่ยนความสุข"
+      ],
+      "tone_of_voice": "อบอุ่น จริงใจ ให้กำลังใจ และสร้างแรงบันดาลใจ",
+      "sample_hooks": [
+        "เปลี่ยนวันหยุดธรรมดา ให้เป็นวันแห่งการ 'ให้' ที่คุณจะไม่มีวันลืม",
+        "ความสุขที่แท้จริง ไม่ได้อยู่ที่เรามีเท่าไหร่ แต่อยู่ที่วันนี้เราได้แบ่งปันอะไรให้ใครบ้าง",
+        "มือเล็กๆ ของคุณ อาจเป็นจุดเริ่มต้นของรอยยิ้มที่ยิ่งใหญ่กว่าที่คิด"
+      ],
+      "sample_hashtags": [
+        "#สุขอาสา",
+        "#ส่งต่อความสุข",
+        "#อาสาสมัคร",
+        "#พลังแห่งการให้"
+      ]
     },
     {
       "id": "107080661675810",
       "name": "น้ำส้ม อมยิ้ม",
       "category": "บริการในท้องถิ่น",
-      "access_token": "EAAQKQJd75dUBS1VrbH1PZCIbgEKbE4Vxuo1bbRjvmf78rCrdMBTZAyKXb9bnaR22A42RNFSt3KCv4NqbjZBzoBDBIxaZBdG8uFmDuPTAXIVo0LVWUv9vRdOmekEmzVZAM3eBhEzcO1qQhSqEt2UVsUhGHokBnuJchBZCS3KfH9rwkNZCSfbXJgY7aHnmdpoNrFr2tdkaDgZD",
-      "picture_url": "https://scontent.fbkk8-2.fna.fbcdn.net/v/t39.30808-1/341557122_753192709584664_9022192766401840607_n.jpg?stp=cp1_dst-jpg_s200x200_tt6&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeEnJqQHlb3RFwD7acfoKUGh4HPDDNtYCETgc8MM21gIRFZFA6mX9iY0QXfdESPSrjmYFOAvecNHcRS2zjqtzD9H&_nc_ohc=Wg7O3VaRChMQ7kNvwFxuzGH&_nc_oc=AdpzENI3JS8ybwUzrFiPLi6FiFoqDxsnZldWVHaIqEdb3hxfxOJezXjqKl_YJOMj02nYdrkOUudSvPDW7Eru9TsH&_nc_zt=24&_nc_ht=scontent.fbkk8-2.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQJo21fgnny8HDqRNVLKaCCfpagRiDGed2VoHKZJmEMdicmT0oCL_-gCyxXEIgjyBaXZQL2liQ5zmA&oh=00_AQSHn6ikP-kzbMPIDeUKpWxWs0QqtdFjGrTxu1b-r-Xo-w&oe=6AF45D6E",
-      "brand_name": "น้ำส้ม",
-      "tagline": "น้ำส้ม อมยิ้ม",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "access_token": "EAAQKQJd75dUBS5rQRfRKlYZB9styaiZBjb7sUtbC43d2ARtQrSOZBo4UHCa2BiZA4XyTuLZB0JIGilUPUOZA9RrRMh4YDUVTXqv1duGerVSvIfHefRECQgw7U2Lp1oeFworMFLBZAmTXZABZAYFOzTp1rFZB1Tww33X2Egby8ZB2F1kTyK3TP7H1d12fZApZAM76QoQ2BJuVBzdIZD",
+      "picture_url": "https://scontent.fbkk3-4.fna.fbcdn.net/v/t39.30808-1/341557122_753192709584664_9022192766401840607_n.jpg?stp=cp1_dst-jpg_s200x200_tt6&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeEnJqQHlb3RFwD7acfoKUGh4HPDDNtYCETgc8MM21gIRFZFA6mX9iY0QXfdESPSrjmYFOAvecNHcRS2zjqtzD9H&_nc_ohc=Wg7O3VaRChMQ7kNvwHlpDFM&_nc_oc=AdovQT8JL23FpL9v74sAjHTpy3vxMn0xBcSGvkcH-0YRfWgq5pHb9dI1vIy9Hv1P4E8&_nc_zt=24&_nc_ht=scontent.fbkk3-4.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQIIiN3uy0lGJnI2JCtV9ObwRWYiWJVf9Eed9spqwcxryJhbEsjNMNdjnn-nI84cjFT5QF5DA5mr-w&oh=00_AQTRmBpzp2ErbiMjN_Ulmxg-26yFB5KQCLU6r86b4kQg6Q&oe=6AF495AE",
+      "brand_name": "น้ำส้มอมยิ้ม",
+      "tagline": "เพราะการรักตัวเอง เริ่มต้นที่ความสดชื่น",
+      "primary_color": "#FF9800",
+      "accent_color": "#4CAF50",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เริ่มต้นขวดละ 35.- / โปรโมชั่น 3 ขวด 100.-",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "น้ำส้มอมยิ้ม",
+        "business_type": "น้ำส้มคั้นสดพร้อมดื่มเพื่อสุขภาพ",
+        "tagline": "เพราะการรักตัวเอง เริ่มต้นที่ความสดชื่น",
+        "target_audience": "คนวัยทำงานที่ใส่ใจสุขภาพ, ผู้หญิงที่มองหาผลิตภัณฑ์จากธรรมชาติ, ครอบครัวที่ต้องการเครื่องดื่มที่มีประโยชน์",
+        "core_services": [
+          "น้ำส้มคั้นสดแท้ 100% เกรดพรีเมียม",
+          "น้ำส้มเพื่อสุขภาพ ปลอดสารเจือปน",
+          "ชุดของขวัญน้ำส้มเพื่อสุขภาพ (Gift Set)",
+          "บริการจัดส่งน้ำส้มถึงหน้าบ้านและออฟฟิศ"
+        ],
+        "selling_points": [
+          "คั้นสดใหม่ทุกวันจากส้มสายพันธุ์ดี มั่นใจในความสะอาด",
+          "เป็นมากกว่าเครื่องดื่ม แต่คือความห่วงใยและการดูแลสุขภาพ",
+          "สนับสนุนอาชีพคนในชุมชน เติบโตไปพร้อมกับรอยยิ้มลูกค้า"
+        ],
+        "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเองเหมือนคนในครอบครัว และมีความใส่ใจสุขภาพในทุกคำพูด",
+        "primary_color": "#FF9800",
+        "accent_color": "#4CAF50",
+        "price_tag": "เริ่มต้นขวดละ 35.- / โปรโมชั่น 3 ขวด 100.-",
+        "sample_hooks": [
+          "วันนี้คุณดื่ม 'น้ำส้ม' ดูแลตัวเองแล้วหรือยัง? 🍊",
+          "เพราะความรักเริ่มที่การดูแลตัวเอง... ให้ 'น้ำส้มอมยิ้ม' เป็นหนึ่งในความห่วงใยของคุณ",
+          "จากรถเข็นหน้าหมู่บ้าน สู่ความสดชื่นที่อยากส่งต่อให้คุณถึงมือ 🧡"
+        ],
+        "hashtags": [
+          "#น้ำส้มอมยิ้ม",
+          "#น้ำส้มคั้นสด",
+          "#ดื่มสุขภาพดี",
+          "#รักตัวเองเริ่มที่การกิน"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "น้ำส้มคั้นสดพร้อมดื่มเพื่อสุขภาพ",
+      "target_audience": "คนวัยทำงานที่ใส่ใจสุขภาพ, ผู้หญิงที่มองหาผลิตภัณฑ์จากธรรมชาติ, ครอบครัวที่ต้องการเครื่องดื่มที่มีประโยชน์",
+      "core_services": [
+        "น้ำส้มคั้นสดแท้ 100% เกรดพรีเมียม",
+        "น้ำส้มเพื่อสุขภาพ ปลอดสารเจือปน",
+        "ชุดของขวัญน้ำส้มเพื่อสุขภาพ (Gift Set)",
+        "บริการจัดส่งน้ำส้มถึงหน้าบ้านและออฟฟิศ"
+      ],
+      "selling_points": [
+        "คั้นสดใหม่ทุกวันจากส้มสายพันธุ์ดี มั่นใจในความสะอาด",
+        "เป็นมากกว่าเครื่องดื่ม แต่คือความห่วงใยและการดูแลสุขภาพ",
+        "สนับสนุนอาชีพคนในชุมชน เติบโตไปพร้อมกับรอยยิ้มลูกค้า"
+      ],
+      "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเองเหมือนคนในครอบครัว และมีความใส่ใจสุขภาพในทุกคำพูด",
+      "sample_hooks": [
+        "วันนี้คุณดื่ม 'น้ำส้ม' ดูแลตัวเองแล้วหรือยัง? 🍊",
+        "เพราะความรักเริ่มที่การดูแลตัวเอง... ให้ 'น้ำส้มอมยิ้ม' เป็นหนึ่งในความห่วงใยของคุณ",
+        "จากรถเข็นหน้าหมู่บ้าน สู่ความสดชื่นที่อยากส่งต่อให้คุณถึงมือ 🧡"
+      ],
+      "sample_hashtags": [
+        "#น้ำส้มอมยิ้ม",
+        "#น้ำส้มคั้นสด",
+        "#ดื่มสุขภาพดี",
+        "#รักตัวเองเริ่มที่การกิน"
+      ]
     },
     {
       "id": "150813185529161",
       "name": "Work4u.,co,ltd",
       "category": "ธุรกิจท้องถิ่น",
-      "access_token": "EAAQKQJd75dUBSz2q28cR2mYIun606MCaW9KVZACfzVQZCDnjvmTvJO8gTWqzfar6bZBlr3KCu61EopRXPQucZCiYkqjRgLbp415pVve0TAhJxNqM96538ihzDlNqZBCx0NMFwDHqZCEzMANMHLS4y6UDBEaw6toGrIf5draEYPWzRLaZCin8yiP0awZAOHYKxgZAZAXLVDjX8ZD",
-      "picture_url": "https://scontent.fbkk12-5.fna.fbcdn.net/v/t39.30808-1/216473666_884303562180116_1465365931762294468_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeE-tvvWsMyRCkzfnsggqlCmhmwdyNuVtoKGbB3I25W2gniyj2fyrovTKQ7AxVptU0W6rOwMzsWIwX7DXRVf7Fe_&_nc_ohc=TXvSrh5ajiQQ7kNvwFj2Aao&_nc_oc=Adp_8FI4BWEzwBfRKppOQsjF_w0Tf3NvVCPRJSg_ZrWeLlRd5_A_1HGgpwvO4xTeiEUX-wkX40Zq0RWhWYZleQX4&_nc_zt=24&_nc_ht=scontent.fbkk12-5.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQJSDu7aEWD3Vf2F2BAKgmWMEnwgNm80NpR3W4EIkXsdZV3QsIwLQxY4v5rfdI9rCnUysvTxBw2Jhg&oh=00_AQTCBCp7hzXY9rWNiWfoKfklmCCddbbCic1XIZyvh8PIfA&oe=6AF4696E",
-      "brand_name": "Work4u.,co,ltd",
-      "tagline": "Work4u.,co,ltd",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "access_token": "EAAQKQJd75dUBS5sJgQ2OamCtt5ipA5XFoI9HOXP3JpAvGceSqd3zX0UjXITqKWUeHdV1faI3YCt3F5bbrn4nivBJiNCzO3J2EdzleZCzYAmxNQRcfqoVuOVFTiUynMXSsfaOyIyFJ0aD8zmQtZAb13ZC6331Ji4U52zbU2XimmoBQRzyD6ZAYiKAsePy18V3wLXwdCcZD",
+      "picture_url": "https://scontent.fbkk3-4.fna.fbcdn.net/v/t39.30808-1/216473666_884303562180116_1465365931762294468_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeE-tvvWsMyRCkzfnsggqlCmhmwdyNuVtoKGbB3I25W2gniyj2fyrovTKQ7AxVptU0W6rOwMzsWIwX7DXRVf7Fe_&_nc_ohc=TXvSrh5ajiQQ7kNvwFWeWE3&_nc_oc=AdoasmuqBQ6softb3YSGsIKKLPXUd9NtEX-k9QWAW3vCmdH8mrOzW143jwPqSyKPzbM&_nc_zt=24&_nc_ht=scontent.fbkk3-4.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQJ65jJoW8BX0M3nxGnLFx69dfvaXI0QhlZQCzGnMzW4bdkzZcH0ahdhw-d-Svq2Rzl_SVuVqfDPqQ&oh=00_AQR_IkD7Urk19MKJPXzZ00xKgBIJtTJzYYy7r_G27rsMKQ&oe=6AF4A1AE",
+      "brand_name": "Work4u (เวิร์คฟอร์ยู)",
+      "tagline": "เรื่องงาน ให้เราดูแล ชีวิตคุณจะง่ายขึ้น",
+      "primary_color": "#0056b3",
+      "accent_color": "#FFD700",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "ราคาเริ่มต้น 450.-/วัน (ขึ้นอยู่กับประเภทงาน)",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "Work4u (เวิร์คฟอร์ยู)",
+        "business_type": "บริการจัดหาแรงงานและพนักงานเอาท์ซอร์ส (Outsource & Staffing Solutions)",
+        "tagline": "เรื่องงาน ให้เราดูแล ชีวิตคุณจะง่ายขึ้น",
+        "target_audience": "เจ้าของธุรกิจ SME, ผู้จัดการฝ่ายบุคคล, โรงงานและคลังสินค้า ที่ต้องการกำลังคนที่มีประสิทธิภาพ",
+        "core_services": [
+          "บริการจัดหาพนักงานรายวันและรายเดือน",
+          "พนักงานทำความสะอาดและแม่บ้านสำนักงาน",
+          "พนักงานคลังสินค้าและแพ็คสินค้า",
+          "พนักงานฝ่ายผลิตและแรงงานทั่วไป"
+        ],
+        "selling_points": [
+          "พนักงานผ่านการคัดกรองประวัติและทักษะเบื้องต้น",
+          "พร้อมเริ่มงานทันทีไม่ต้องเสียเวลาหาเอง",
+          "บริการแบบยืดหยุ่น ปรับจำนวนคนตามปริมาณงานจริง",
+          "มีทีมงานคอยดูแลและเปลี่ยนคนทันทีหากไม่ผ่านงาน"
+        ],
+        "tone_of_voice": "น่าเชื่อถือ เป็นมืออาชีพ รวดเร็ว และเป็นพาร์ทเนอร์ที่พร้อมช่วยเหลือ",
+        "primary_color": "#0056b3",
+        "accent_color": "#FFD700",
+        "price_tag": "ราคาเริ่มต้น 450.-/วัน (ขึ้นอยู่กับประเภทงาน)",
+        "sample_hooks": [
+          "หาคนทำงานด่วน? Work4u คัดคนคุณภาพพร้อมลุยงานให้คุณทันที!",
+          "ลดภาระงาน HR ด้วยบริการ Outsource มืออาชีพ จบปัญหาหาคนไม่ทัน",
+          "งานเยอะจนล้นมือ? ให้ทีมงานมืออาชีพจาก Work4u เข้าไปช่วยแบ่งเบา"
+        ],
+        "hashtags": [
+          "#Work4u",
+          "#จัดหาแรงงาน",
+          "#Outsourceพนักงาน",
+          "#บริการจัดหาคนงาน"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการจัดหาแรงงานและพนักงานเอาท์ซอร์ส (Outsource & Staffing Solutions)",
+      "target_audience": "เจ้าของธุรกิจ SME, ผู้จัดการฝ่ายบุคคล, โรงงานและคลังสินค้า ที่ต้องการกำลังคนที่มีประสิทธิภาพ",
+      "core_services": [
+        "บริการจัดหาพนักงานรายวันและรายเดือน",
+        "พนักงานทำความสะอาดและแม่บ้านสำนักงาน",
+        "พนักงานคลังสินค้าและแพ็คสินค้า",
+        "พนักงานฝ่ายผลิตและแรงงานทั่วไป"
+      ],
+      "selling_points": [
+        "พนักงานผ่านการคัดกรองประวัติและทักษะเบื้องต้น",
+        "พร้อมเริ่มงานทันทีไม่ต้องเสียเวลาหาเอง",
+        "บริการแบบยืดหยุ่น ปรับจำนวนคนตามปริมาณงานจริง",
+        "มีทีมงานคอยดูแลและเปลี่ยนคนทันทีหากไม่ผ่านงาน"
+      ],
+      "tone_of_voice": "น่าเชื่อถือ เป็นมืออาชีพ รวดเร็ว และเป็นพาร์ทเนอร์ที่พร้อมช่วยเหลือ",
+      "sample_hooks": [
+        "หาคนทำงานด่วน? Work4u คัดคนคุณภาพพร้อมลุยงานให้คุณทันที!",
+        "ลดภาระงาน HR ด้วยบริการ Outsource มืออาชีพ จบปัญหาหาคนไม่ทัน",
+        "งานเยอะจนล้นมือ? ให้ทีมงานมืออาชีพจาก Work4u เข้าไปช่วยแบ่งเบา"
+      ],
+      "sample_hashtags": [
+        "#Work4u",
+        "#จัดหาแรงงาน",
+        "#Outsourceพนักงาน",
+        "#บริการจัดหาคนงาน"
+      ]
     },
     {
       "id": "102001275264618",
       "name": "เพียงพอฏี",
       "category": "ร้านอาหาร",
-      "access_token": "EAAQKQJd75dUBS1SELFqs1rqZCMzxcx6ULstuFPxtaSwQuJMGZBagAPyDNzEIQ57enWZAlvK3VXTRZCsQgufG3oPLerhNbjBUFaAj0mBQSWjKWaFX7QiDsUsB79i4rni3RYeIW8WmpROSZABubzSUsRDVBrSK3SNK9kcQV7ZCiggi71MVmfFSZA6mJTQ2ZAA3bTsXR5yofWYZD",
-      "picture_url": "https://scontent.fbkk12-2.fna.fbcdn.net/v/t39.30808-1/291631337_441335404665033_2113588831101345705_n.jpg?stp=c0.0.581.581a_dst-jpg_s200x200_tt6&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeFBdZeANUnZGSVi7chPSXRoCyenvXlzSvkLJ6e9eXNK-V8NCRktf8HDNMVDqTB6DCNV-N79nM4nTmUTy0WjAbuf&_nc_ohc=BdMI-bDRzgAQ7kNvwHv3JUX&_nc_oc=AdpDWytPpfNlbQ3MpYgdfL9_MP57bIhJA3v8qhqLANydfU6Ykq1a1b4SjxBMtX172YJX375UNOQx0tSyRJOqV9m-&_nc_zt=24&_nc_ht=scontent.fbkk12-2.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQK83_fmN65g5MadC6zMiuF5bbRGGznGZc6jUxHWR7VlNVF07BhzrT1EAluHMFcsLDBfrWhU6QTQzQ&oh=00_AQSV_8xSrsPGaIOOhyCDMy6PyTShREQFCMlrU0r4aYXMaw&oe=6AF4877D",
-      "brand_name": "เพียงพอฏี",
-      "tagline": "เพียงพอฏี",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "access_token": "EAAQKQJd75dUBS7yaKkC5806DNJ4ZC8DuWb9aUdlQG36c0qjFfVIIfb2Jt5LtWtRZCSYSZCwOBtSiS17pBqkWOZBSZAH3B0aTWxkaOjBVNM431ILLXexD7sfswbArjARVgERNQIpUSm9RBCBaVGuAhO3H2HqWFvA7I7yKsTfkHZAqZCetoRUvCtg9bu23miHPxcHUtLiApAZD",
+      "picture_url": "https://scontent.fbkk34-3.fna.fbcdn.net/v/t39.30808-1/291631337_441335404665033_2113588831101345705_n.jpg?stp=c0.0.581.581a_dst-jpg_s200x200_tt6&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeFBdZeANUnZGSVi7chPSXRoCyenvXlzSvkLJ6e9eXNK-V8NCRktf8HDNMVDqTB6DCNV-N79nM4nTmUTy0WjAbuf&_nc_ohc=BdMI-bDRzgAQ7kNvwG-jJsY&_nc_oc=Adq5ZIuT3mFXfp5yuirnyhZhVac_caO4Ki0KmNOesNOX-4Bm10irVpz-PrkIVqkDQMw&_nc_zt=24&_nc_ht=scontent.fbkk34-3.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQK5LlBCftbXLwvs2RrcSREgr6eIrjJWgefQL1Hv3mavccahZDtMR7Qb5gBw8623KhakRYW1uhQLNA&oh=00_AQS0WAfA_UW1As3mbMfOsgIBApoL75nmw4fmg_mRmFGujw&oe=6AF4877D",
+      "brand_name": "เพียงพอฏี (Piangpor-Dee)",
+      "tagline": "อิ่มอร่อยได้ดั่งใจ ใส่ใจในทุกกล่อง",
+      "primary_color": "#6B8E23",
+      "accent_color": "#D4AF37",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "จัดเบรคเริ่มต้นเพียง 35.-/ชุด (ปรับงบประมาณได้ตามต้องการ)",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "เพียงพอฏี (Piangpor-Dee)",
+        "business_type": "บริการอาหารจัดเลี้ยง Snack Box และอาหารตามสั่งโฮมเมด",
+        "tagline": "อิ่มอร่อยได้ดั่งใจ ใส่ใจในทุกกล่อง",
+        "target_audience": "พนักงานออฟฟิศ, หน่วยงานรัฐและเอกชนที่ต้องการบริการจัดเบรค, ผู้ที่ชื่นชอบอาหารโฮมเมดและขนมไทย",
+        "core_services": [
+          "บริการจัด Snack Box (อาหารว่างและเบเกอรี่) ตามงบประมาณ",
+          "อาหารกล่องเดลิเวอรี่รสชาติตามสั่ง",
+          "ขนมไทยและน้ำสมุนไพรคั้นสดวันต่อวัน",
+          "สินค้า OTOP พรีเมียมและอาหารเพื่อสุขภาพ"
+        ],
+        "selling_points": [
+          "ปรับเปลี่ยนเมนูและราคาได้ตามงบประมาณของลูกค้า",
+          "รสชาติแบบโฮมเมด คัดสรรวัตถุดิบคุณภาพและสดใหม่ทุกวัน",
+          "บริการจัดส่งตรงเวลาพร้อมรับออเดอร์ขนาดใหญ่สำหรับงานประชุมและสัมมนา"
+        ],
+        "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเอง และใส่ใจในรายละเอียดประหนึ่งทำอาหารให้คนในครอบครัว",
+        "primary_color": "#6B8E23",
+        "accent_color": "#D4AF37",
+        "price_tag": "จัดเบรคเริ่มต้นเพียง 35.-/ชุด (ปรับงบประมาณได้ตามต้องการ)",
+        "sample_hooks": [
+          "งานประชุมคราวนี้ให้ 'เพียงพอฏี' ดูแล! จัดเบรคด่วน อร่อยคุ้มค่า ได้ตามงบที่คุณกำหนด",
+          "คิดเมนูไม่ออก? บอกเรา! เพียงพอฏีจัดให้ครบ ทั้งคาว-หวาน วัตถุดิบพรีเมียมในราคามิตรภาพ",
+          "เติมความสดชื่นด้วยน้ำสมุนไพรคั้นสดวันต่อวัน เสิร์ฟพร้อมขนมไทยสูตรต้นตำรับ สั่งเลย!"
+        ],
+        "hashtags": [
+          "#เพียงพอฏี",
+          "#SnackBoxจัดเบรค",
+          "#ขนมไทยเดลิเวอรี่",
+          "#อาหารจัดเลี้ยง"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการอาหารจัดเลี้ยง Snack Box และอาหารตามสั่งโฮมเมด",
+      "target_audience": "พนักงานออฟฟิศ, หน่วยงานรัฐและเอกชนที่ต้องการบริการจัดเบรค, ผู้ที่ชื่นชอบอาหารโฮมเมดและขนมไทย",
+      "core_services": [
+        "บริการจัด Snack Box (อาหารว่างและเบเกอรี่) ตามงบประมาณ",
+        "อาหารกล่องเดลิเวอรี่รสชาติตามสั่ง",
+        "ขนมไทยและน้ำสมุนไพรคั้นสดวันต่อวัน",
+        "สินค้า OTOP พรีเมียมและอาหารเพื่อสุขภาพ"
+      ],
+      "selling_points": [
+        "ปรับเปลี่ยนเมนูและราคาได้ตามงบประมาณของลูกค้า",
+        "รสชาติแบบโฮมเมด คัดสรรวัตถุดิบคุณภาพและสดใหม่ทุกวัน",
+        "บริการจัดส่งตรงเวลาพร้อมรับออเดอร์ขนาดใหญ่สำหรับงานประชุมและสัมมนา"
+      ],
+      "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเอง และใส่ใจในรายละเอียดประหนึ่งทำอาหารให้คนในครอบครัว",
+      "sample_hooks": [
+        "งานประชุมคราวนี้ให้ 'เพียงพอฏี' ดูแล! จัดเบรคด่วน อร่อยคุ้มค่า ได้ตามงบที่คุณกำหนด",
+        "คิดเมนูไม่ออก? บอกเรา! เพียงพอฏีจัดให้ครบ ทั้งคาว-หวาน วัตถุดิบพรีเมียมในราคามิตรภาพ",
+        "เติมความสดชื่นด้วยน้ำสมุนไพรคั้นสดวันต่อวัน เสิร์ฟพร้อมขนมไทยสูตรต้นตำรับ สั่งเลย!"
+      ],
+      "sample_hashtags": [
+        "#เพียงพอฏี",
+        "#SnackBoxจัดเบรค",
+        "#ขนมไทยเดลิเวอรี่",
+        "#อาหารจัดเลี้ยง"
+      ]
     },
     {
       "id": "692403317575521",
       "name": "สำรับคุณแม่",
       "category": "บริษัทด้านอาหารและเครื่องดื่ม",
-      "access_token": "EAAQKQJd75dUBS2tDXICN64qG7NbbWfzU1MW7NdWVRm3WJK3kC0x1xD6LUNM63kC1ZCQBFS5jV0eB4rjq4t65xC9bR39TOuf1JGk1WVS2OL2qv3rES6DGiNQERyzET4mkxv4lWhLQGDZBr2r4i4cPE4vQYeJKTPpghtHiZCBrVixQpjggKukaPZCjB1oYMsYzNnWtTlgK",
-      "picture_url": "https://scontent.fbkk12-2.fna.fbcdn.net/v/t39.30808-1/360087164_764872872310898_6856015449758447966_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeGTKScB754w1nL2FKZrX3pqpMV9y7Bb_86kxX3LsFv_zns1bCBQ_EnoFyKCIw9Mm24BpUWoVjUEwV1aqzP4dIXw&_nc_ohc=KagZMEFl0q0Q7kNvwFOGMi8&_nc_oc=Adp-5pUxbsj0oKxApRP3cXNln08XFiTNx1nw3LlOPn9CCZDfA11pFFbO73Fwj9DgH6-AewVQT5fKEoxxKyqGWRQd&_nc_zt=24&_nc_ht=scontent.fbkk12-2.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQLR6PthhoOKMoxkszITZqss2KPaBx2hOEtEXNQzXENXE-bKpruVvwHDu_BYjdpzeuLLyyyBgo3oWw&oh=00_AQR7d43FAqTjJalJO3DMR0P0rFKOc41hnIFZ8IAiU84OXw&oe=6AF48C4D",
+      "access_token": "EAAQKQJd75dUBSZCWCOmVXUnH5gBCmbZA8tEai9FabLjfkZB9sTP2L5jfUf9WYhWf8ZAaYYGK0FuCWnZCrKW3TfChbZC4B3FgBZAgHjAOhzbi95G7OKp0jYbGzmwCVBXYplZCSMc9exKzwglbFEFeblXSwagIFSZADt9w8EapDxCgSM5PQP4FvadQTY32ZBvODG9TLUcrITIbyO",
+      "picture_url": "https://scontent.fbkk3-2.fna.fbcdn.net/v/t39.30808-1/360087164_764872872310898_6856015449758447966_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeGTKScB754w1nL2FKZrX3pqpMV9y7Bb_86kxX3LsFv_zns1bCBQ_EnoFyKCIw9Mm24BpUWoVjUEwV1aqzP4dIXw&_nc_ohc=KagZMEFl0q0Q7kNvwEhzY1L&_nc_oc=AdrvuthcYAoP32SXIqFcE-eMMCi9S1e-iPtfmdok959bvYLP9bOajIuTXWDAR7wVRvg&_nc_zt=24&_nc_ht=scontent.fbkk3-2.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQJVRfMSUD2usDzf4EzXax8mETUUPPTcCqKNIdLltGQIKeOwYuCvwcEfKdUuBUopZHdIF7FMOYUbfA&oh=00_AQRE5Pww4xZKt6InXnOXVifiWBHuwExqHQ5qLedghisAHg&oe=6AF48C4D",
       "brand_name": "สำรับคุณแม่",
-      "tagline": "สำรับคุณแม่",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "รสชาติที่คิดถึง ส่งตรงถึงมือคุณ",
+      "primary_color": "#D4A373",
+      "accent_color": "#606C38",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เริ่มต้นเพียง 35.- / ส่งฟรีไม่มีขั้นต่ำ (พื้นที่โซน CBD)",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "สำรับคุณแม่",
+        "business_type": "บริการอาหารว่างและอาหารจัดเลี้ยงแบบโฮมเมดเดลิเวอรี่",
+        "tagline": "รสชาติที่คิดถึง ส่งตรงถึงมือคุณ",
+        "target_audience": "พนักงานออฟฟิศในย่าน CBD, ผู้จัดงานสัมมนาขนาดเล็ก, คนวัยทำงานที่โหยหารสชาติอาหารทำเอง",
+        "core_services": [
+          "สังขยาไข่และใบเตยสูตรเข้มข้นพร้อมขนมปัง",
+          "อาหารว่างและขนมจัดเบรกสำหรับงานประชุม",
+          "อาหารทานเล่นเมนูพิเศษ เช่น ข้าวตังหน้าทูน่า",
+          "เครื่องดื่มโฮมเมด ชาไทย/ชาเขียว/ชามะนาว"
+        ],
+        "selling_points": [
+          "รสชาติโฮมเมดต้นตำรับเหมือนแม่ทำให้ทาน",
+          "บริการจัดส่งฟรีครอบคลุมพื้นที่ใจกลางเมือง (สยาม-สีลม-เพลินจิต)",
+          "คัดสรรวัตถุดิบคุณภาพเพื่อมาตรฐานอาหารจัดเลี้ยง"
+        ],
+        "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเองเหมือนคนในครอบครัว",
+        "primary_color": "#D4A373",
+        "accent_color": "#606C38",
+        "price_tag": "เริ่มต้นเพียง 35.- / ส่งฟรีไม่มีขั้นต่ำ (พื้นที่โซน CBD)",
+        "sample_hooks": [
+          "นึกถึงเมนูแม่ทีไร ใจก็ฟู... สั่งสำรับคุณแม่วันนี้สิคะ",
+          "บ่ายนี้รับขนมปังสังขยาฉ่ำๆ สักชุดไหมคะ? ความอร่อยที่รอคุณอยู่",
+          "ประชุมเครียดแค่ไหน ก็หายเหนื่อยได้ด้วยชุดอาหารว่างจากสำรับคุณแม่"
+        ],
+        "hashtags": [
+          "#สำรับคุณแม่",
+          "#อาหารจัดเบรก",
+          "#ขนมโฮมเมด",
+          "#อร่อยบอกต่อ"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการอาหารว่างและอาหารจัดเลี้ยงแบบโฮมเมดเดลิเวอรี่",
+      "target_audience": "พนักงานออฟฟิศในย่าน CBD, ผู้จัดงานสัมมนาขนาดเล็ก, คนวัยทำงานที่โหยหารสชาติอาหารทำเอง",
+      "core_services": [
+        "สังขยาไข่และใบเตยสูตรเข้มข้นพร้อมขนมปัง",
+        "อาหารว่างและขนมจัดเบรกสำหรับงานประชุม",
+        "อาหารทานเล่นเมนูพิเศษ เช่น ข้าวตังหน้าทูน่า",
+        "เครื่องดื่มโฮมเมด ชาไทย/ชาเขียว/ชามะนาว"
+      ],
+      "selling_points": [
+        "รสชาติโฮมเมดต้นตำรับเหมือนแม่ทำให้ทาน",
+        "บริการจัดส่งฟรีครอบคลุมพื้นที่ใจกลางเมือง (สยาม-สีลม-เพลินจิต)",
+        "คัดสรรวัตถุดิบคุณภาพเพื่อมาตรฐานอาหารจัดเลี้ยง"
+      ],
+      "tone_of_voice": "อบอุ่น จริงใจ เป็นกันเองเหมือนคนในครอบครัว",
+      "sample_hooks": [
+        "นึกถึงเมนูแม่ทีไร ใจก็ฟู... สั่งสำรับคุณแม่วันนี้สิคะ",
+        "บ่ายนี้รับขนมปังสังขยาฉ่ำๆ สักชุดไหมคะ? ความอร่อยที่รอคุณอยู่",
+        "ประชุมเครียดแค่ไหน ก็หายเหนื่อยได้ด้วยชุดอาหารว่างจากสำรับคุณแม่"
+      ],
+      "sample_hashtags": [
+        "#สำรับคุณแม่",
+        "#อาหารจัดเบรก",
+        "#ขนมโฮมเมด",
+        "#อร่อยบอกต่อ"
+      ]
     },
     {
       "id": "102590967802429",
       "name": "ChangeYou",
       "category": "นักพูดสร้างแรงบันดาลใจ",
-      "access_token": "EAAQKQJd75dUBSZC8Khq5TRXpNKw0Ibl6XdUB1Nlvq0yZBsbR2pFVYrOqALBZAciZBtiHr5hRLA3Mq8qFC71DOY5cvZAZAVhYNSU2rowiZBKEAIrJjpacRlqNN7j0q4V7vfDZB5ZBw2SyL5AXyoWx2uihqTo355teYWZC8TKZAZBF43sEtqAa7ObgO5uX6tQwku54fycSxMVDKVkZD",
-      "picture_url": "https://scontent.fbkk12-4.fna.fbcdn.net/v/t39.30808-1/300840517_431762542351200_436209591548257574_n.png?stp=dst-png_s200x200&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHj86X7RGVpJa8vVd1OphRaWD1yimllHjdYPXKKaWUeNzX-uafV5tlgD7-J8AhKkjd1KbidJQl8j_AiyobQ3RfB&_nc_ohc=N1u66PgZgjEQ7kNvwHWBY8x&_nc_oc=Adof3hI6dlEH_4FL0i3nolg3CkKJu4mCGi2DkGB36v3iftUk2HRdy9chHpRryGCAI7mwSouJHNPSHeNiPUtMCnEI&_nc_zt=24&_nc_ht=scontent.fbkk12-4.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQLYIxTRCoEx3e0FPvtOKeeq0hjQo8A2jGOrWC3rYa0MeVy1p_Q03p7GzsN4BLYAlHWw7Ygn_AetzQ&oh=00_AQQSLtDS7XdCeHsoxq4DN0LdGp3CFXJHLH5K54LjyS-LdA&oe=6AF45FA9",
+      "access_token": "EAAQKQJd75dUBS7VsAHc3V6BQYtnRv76aLwGF80t7S9zXQc5OoqJHGAL1qiQKnPrhZC7gyiXBByTCsnGBKjXGpOoCb1YKaOkaQoFI8eANp67rCLTVRTmF7FTh6U92vKYFJvrwTdUcQXNGSh1U9cCi9YXKGtJQgf2cb7m105ts4cwCLpO7qaxYFt9j4MZAK7sUV8RscZD",
+      "picture_url": "https://scontent.fbkk34-1.fna.fbcdn.net/v/t39.30808-1/300840517_431762542351200_436209591548257574_n.png?stp=dst-png_s200x200&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeHj86X7RGVpJa8vVd1OphRaWD1yimllHjdYPXKKaWUeNzX-uafV5tlgD7-J8AhKkjd1KbidJQl8j_AiyobQ3RfB&_nc_ohc=N1u66PgZgjEQ7kNvwHbGECB&_nc_oc=AdrVnEhtTH00iKUU896oVVYGmwiVSvg-3-g2ER1lpcfVPiKQvsGCL9YLqBxEp4P7enk&_nc_zt=24&_nc_ht=scontent.fbkk34-1.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQK02Akkff0dOzKgkrW62IGUsFRjGUx5p_V1biToa7drDd_F5sy4SExXMPpQoNRVKvGfRVl37SQX1g&oh=00_AQSfM9c4YKMn4UcK9fCOxMEnvrfXkWjkiGm_NO5zr-SGUg&oe=6AF497E9",
       "brand_name": "ChangeYou",
-      "tagline": "ChangeYou",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "เปลี่ยนวิธีคิด พลิกชีวิตให้มีความสุข",
+      "primary_color": "#2D3748",
+      "accent_color": "#48BB78",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เริ่มต้นที่ 990.- สำหรับเวิร์กชอปกลุ่ม",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "ChangeYou",
+        "business_type": "คอมมูนิตี้และที่ปรึกษาด้านการพัฒนาตนเองและการจัดการชีวิต",
+        "tagline": "เปลี่ยนวิธีคิด พลิกชีวิตให้มีความสุข",
+        "target_audience": "วัยทำงานที่รู้สึกเหนื่อยล้ากับชีวิต พนักงานออฟฟิศที่ต้องการจัดระเบียบชีวิต และคนที่ต้องการพัฒนาศักยภาพตนเองผ่านแนวคิดใหม่ๆ",
+        "core_services": [
+          "คอนเทนต์สร้างแรงบันดาลใจและวิธีคิด (Mindset Coaching)",
+          "เครื่องมือจัดการชีวิตและระบบเพิ่มประสิทธิภาพ (Life OS Tools)",
+          "คอร์สเรียนหรือเวิร์กชอปพัฒนาตนเอง (Self-Development Workshop)",
+          "ให้คำปรึกษาด้านการปรับสมดุลชีวิตและการทำงาน (Life Work Balance Counseling)"
+        ],
+        "selling_points": [
+          "เปลี่ยนแนวคิดยากๆ ให้เป็นเรื่องสนุกที่ทำตามได้จริง",
+          "นำหลักการ Gamification มาประยุกต์ใช้ในการจัดการชีวิต",
+          "เน้นการลงมือทำด้วยวิธีที่เรียบง่ายแต่ทรงพลัง"
+        ],
+        "tone_of_voice": "เป็นกันเอง อบอุ่นเหมือนเพื่อนที่คอยให้คำปรึกษา ให้กำลังใจ และสร้างสรรค์",
+        "primary_color": "#2D3748",
+        "accent_color": "#48BB78",
+        "price_tag": "เริ่มต้นที่ 990.- สำหรับเวิร์กชอปกลุ่ม",
+        "sample_hooks": [
+          "เลิกเป็นตัวประกอบในชีวิตตัวเอง! เปลี่ยนชีวิตคุณให้เป็น 'เกม RPG' ที่สนุกกว่าเดิมด้วยวิธีนี้",
+          "ทำงานจนเหนื่อยลากเลือด แต่ชีวิตวนอยู่ที่เดิม? ลองเช็ค 3 นิสัยที่ฉุดรั้งคุณอยู่",
+          "ไม่ต้องรอให้โลกหมุนตามใจ แค่เปลี่ยนใจในหนึ่งลมหายใจ... นี่คือวิธีเริ่มต้นง่ายๆ วันนี้"
+        ],
+        "hashtags": [
+          "#ChangeYou",
+          "#เปลี่ยนชีวิตให้มีความสุข",
+          "#พัฒนาตัวเอง",
+          "#LifeOS"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "คอมมูนิตี้และที่ปรึกษาด้านการพัฒนาตนเองและการจัดการชีวิต",
+      "target_audience": "วัยทำงานที่รู้สึกเหนื่อยล้ากับชีวิต พนักงานออฟฟิศที่ต้องการจัดระเบียบชีวิต และคนที่ต้องการพัฒนาศักยภาพตนเองผ่านแนวคิดใหม่ๆ",
+      "core_services": [
+        "คอนเทนต์สร้างแรงบันดาลใจและวิธีคิด (Mindset Coaching)",
+        "เครื่องมือจัดการชีวิตและระบบเพิ่มประสิทธิภาพ (Life OS Tools)",
+        "คอร์สเรียนหรือเวิร์กชอปพัฒนาตนเอง (Self-Development Workshop)",
+        "ให้คำปรึกษาด้านการปรับสมดุลชีวิตและการทำงาน (Life Work Balance Counseling)"
+      ],
+      "selling_points": [
+        "เปลี่ยนแนวคิดยากๆ ให้เป็นเรื่องสนุกที่ทำตามได้จริง",
+        "นำหลักการ Gamification มาประยุกต์ใช้ในการจัดการชีวิต",
+        "เน้นการลงมือทำด้วยวิธีที่เรียบง่ายแต่ทรงพลัง"
+      ],
+      "tone_of_voice": "เป็นกันเอง อบอุ่นเหมือนเพื่อนที่คอยให้คำปรึกษา ให้กำลังใจ และสร้างสรรค์",
+      "sample_hooks": [
+        "เลิกเป็นตัวประกอบในชีวิตตัวเอง! เปลี่ยนชีวิตคุณให้เป็น 'เกม RPG' ที่สนุกกว่าเดิมด้วยวิธีนี้",
+        "ทำงานจนเหนื่อยลากเลือด แต่ชีวิตวนอยู่ที่เดิม? ลองเช็ค 3 นิสัยที่ฉุดรั้งคุณอยู่",
+        "ไม่ต้องรอให้โลกหมุนตามใจ แค่เปลี่ยนใจในหนึ่งลมหายใจ... นี่คือวิธีเริ่มต้นง่ายๆ วันนี้"
+      ],
+      "sample_hashtags": [
+        "#ChangeYou",
+        "#เปลี่ยนชีวิตให้มีความสุข",
+        "#พัฒนาตัวเอง",
+        "#LifeOS"
+      ]
     },
     {
       "id": "103466894380857",
       "name": "Free4U",
       "category": "ธุรกิจท้องถิ่น",
-      "access_token": "EAAQKQJd75dUBSZBEYyGRKXrC95K1TN0nZBx1Cje9Jzl6IcVZBRsU3jLUSyJSPfqK7vW9TvwNvB92SLlMIRfdfLc4yEjudEGjz5gDz1UjYTaNr7WPZAxVglAZAmKrAWJw6ZCqp8Kle3PCQD39rd5r2tU9jg1mVVoEHkZCPuqZBGXzTtgImZACftBa2jDNGdDkj3ZBNY5UBbFcoZD",
-      "picture_url": "https://scontent.fbkk12-6.fna.fbcdn.net/v/t39.30808-1/302745293_509471491182381_2634424111527492765_n.png?_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeGFZ41ldBw3VNuuUSGzQVmMh7HPcpFPa66Hsc9ykU9rrmG-u5wiI7t5zABbOXG-zai2ABAKMEZAxRVlAu1tH6fZ&_nc_ohc=A-xl_3HvVEgQ7kNvwGUE5Ok&_nc_oc=AdqwnQjOTtmv1kM9thY70vOxT4tx4o9eVmXJ23RTSl0QMI9_2NsTUwCpc7IgTW22tINypTiqu71HbdEpWEY9AEQI&_nc_zt=24&_nc_ht=scontent.fbkk12-6.fna&edm=AGaHXAAEAAAA&_nc_gid=85_X-bIisRBhQRSEu-i6rg&_nc_tpa=Q5bMBQJryAISZl3ZCpOOro_UYfQhpVfvQVR61zcZxl3h9y2RYEWkBl0NlB8grRhhPspY6dniB_VJpcN3lw&oh=00_AQQMjm_9kNfiRYEVZMqxNQN6WEX9sIXbLTLXwKbZ7Wn3CA&oe=6AF45E80",
-      "brand_name": "Free4U",
-      "tagline": "Free4U",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "access_token": "EAAQKQJd75dUBS2vaWgYwWkuyuHEejRfF7doMwCC69Xn5UZANpNBtD9urgyBBFNPxpz9a8F0cWP6aBHAaKutLm7cfWaFLbdxMJ0L9tX3xGUBEAXGp2EnVXDnoWD3ZBy1MdeNsfjZBIrCqPAaeseP3jByXrDx1tuJNnvDuGuUkJZBNIHQFwWT9QZBZBuVkPflMrewCdIiF8ZD",
+      "picture_url": "https://scontent.fbkk3-2.fna.fbcdn.net/v/t39.30808-1/302745293_509471491182381_2634424111527492765_n.png?_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f907e8&_nc_eui2=AeGFZ41ldBw3VNuuUSGzQVmMh7HPcpFPa66Hsc9ykU9rrmG-u5wiI7t5zABbOXG-zai2ABAKMEZAxRVlAu1tH6fZ&_nc_ohc=A-xl_3HvVEgQ7kNvwGe7S9b&_nc_oc=Adqyubay96l-1mBLZ3P_T0vXqm3m960SSQFJGCBmewClqAdcX2CeCJQ2wNsZpZEbpnQ&_nc_zt=24&_nc_ht=scontent.fbkk3-2.fna&edm=AGaHXAAEAAAA&_nc_gid=qfyrzT8DeM8KaYD3D-tm8Q&_nc_tpa=Q5bMBQKx65hJozAjQw-tly_-84-4AwKpziCtDaCEx0DPGVTs3aXVcP03pAtMpMSN94XA3PD4wzLSTagKrg&oh=00_AQQQHAtbmybgrbe-oJm4WzY3dgCNH9LLEcJhi8MGMCZLaQ&oe=6AF496C0",
+      "brand_name": "Free4U (ฟรีเพื่อคุณ)",
+      "tagline": "คุ้มกว่านี้ไม่มีอีกแล้ว รวมดีลเด็ดที่ต้องรีบคว้า",
+      "primary_color": "#FF4D4D",
+      "accent_color": "#FFD700",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "รวมดีลคุ้ม เริ่มต้น 0 บาท",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "Free4U (ฟรีเพื่อคุณ)",
+        "business_type": "แพลตฟอร์มรวบรวมสิทธิพิเศษและโปรโมชั่นสุดคุ้ม",
+        "tagline": "คุ้มกว่านี้ไม่มีอีกแล้ว รวมดีลเด็ดที่ต้องรีบคว้า",
+        "target_audience": "นักล่าโปรโมชั่น, ผู้ใช้งานสิทธิพิเศษจากค่ายมือถือ/บัตรเครดิต, คนชอบความคุ้มค่า",
+        "core_services": [
+          "อัปเดตสิทธิพิเศษจากค่ายมือถือ (DTAC/AIS/True)",
+          "รวมดีลโปรโมชั่นราคาพิเศษและส่วนลดจากแบรนด์ดัง",
+          "แจ้งเตือนกิจกรรมแจกของฟรีและของแถม",
+          "รีวิวโปรโมชั่นราคา Shock Price รายวัน"
+        ],
+        "selling_points": [
+          "อัปเดตไว เกาะติดทุกสิทธิพิเศษก่อนใคร",
+          "คัดสรรเฉพาะดีลที่ใช้ได้จริงและคุ้มค่าที่สุด",
+          "เข้าใจง่าย ไม่ต้องเสียเวลาหาเอง"
+        ],
+        "tone_of_voice": "ตื่นเต้น กระตือรือร้น เป็นกันเอง ชวนให้รีบกดใช้สิทธิ์",
+        "primary_color": "#FF4D4D",
+        "accent_color": "#FFD700",
+        "price_tag": "รวมดีลคุ้ม เริ่มต้น 0 บาท",
+        "sample_hooks": [
+          "หยุดเลื่อน! เช็คด่วน สิทธิ์ฟรีที่คนใช้ DTAC ห้ามพลาดเดือนนี้!",
+          "ของดีต้องแชร์! รวมดีลลดกระหน่ำวันธรรมดาที่ถูกจนต้องร้องขอชีวิต",
+          "ใช้สิทธิ์ให้คุ้ม! รวมลิสต์ของฟรีที่กดรับได้เลยไม่ต้องรอ"
+        ],
+        "hashtags": [
+          "#Free4U",
+          "#โปรดีบอกต่อ",
+          "#รวมดีลเด็ด",
+          "#ของฟรีมีจริง"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "แพลตฟอร์มรวบรวมสิทธิพิเศษและโปรโมชั่นสุดคุ้ม",
+      "target_audience": "นักล่าโปรโมชั่น, ผู้ใช้งานสิทธิพิเศษจากค่ายมือถือ/บัตรเครดิต, คนชอบความคุ้มค่า",
+      "core_services": [
+        "อัปเดตสิทธิพิเศษจากค่ายมือถือ (DTAC/AIS/True)",
+        "รวมดีลโปรโมชั่นราคาพิเศษและส่วนลดจากแบรนด์ดัง",
+        "แจ้งเตือนกิจกรรมแจกของฟรีและของแถม",
+        "รีวิวโปรโมชั่นราคา Shock Price รายวัน"
+      ],
+      "selling_points": [
+        "อัปเดตไว เกาะติดทุกสิทธิพิเศษก่อนใคร",
+        "คัดสรรเฉพาะดีลที่ใช้ได้จริงและคุ้มค่าที่สุด",
+        "เข้าใจง่าย ไม่ต้องเสียเวลาหาเอง"
+      ],
+      "tone_of_voice": "ตื่นเต้น กระตือรือร้น เป็นกันเอง ชวนให้รีบกดใช้สิทธิ์",
+      "sample_hooks": [
+        "หยุดเลื่อน! เช็คด่วน สิทธิ์ฟรีที่คนใช้ DTAC ห้ามพลาดเดือนนี้!",
+        "ของดีต้องแชร์! รวมดีลลดกระหน่ำวันธรรมดาที่ถูกจนต้องร้องขอชีวิต",
+        "ใช้สิทธิ์ให้คุ้ม! รวมลิสต์ของฟรีที่กดรับได้เลยไม่ต้องรอ"
+      ],
+      "sample_hashtags": [
+        "#Free4U",
+        "#โปรดีบอกต่อ",
+        "#รวมดีลเด็ด",
+        "#ของฟรีมีจริง"
+      ]
     },
     {
       "id": "135995057053795",
       "name": "Fast4U",
       "category": "ธุรกิจท้องถิ่น",
-      "access_token": "EAAQKQJd75dUBS5nuvZBK4js5IcPD0ntYofAp1qCxNk4ozJY3jwCH1ggmHdwdZCiX4BFyciIDtbGukJMAmxb4r0xmskawpAL1HhrtZBCiFw3KawZAIEcMTCzeFgo08ZBcmZCVDhXCVZCHKCOvZCLdDohI8nEa4Fi2PKJRg0H4jZBNc4iGRhwLZAn4PtMmXrD1YYh4JHzMMmylYZD",
-      "picture_url": "https://scontent.fbkk9-3.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png?stp=dst-png_s200x200&_nc_cat=1&ccb=1-7&_nc_sid=8f254b&_nc_eui2=AeFgGGurCVj1pTCRxZ8Ng7p8Wt9TLzuBU1Ba31MvO4FTUK56BsT3YPSVjpzE_qHwLg2NNyEOo3GB6-E5afBdm_oE&_nc_ohc=6WY2Kqhyid0Q7kNvwFhzCUS&_nc_oc=AdqQSYorgC8g4VYlxTlg2BAiDDwRNg4DTMSSlvJLloxi1prNyrtfjcqlk0z_xyttebgTszRQVjSrOUYv02CqRpaV&_nc_zt=24&_nc_ht=scontent.fbkk9-3.fna&edm=AGaHXAAEAAAA&_nc_tpa=Q5bMBQJ2gEWfNRyeIRjm_p8fkkBH67Md29uRqmlBBPZ1DtHO6fspfp1voI93jRqgx2q3H1zIRLn2dFnJ4g&oh=00_AQSGVrury-GHNy89pDRlAkRafkuCMSGvvu8tt2lDP8Ygwg&oe=6B1603BA",
+      "access_token": "EAAQKQJd75dUBSZChQOs9BrA3DZCyVHQ5veqdO7ARcybRiLQ8ZA56Gu5gaMTXJalIVpfpg3p0BeiPCpCZA4hXtzOteA4yoZCXvm9nT15Felud09wOFxqZAnLftwPi5RDseSSC9SaZCukmJAv3mjq8vy4mQ9o59Efd0WlazjUmdq71vnqMd4iI9YZCxy6hxW8E2iJqxM0rew4ZD",
+      "picture_url": "https://scontent.fbkk34-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png?stp=dst-png_s200x200&_nc_cat=1&ccb=1-7&_nc_sid=8f254b&_nc_eui2=AeFgGGurCVj1pTCRxZ8Ng7p8Wt9TLzuBU1Ba31MvO4FTUK56BsT3YPSVjpzE_qHwLg2NNyEOo3GB6-E5afBdm_oE&_nc_ohc=6WY2Kqhyid0Q7kNvwERqdBp&_nc_oc=AdpSZbB0FdfIhDCcaFiyxSb3xkaUug7XE74zBpqqWauMUsxQV_J3az88FLgUL4Xqa2o&_nc_zt=24&_nc_ht=scontent.fbkk34-1.fna&edm=AGaHXAAEAAAA&_nc_tpa=Q5bMBQLDjrnrHRG5Rq9eN2oaQNCUmKLWLfHKGVE-WutV2MzChFC--yIYeZ1Wx4LLldlJly3YPtGcsPg0oQ&oh=00_AQRM5CBAT612hsCbRw89TeDRDvAfa6fLfA47EFZfmMSmMw&oe=6B163BFA",
       "brand_name": "Fast4U",
-      "tagline": "Fast4U",
-      "primary_color": "#0B3B60",
-      "accent_color": "#FF5B00",
+      "tagline": "Fast4U ส่งไว ถึงใจ สั่งได้ทุกที่",
+      "primary_color": "#FF4500",
+      "accent_color": "#2D3748",
       "phone": "066-097-1257",
-      "price_tag": "เหมาจ่าย 1,500.-",
+      "price_tag": "เริ่มต้นเพียง 59.- ตามระยะทางจริง",
       "daily_post_time": "09:30",
-      "auto_pilot_enabled": true
+      "auto_pilot_enabled": true,
+      "brand_dna": {
+        "brand_name": "Fast4U",
+        "business_type": "บริการขนส่งและจัดส่งสินค้าด่วนในพื้นที่ (Local Express Delivery)",
+        "tagline": "Fast4U ส่งไว ถึงใจ สั่งได้ทุกที่",
+        "target_audience": "พ่อค้าแม่ค้าออนไลน์ในพื้นที่, ผู้ที่ต้องการฝากซื้อของจากห้างสรรพสินค้า, คนทำงานที่ต้องการบริการรับ-ส่งเอกสาร/ของด่วน",
+        "core_services": [
+          "บริการรับ-ส่งพัสดุและเอกสารด่วน",
+          "บริการซื้อของฝากจากห้าง/งานอีเวนต์ตามสั่ง",
+          "บริการส่งอาหารและสินค้าเดลิเวอรี่ภายในโซน",
+          "บริการขนส่งสินค้าขนาดเล็กถึงที่หมายทันใจ"
+        ],
+        "selling_points": [
+          "บริการรวดเร็ว ทันใจ ตอบโจทย์ชีวิตคนเมือง",
+          "ใส่ใจดูแลสินค้าทุกชิ้นเหมือนฝากส่งเอง",
+          "ราคาเป็นธรรม คิดตามระยะทางจริงไม่มีชาร์จเพิ่ม"
+        ],
+        "tone_of_voice": "รวดเร็ว เป็นกันเอง กระตือรือร้น และเชื่อถือได้",
+        "primary_color": "#FF4500",
+        "accent_color": "#2D3748",
+        "price_tag": "เริ่มต้นเพียง 59.- ตามระยะทางจริง",
+        "sample_hooks": [
+          "อยากได้ของจากซีคอน แต่ไม่อยากฝ่ารถติด? ให้ Fast4U จัดการให้!",
+          "ของสำคัญต้องถึงมือวันนี้! บริการส่งด่วนแบบเหมาๆ เรียกเราได้เลย",
+          "สั่งซื้อสินค้างานอีเวนต์ แต่ไม่มีเวลาไป? ทักแชทบอก Fast4U เราไปรับมาส่งให้ถึงหน้าบ้าน"
+        ],
+        "hashtags": [
+          "#Fast4U",
+          "#ส่งด่วนพื้นที่ซีคอน",
+          "#บริการรับส่งของด่วน",
+          "#ชีวิตง่ายขึ้นด้วยFast4U"
+        ],
+        "model": "gemini-3.1-flash-lite"
+      },
+      "business_type": "บริการขนส่งและจัดส่งสินค้าด่วนในพื้นที่ (Local Express Delivery)",
+      "target_audience": "พ่อค้าแม่ค้าออนไลน์ในพื้นที่, ผู้ที่ต้องการฝากซื้อของจากห้างสรรพสินค้า, คนทำงานที่ต้องการบริการรับ-ส่งเอกสาร/ของด่วน",
+      "core_services": [
+        "บริการรับ-ส่งพัสดุและเอกสารด่วน",
+        "บริการซื้อของฝากจากห้าง/งานอีเวนต์ตามสั่ง",
+        "บริการส่งอาหารและสินค้าเดลิเวอรี่ภายในโซน",
+        "บริการขนส่งสินค้าขนาดเล็กถึงที่หมายทันใจ"
+      ],
+      "selling_points": [
+        "บริการรวดเร็ว ทันใจ ตอบโจทย์ชีวิตคนเมือง",
+        "ใส่ใจดูแลสินค้าทุกชิ้นเหมือนฝากส่งเอง",
+        "ราคาเป็นธรรม คิดตามระยะทางจริงไม่มีชาร์จเพิ่ม"
+      ],
+      "tone_of_voice": "รวดเร็ว เป็นกันเอง กระตือรือร้น และเชื่อถือได้",
+      "sample_hooks": [
+        "อยากได้ของจากซีคอน แต่ไม่อยากฝ่ารถติด? ให้ Fast4U จัดการให้!",
+        "ของสำคัญต้องถึงมือวันนี้! บริการส่งด่วนแบบเหมาๆ เรียกเราได้เลย",
+        "สั่งซื้อสินค้างานอีเวนต์ แต่ไม่มีเวลาไป? ทักแชทบอก Fast4U เราไปรับมาส่งให้ถึงหน้าบ้าน"
+      ],
+      "sample_hashtags": [
+        "#Fast4U",
+        "#ส่งด่วนพื้นที่ซีคอน",
+        "#บริการรับส่งของด่วน",
+        "#ชีวิตง่ายขึ้นด้วยFast4U"
+      ]
     }
   ]
 }

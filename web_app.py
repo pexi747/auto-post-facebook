@@ -393,30 +393,50 @@ async def enhance_image_api(payload: EnhanceImageRequest, request: Request):
     return {"success": False, "error": "ไม่สามารถตกแต่งรูปภาพได้ ตรวจสอบไฟล์ต้นฉบับ"}
 
 class GenerateBannerRequest(BaseModel):
-    topic: Optional[str] = "เลือกซ่อมได้เอง 3 งานในบ้าน"
-    subheadline: Optional[str] = "ไฟฟ้า • ประปา • ประตูหน้าต่าง • ติดตั้ง"
-    price: Optional[str] = "เหมาจ่าย 1,500.-"
-    phone: Optional[str] = "066-097-1257"
+    topic: Optional[str] = ""
+    subheadline: Optional[str] = ""
+    price: Optional[str] = ""
+    phone: Optional[str] = ""
 
 @app.post("/api/ai/generate_banner")
 async def generate_banner_api(payload: GenerateBannerRequest, request: Request):
     require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
     brand = load_brand_config()
     os.makedirs("static/uploads", exist_ok=True)
     out_name = f"banner_{int(time.time())}.png"
     out_path = os.path.join("static", "uploads", out_name)
 
-    headline = payload.topic or "เลือกซ่อมได้เอง 3 งานในบ้าน"
-    price = payload.price or brand.get("price_tag", "เหมาจ่าย 1,500.-")
-    phone = payload.phone or brand.get("phone", "066-097-1257")
+    headline = payload.topic or active_page.get("brand_name") or "บริการระดับมืออาชีพ"
+    price = payload.price or active_page.get("price_tag") or brand.get("price_tag", "")
+    subheadline = payload.subheadline or active_page.get("tagline") or "บริการคุณภาพ ใส่ใจทุกขั้นตอน มั่นใจได้"
+
+    # ลองสร้างด้วย Dynamic Brand Banner Generator (ตาม CI สีและโลโก้จริงของเพจ)
+    try:
+        from banner_generator import create_brand_banner
+        banner_ok = create_brand_banner(
+            page_info=active_page,
+            headline=headline[:35],
+            subheadline=subheadline[:55],
+            price_tag=price,
+            output_path=out_path
+        )
+        if banner_ok:
+            return {
+                "success": True,
+                "image_path": out_path,
+                "url": f"/static/uploads/{out_name}"
+            }
+    except Exception as e:
+        print(f"[Banner Error] Fallback to technician banner: {e}")
 
     result = create_ai_technician_banner(
         photo_path="ai_technician.jpg",
         output_path=out_path,
         headline=headline[:35],
-        subheadline=payload.subheadline or "ไฟฟ้า • ประปา • ประตูหน้าต่าง • ติดตั้ง",
-        price=price,
-        phone=phone
+        subheadline=subheadline,
+        price=price or "เหมาจ่าย 1,500.-",
+        phone=active_page.get("phone") or "066-097-1257"
     )
     if result:
         return {
@@ -441,17 +461,10 @@ class CaptionFromImageRequest(BaseModel):
 @app.post("/api/ai/caption_from_image")
 async def api_caption_from_image(payload: CaptionFromImageRequest, request: Request):
     """
-    วิเคราะห์รูปภาพด้วย Gemini Multimodal AI แล้วสร้างหัวข้อและแคปชั่นตาม CI ของเพจที่เลือกอยู่
+    วิเคราะห์รูปภาพด้วย Gemini Multimodal AI แล้วสร้างหัวข้อและแคปชั่นตาม Brand DNA ของเพจที่เลือกอยู่
     """
     require_auth(request)
     active_page = pages_manager.get_active_page() or {}
-    brand = load_brand_config()
-
-    brand_name = active_page.get("brand_name") or brand.get("brand_name", "FixPack")
-    tagline = active_page.get("tagline") or brand.get("tagline", "")
-    phone = active_page.get("phone") or brand.get("phone", "066-097-1257")
-    price = active_page.get("price_tag") or brand.get("price_tag", "")
-    category = active_page.get("category", "บริการทั่วไป")
 
     from scheduler_engine import resolve_image_path
     actual_path = resolve_image_path(payload.image_path)
@@ -461,11 +474,7 @@ async def api_caption_from_image(payload: CaptionFromImageRequest, request: Requ
     from content_generator import generate_caption_from_image
     result = generate_caption_from_image(
         image_path=actual_path,
-        brand_name=brand_name,
-        tagline=tagline,
-        phone=phone,
-        price=price,
-        category=category,
+        page_info=active_page,
         user_hint=payload.user_hint
     )
     return result
@@ -478,13 +487,11 @@ async def api_generate_caption(payload: GenerateCaptionRequest, request: Request
     require_auth(request)
     try:
         active_page = pages_manager.get_active_page() or {}
-        brand = load_brand_config()
-        brand_name = active_page.get("brand_name") or brand.get("brand_name", "FixPack")
-        tagline = active_page.get("tagline") or brand.get("tagline", "")
-        product_name = f"{brand_name} {tagline}".strip()
+        brand_name = active_page.get("brand_name") or "แบรนด์คุณภาพ"
+        topic = payload.topic.strip() or f"บริการแนะนำจาก {brand_name}"
 
-        topic = payload.topic.strip() or f"บริการจาก {brand_name}"
-        caption = create_facebook_post_content(topic=topic, product=product_name)
+        from content_generator import create_facebook_post_content
+        caption = create_facebook_post_content(topic=topic, page_info=active_page)
         return {"success": True, "caption": caption}
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -496,42 +503,61 @@ class PlanTopicsRequest(BaseModel):
 async def api_plan_topics(payload: PlanTopicsRequest, request: Request):
     require_auth(request)
     days = min(max(payload.days, 3), 30)
+    active_page = pages_manager.get_active_page() or {}
 
-    # พยายามใช้ Gemini สร้างหัวข้อที่หลากหลาย
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if api_key:
-        try:
-            from google import genai
-            client = genai.Client(api_key=api_key)
-            prompt = f"""
-คุณเป็นผู้เชี่ยวชาญการวางแผนคอนเทนต์ Facebook สำหรับแบรนด์ 'FixPack งานเล็กซ่อมครบจบในแพ็กเดียว' 
-(บริการช่างซ่อมบ้าน คอนโด งานเล็กๆ เช่น ประปา, ไฟฟ้า, ประตูหน้าต่าง, ยาแนวกระเบื้อง, ติดตั้งชั้นวาง, เหมา 3 งาน 1,500 บาท)
+    from content_generator import generate_brand_topics
+    topics_data = generate_brand_topics(page_info=active_page, days=days)
+    return {"success": True, "topics": topics_data}
 
-กรุณาวางแผนหัวข้อโพสต์จำนวน {days} วัน ในรูปแบบ JSON Array ตามตัวอย่าง:
-[
-  {{"topic": "ชื่อหัวข้อโพสต์ที่น่าสนใจ", "brief": "แนวทางการเล่าสั้นๆ", "category": "หมวดหมู่เช่น ประปา / ไฟฟ้า / โปรโมชั่น"}}
-]
-ตอบกลับเฉพาะโค้ด JSON เท่านั้น ห้ามมีคำอธิบายอื่น
-"""
-            resp = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt)
-            clean_json = resp.text.strip().replace("```json", "").replace("```", "").strip()
-            topics_data = json.loads(clean_json)
-            return {"success": True, "topics": topics_data}
-        except Exception:
-            pass
+@app.post("/api/brand/learn_now")
+async def api_brand_learn_now(request: Request):
+    """
+    ให้ AI สแกนศึกษาข้อมูลเพจปัจจุบันจาก Facebook Graph API และอัปเดต Brand DNA ทันที
+    """
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id"))
+    token = active_page.get("access_token")
+    if not page_id or not token:
+        return {"success": False, "error": "เพจนี้ยังไม่มี Page Access Token กรุณาซิงค์ Token ก่อน"}
 
-    # Fallback สุ่มจากคลังหัวข้อ
-    shuffled = list(AUTO_TOPIC_POOL)
-    random.shuffle(shuffled)
-    fallback_topics = []
-    for i in range(days):
-        t = shuffled[i % len(shuffled)]
-        fallback_topics.append({
-            "topic": t,
-            "brief": "ให้ความรู้และนำเสนอแพ็กเกจเหมาซ่อม 3 งาน 1,500 บาทของ FixPack",
-            "category": "งานซ่อมบำรุงบ้าน"
-        })
-    return {"success": True, "topics": fallback_topics}
+    try:
+        from brand_knowledge_engine import analyze_page_brand
+        brand_dna = analyze_page_brand(page_id=page_id, page_access_token=token)
+        if not brand_dna:
+            return {"success": False, "error": "ไม่สามารถดึงข้อมูลเพจจาก Facebook ได้"}
+
+        # อัปเดตลง managed_pages.json
+        data = pages_manager.load_pages_data()
+        for p in data.get("pages", []):
+            if str(p.get("id")) == page_id:
+                p["brand_dna"] = brand_dna
+                p["brand_name"] = brand_dna.get("brand_name", p.get("brand_name"))
+                p["tagline"] = brand_dna.get("tagline", p.get("tagline"))
+                p["primary_color"] = brand_dna.get("primary_color", p.get("primary_color"))
+                p["accent_color"] = brand_dna.get("accent_color", p.get("accent_color"))
+                p["phone"] = brand_dna.get("phone", p.get("phone"))
+                p["price_tag"] = brand_dna.get("price_tag", p.get("price_tag"))
+                break
+        pages_manager.save_pages_data(data)
+
+        # อัปเดต brand_config
+        cfg = load_brand_config()
+        cfg["brand_name"] = brand_dna.get("brand_name", cfg.get("brand_name"))
+        cfg["tagline"] = brand_dna.get("tagline", cfg.get("tagline"))
+        cfg["primary_color"] = brand_dna.get("primary_color", cfg.get("primary_color"))
+        cfg["accent_color"] = brand_dna.get("accent_color", cfg.get("accent_color"))
+        cfg["phone"] = brand_dna.get("phone", cfg.get("phone"))
+        cfg["price_tag"] = brand_dna.get("price_tag", cfg.get("price_tag"))
+        save_brand_config(cfg)
+
+        return {
+            "success": True,
+            "brand_dna": brand_dna,
+            "message": f"AI ศึกษาข้อมูลแบรนด์ '{brand_dna.get('brand_name')}' สำเร็จเรียบร้อยแล้ว!"
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 @app.post("/api/autopilot/run_now")
 async def api_autopilot_run_now(request: Request):
