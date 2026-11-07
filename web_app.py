@@ -434,6 +434,42 @@ async def get_random_topic(request: Request):
 
 # ================= AI GENERATION APIS =================
 
+class CaptionFromImageRequest(BaseModel):
+    image_path: str
+    user_hint: Optional[str] = ""
+
+@app.post("/api/ai/caption_from_image")
+async def api_caption_from_image(payload: CaptionFromImageRequest, request: Request):
+    """
+    วิเคราะห์รูปภาพด้วย Gemini Multimodal AI แล้วสร้างหัวข้อและแคปชั่นตาม CI ของเพจที่เลือกอยู่
+    """
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    brand = load_brand_config()
+
+    brand_name = active_page.get("brand_name") or brand.get("brand_name", "FixPack")
+    tagline = active_page.get("tagline") or brand.get("tagline", "")
+    phone = active_page.get("phone") or brand.get("phone", "066-097-1257")
+    price = active_page.get("price_tag") or brand.get("price_tag", "")
+    category = active_page.get("category", "บริการทั่วไป")
+
+    from scheduler_engine import resolve_image_path
+    actual_path = resolve_image_path(payload.image_path)
+    if not actual_path:
+        return {"success": False, "error": f"ไม่พบไฟล์รูปภาพ: {payload.image_path}"}
+
+    from content_generator import generate_caption_from_image
+    result = generate_caption_from_image(
+        image_path=actual_path,
+        brand_name=brand_name,
+        tagline=tagline,
+        phone=phone,
+        price=price,
+        category=category,
+        user_hint=payload.user_hint
+    )
+    return result
+
 class GenerateCaptionRequest(BaseModel):
     topic: str
 
@@ -441,8 +477,14 @@ class GenerateCaptionRequest(BaseModel):
 async def api_generate_caption(payload: GenerateCaptionRequest, request: Request):
     require_auth(request)
     try:
-        topic = payload.topic.strip() or "บริการช่างซ่อมแซมบ้าน FixPack"
-        caption = create_facebook_post_content(topic=topic, product="FixPack งานเล็กซ่อมครบจบในแพ็กเดียว")
+        active_page = pages_manager.get_active_page() or {}
+        brand = load_brand_config()
+        brand_name = active_page.get("brand_name") or brand.get("brand_name", "FixPack")
+        tagline = active_page.get("tagline") or brand.get("tagline", "")
+        product_name = f"{brand_name} {tagline}".strip()
+
+        topic = payload.topic.strip() or f"บริการจาก {brand_name}"
+        caption = create_facebook_post_content(topic=topic, product=product_name)
         return {"success": True, "caption": caption}
     except Exception as e:
         return {"success": False, "error": str(e)}

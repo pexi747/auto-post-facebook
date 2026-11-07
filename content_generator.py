@@ -5,6 +5,9 @@ import os
 import sys
 import random
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # รองรับ UTF-8 สำหรับ Windows Console ป้องกันปัญหาเรื่อง Emoji และภาษาไทย
 if sys.platform == "win32":
@@ -94,6 +97,96 @@ def generate_post_from_template(topic: str = "บริการซ่อมแ�
 
     post_content = f"{hook}\n\n{body}\n\n{cta}\n\n{tag}"
     return post_content
+
+def generate_caption_from_image(
+    image_path: str,
+    brand_name: str = "FixPack",
+    tagline: str = "งานเล็กซ่อมครบ จบในแพ็กเดียว",
+    phone: str = "066-097-1257",
+    price: str = "เหมาจ่าย 1,500.-",
+    category: str = "บริการทั่วไป",
+    user_hint: Optional[str] = None
+) -> dict:
+    """
+    วิเคราะห์รูปภาพด้วย Gemini Multimodal Vision แล้วแต่งแคปชั่นและตั้งชื่อหัวข้อที่ตรงกับภาพและแบรนด์
+    """
+    from PIL import Image
+    import json
+
+    if not os.path.exists(image_path):
+        return {"success": False, "error": f"ไม่พบไฟล์รูปภาพ: {image_path}"}
+
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        return {
+            "success": False,
+            "error": "กรุณาระบุ GEMINI_API_KEY ในไฟล์ .env เพื่อใช้ระบบ AI วิเคราะห์ภาพ"
+        }
+
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        img = Image.open(image_path)
+
+        prompt = f"""
+คุณเป็นสุดยอดผู้เชี่ยวชาญด้าน Copywriting และการตลาดบน Facebook ภาษาไทย สำหรับธุรกิจ '{brand_name}'
+- สโลแกน/จุดเด่น: {tagline}
+- หมวดหมู่ธุรกิจ: {category}
+- ช่องทางติดต่อ: โทร {phone} หรือ ทักแชท Inbox เพจ
+- โปรโมชั่น/ราคา (ถ้ามี): {price}
+- คำบอกใบ้/ความต้องการเพิ่มเติมจากผู้ใช้: {user_hint or 'ไม่มี (ให้ดูและวิเคราะห์จากภาพเป็นหลัก)'}
+
+คำสั่ง:
+1. ดูและวิเคราะห์รูปภาพนี้อย่างละเอียด (ระบุว่าในภาพคือสิ่งใด ปัญหาอะไร หรืองานบริการประเภทใด)
+2. เขียนหัวข้อโพสต์สั้นๆ ที่น่าสนใจและหยุดนิ้วโป้ง (topic)
+3. เขียนแคปชั่น Facebook ฉบับเต็ม (caption) ที่มีความน่าเชื่อถือ เป็นกันเอง ชวนให้ลูกค้าทักแชทหรือโทรจองบริการ
+   - มี Hook เปิดหัวที่ดึงดูด
+   - เนื้อหาเชื่อมโยงกับสิ่งที่เห็นในภาพ
+   - จุดเด่นบริการ (ใช้ Bullet points ✅)
+   - Call to action ชวนทักแชท Inbox หรือโทร {phone}
+   - แฮชแท็กที่เกี่ยวข้อง 3-5 แท็ก
+
+ให้ตอบกลับเฉพาะ JSON รูปแบบนี้เท่านั้น ห้ามมีข้อความอื่น:
+{{
+  "topic": "ชื่อหัวข้อโพสต์สั้นๆ",
+  "caption": "เนื้อหาแคปชั่นฉบับเต็ม..."
+}}
+"""
+        models_to_try = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.1-flash-lite"]
+        for m in models_to_try:
+            try:
+                resp = client.models.generate_content(model=m, contents=[prompt, img])
+                if resp and resp.text:
+                    import re
+                    # ค้นหาบล็อก JSON
+                    json_match = re.search(r"\{.*\}", resp.text, re.DOTALL)
+                    if json_match:
+                        try:
+                            data = json.loads(json_match.group(0))
+                            return {
+                                "success": True,
+                                "topic": data.get("topic", f"บริการจาก {brand_name}"),
+                                "caption": data.get("caption", ""),
+                                "model": m
+                            }
+                        except Exception:
+                            pass
+
+                    # Fallback หากไม่ใช่ JSON: ใช้เนื้อหาทั้งหมดเป็นแคปชั่นโดยตรง
+                    lines = [ln.strip() for ln in resp.text.strip().split("\n") if ln.strip()]
+                    suggested_top = lines[0].replace("#", "").replace("*", "").strip() if lines else f"บริการจาก {brand_name}"
+                    return {
+                        "success": True,
+                        "topic": suggested_top[:45],
+                        "caption": resp.text.strip(),
+                        "model": m
+                    }
+            except Exception as e:
+                continue
+
+        return {"success": False, "error": "AI ไม่สามารถประมวลผลรูปภาพได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 def create_facebook_post_content(topic: str = "บริการช่างซ่อมแซมบ้าน", tone: str = "น่าเชื่อถือ เป็นกันเอง ให้คำแนะนำ", product: str = "FixPack งานเล็กซ่อมครบจบในแพ็กเดียว") -> str:
     """ฟังก์ชันหลักสำหรับสร้างเนื้อหาโพสต์ (ลองใช้ AI ก่อน หากไม่มี API Key ให้ใช้ Template)"""

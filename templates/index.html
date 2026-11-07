@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixPack - Facebook Auto-Pilot Dashboard</title>
+    <title>{{ active_page.brand_name or active_page.name }} - Facebook Auto-Pilot Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,8 +12,8 @@
     <style>
         body { font-family: 'Prompt', sans-serif; }
         .tab-btn.active {
-            color: #0B3B60;
-            border-bottom: 3px solid #FF5B00;
+            color: {{ active_page.primary_color or '#0B3B60' }};
+            border-bottom: 3px solid {{ active_page.accent_color or '#FF5B00' }};
             font-weight: 600;
         }
     </style>
@@ -21,29 +21,29 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
     <!-- Top Navigation Bar -->
-    <header class="bg-[#0B3B60] text-white shadow-md sticky top-0 z-40">
+    <header id="main-header" class="text-white shadow-md sticky top-0 z-40 transition-colors duration-300" style="background-color: {{ active_page.primary_color or '#0B3B60' }};">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Brand Info & Multi-Page Switcher -->
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-3">
-                        <img src="/static/profile.jpg" alt="Logo" class="w-10 h-10 rounded-xl bg-white p-0.5 object-cover shadow" onerror="this.src='https://via.placeholder.com/50?text=FixPack'">
+                        <img id="header-brand-logo" src="{{ active_page.picture_url or '/static/profile.jpg' }}" alt="Logo" class="w-10 h-10 rounded-xl bg-white p-0.5 object-cover shadow" onerror="this.src='/static/profile.jpg'">
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="font-bold text-lg leading-tight">{{ active_page.brand_name or 'FixPack' }}</span>
+                                <span id="header-brand-name" class="font-bold text-lg leading-tight">{{ active_page.brand_name or active_page.name }}</span>
                                 <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-400/30 flex items-center gap-1">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                     Auto-Pilot
                                 </span>
                             </div>
-                            <p class="text-xs text-orange-400 leading-none truncate max-w-[180px]">{{ active_page.tagline or 'ระบบโพสต์อัตโนมัติ' }}</p>
+                            <p id="header-tagline" class="text-xs leading-none truncate max-w-[180px]" style="color: {{ active_page.accent_color or '#FF5B00' }};">{{ active_page.tagline or 'ระบบโพสต์อัตโนมัติ' }}</p>
                         </div>
                     </div>
 
                     <!-- Multi-Page Switcher Dropdown -->
                     <div class="relative inline-block text-left ml-2">
                         <button type="button" onclick="togglePageDropdown()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm">
-                            <i class="fa-solid fa-flag text-orange-400"></i>
+                            <i class="fa-solid fa-flag" style="color: {{ active_page.accent_color or '#FF5B00' }};"></i>
                             <span id="current-page-label" class="max-w-[130px] sm:max-w-[180px] truncate">{{ active_page.name }}</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-white/70"></i>
                         </button>
@@ -256,10 +256,10 @@
                         
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="image-picker-group">
                             <!-- Choice 1: Brand Banner -->
-                            <label class="cursor-pointer border-2 border-[#FF5B00] bg-orange-50/40 p-2.5 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-banner">
+                            <label class="cursor-pointer border-2 border-[#FF5B00] bg-orange-50/40 p-2.5 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-banner" style="border-color: {{ active_page.accent_color or '#FF5B00' }};">
                                 <input type="radio" name="image-choice" value="banner" checked class="hidden" onchange="updateImageChoice('banner')">
-                                <img src="/static/fixpack_ai_banner.png" id="img-thumb-banner" class="w-full h-20 object-cover rounded-lg shadow-xs" onerror="this.src='/static/profile.jpg'">
-                                <span class="text-xs font-semibold text-slate-800 leading-tight">แบนเนอร์ช่าง CI FixPack</span>
+                                <img src="/static/fixpack_ai_banner.png" id="img-thumb-banner" class="w-full h-20 object-cover rounded-lg shadow-xs" onerror="this.src='{{ active_page.picture_url or '/static/profile.jpg' }}'">
+                                <span class="text-xs font-semibold text-slate-800 leading-tight">แบนเนอร์ CI {{ active_page.brand_name or 'เพจ' }}</span>
                             </label>
 
                             <!-- Choice 2: Upload Own Photo -->
@@ -302,21 +302,34 @@
                             </div>
 
                             <!-- Upload Action Subpanel (Hidden by default) -->
-                            <div id="subpanel-upload" class="hidden space-y-2">
+                            <div id="subpanel-upload" class="hidden space-y-3">
                                 <div class="flex items-center gap-3">
                                     <input type="file" id="user-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
-                                    <button type="button" onclick="document.getElementById('user-file-input').click()" class="text-xs px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-lg border border-slate-300 transition flex items-center gap-1.5">
-                                        <i class="fa-solid fa-folder-open text-[#FF5B00]"></i> เลือกไฟล์ภาพจากเครื่อง
+                                    <button type="button" onclick="document.getElementById('user-file-input').click()" class="text-xs px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition flex items-center gap-1.5 shadow-xs">
+                                        <i class="fa-solid fa-folder-open" style="color: {{ active_page.accent_color or '#FF5B00' }};"></i> เลือกไฟล์ภาพจากเครื่อง
                                     </button>
                                     <span class="text-xs text-slate-500" id="upload-filename-text">ยังไม่ได้เลือกไฟล์</span>
+                                </div>
+
+                                <!-- Vision AI: analyze uploaded image and write post -->
+                                <div id="upload-vision-ai-row" class="hidden p-3.5 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 rounded-xl border border-purple-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                                    <div class="space-y-0.5">
+                                        <div class="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> ให้ AI ดูรูปแล้วแต่งแคปชั่น (Vision AI)
+                                        </div>
+                                        <p class="text-[11px] text-purple-700 leading-relaxed">AI จะวิเคราะห์ภาพจริง แล้วแต่งหัวข้อ + แคปชั่นตรงตามเพจ <strong>{{ active_page.brand_name or active_page.name }}</strong> (คุณสามารถตรวจสอบและแก้ไขข้อความได้อิสระก่อนโพสต์)</p>
+                                    </div>
+                                    <button type="button" onclick="generateCaptionFromUploadedImage()" class="shrink-0 text-xs px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                                        <i class="fa-solid fa-eye text-yellow-300"></i> ให้ AI แต่งแคปชั่นจากรูปนี้
+                                    </button>
                                 </div>
                                 
                                 <div id="upload-enhance-row" class="hidden pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
                                     <span class="text-xs text-slate-600">
                                         💡 มีรูปหน้างานแล้ว อยากให้ภาพดูเป็นมืออาชีพ?
                                     </span>
-                                    <button type="button" onclick="enhanceUploadedImageWithCI()" class="text-xs px-3 py-1.5 bg-[#FF5B00] hover:bg-[#e05000] text-white font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm">
-                                        <i class="fa-solid fa-wand-magic-sparkles"></i> ให้ AI ใส่กรอบแบรนด์ + ป้ายราคา 1,500.-
+                                    <button type="button" onclick="enhanceUploadedImageWithCI()" class="text-xs px-3 py-1.5 text-white font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm" style="background-color: {{ active_page.accent_color or '#FF5B00' }};">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> ให้ AI ใส่กรอบแบรนด์ + ป้ายราคา {{ active_page.price_tag or '' }}
                                     </button>
                                 </div>
                             </div>
@@ -331,8 +344,8 @@
                         <button type="button" onclick="submitPost('schedule')" class="flex-1 py-3 px-4 bg-[#0B3B60] hover:bg-[#082b47] text-white font-semibold rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
                             <i class="fa-solid fa-calendar-plus"></i> บันทึกลงตารางล่วงหน้า
                         </button>
-                        <button type="button" onclick="submitPost('now')" class="flex-1 py-3 px-4 bg-[#FF5B00] hover:bg-[#e05000] text-white font-semibold rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
-                            <i class="fa-solid fa-paper-plane"></i> โพสต์ขึ้นเพจ FixPack ทันที
+                        <button type="button" id="btn-post-now" onclick="submitPost('now')" class="flex-1 py-3 px-4 text-white font-semibold rounded-xl shadow transition flex items-center justify-center gap-2 text-sm" style="background-color: {{ active_page.accent_color or '#FF5B00' }};">
+                            <i class="fa-solid fa-paper-plane"></i> โพสต์ขึ้นเพจ {{ active_page.brand_name or active_page.name }} ทันที
                         </button>
                     </div>
                 </div>
@@ -348,9 +361,9 @@
                         <!-- Post Header -->
                         <div class="p-4 flex items-center justify-between border-b border-slate-100">
                             <div class="flex items-center gap-3">
-                                <img src="/static/profile.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-slate-200" onerror="this.src='https://via.placeholder.com/50'">
+                                <img id="preview-avatar" src="{{ active_page.picture_url or '/static/profile.jpg' }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-xs" onerror="this.src='/static/profile.jpg'">
                                 <div>
-                                    <div class="font-bold text-sm text-slate-900 leading-tight">FixPack งานเล็กซ่อมครบจบในแพ็กเดียว</div>
+                                    <div id="preview-page-name" class="font-bold text-sm text-slate-900 leading-tight">{{ active_page.name }}</div>
                                     <div class="text-xs text-slate-400 flex items-center gap-1">
                                         <span>เมื่อสักครู่</span> • <i class="fa-solid fa-earth-americas text-[10px]"></i>
                                     </div>
@@ -361,18 +374,16 @@
 
                         <!-- Post Text -->
                         <div class="p-4 text-sm text-slate-800 whitespace-pre-line leading-relaxed" id="preview-text">
-                            💧 ก๊อกน้ำหยดกวนใจ ปล่อยไว้นานค่าน้ำพุ่ง! 🚰
+✨ บริการคุณภาพจาก {{ active_page.brand_name or active_page.name }}
+{{ active_page.tagline or '' }}
 
-อย่าปล่อยให้ปัญหางานช่างเล็กๆ กลายเป็นเรื่องใหญ่
-ให้ FixPack ดูแลคุณด้วยบริการซ่อมบ้านเหมา 3 งานเพียง 1,500 บาท!
+✅ ทีมงานมืออาชีพ ตรงเวลา ไว้ใจได้
+✅ คุณภาพมาตรฐาน สบายใจ ปลอดภัย 100%
+{% if active_page.price_tag %}✅ โปรโมชั่นพิเศษ: {{ active_page.price_tag }}{% endif %}
 
-✅ ช่างมืออาชีพ ตรงเวลา ไว้ใจได้
-✅ จบงานไว ไม่มีค่าใช้จ่ายบานปลาย
-✅ มีรับประกันงานซ่อมทุกจุด
+👉 ทักแชท Inbox เพจ หรือโทร {{ active_page.phone or '066-097-1257' }} ได้เลยครับ!
 
-👉 ทักแชท Inbox เพจ FixPack หรือโทร 066-097-1257 นัดคิวช่างได้เลยครับ!
-
-#FixPack #งานเล็กซ่อมครบจบในแพ็กเดียว #ช่างซ่อมบ้าน
+#{{ active_page.brand_name or 'เพจ' }} #{{ active_page.category or 'บริการคุณภาพ' }}
                         </div>
 
                         <!-- Post Image -->

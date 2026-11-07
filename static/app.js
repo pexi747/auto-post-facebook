@@ -97,6 +97,8 @@ function updateImageChoice(choice) {
         if (currentUploadedImagePath) {
             previewImg.src = currentUploadedImagePath.startsWith('/') ? currentUploadedImagePath : '/' + currentUploadedImagePath;
             if (pathInput) pathInput.value = currentUploadedImagePath;
+            const visionRow = document.getElementById('upload-vision-ai-row');
+            if (visionRow) visionRow.classList.remove('hidden');
         } else {
             previewImg.src = '/static/cover.jpg';
         }
@@ -141,19 +143,92 @@ async function handleFileUpload(event) {
                 previewBox.innerHTML = `<img src="${data.url}" class="w-full h-full object-cover">`;
             }
             if (enhanceRow) enhanceRow.classList.remove('hidden');
+            const visionRow = document.getElementById('upload-vision-ai-row');
+            if (visionRow) visionRow.classList.remove('hidden');
 
             Swal.fire({
                 icon: 'success',
-                title: 'อัปโหลดรูปสำเร็จ!',
-                text: 'สามารถเลือกโพสต์รูปจริงนี้ได้เลย หรือกดปุ่ม "ให้ AI ใส่กรอบแบรนด์" ด้านล่าง',
-                timer: 2000,
-                showConfirmButton: false
+                title: 'อัปโหลดรูปภาพสำเร็จ!',
+                html: `
+                    <p class="text-xs text-slate-600 mb-3">รูปภาพหน้างานจริงพร้อมใช้งานแล้ว</p>
+                    <div class="text-left text-xs bg-purple-50 p-3 rounded-xl border border-purple-200 text-purple-900 space-y-1">
+                        <p class="font-bold">✨ ตัวช่วยพิเศษสำหรับโพสต์นี้:</p>
+                        <p>1. กดปุ่ม <strong>"ให้ AI แต่งแคปชั่นจากรูปนี้"</strong> เพื่อให้ AI วิเคราะห์รูปและคิดข้อความให้เลย</p>
+                        <p>2. หรือกดปุ่ม <strong>"ให้ AI ใส่กรอบแบรนด์"</strong> เพื่อประทับตราโลโก้และเบอร์ติดต่อลงบนภาพ</p>
+                    </div>
+                `,
+                confirmButtonText: 'ตกลง',
+                confirmButtonColor: '#0B3B60'
             });
         } else {
             Swal.fire('อัปโหลดล้มเหลว', data.error || 'ไม่สามารถอัปโหลดไฟล์ได้', 'error');
         }
     } catch (e) {
         Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์เพื่ออัปโหลดไฟล์ได้', 'error');
+    }
+}
+
+// Vision AI: Analyze uploaded photo and generate marketing post
+async function generateCaptionFromUploadedImage() {
+    if (!currentUploadedImagePath) {
+        Swal.fire('แจ้งเตือน', 'กรุณาอัปโหลดรูปภาพก่อนให้ AI วิเคราะห์', 'warning');
+        return;
+    }
+
+    const hint = document.getElementById('post-topic') ? document.getElementById('post-topic').value : '';
+    const activeName = document.getElementById('current-page-label') ? document.getElementById('current-page-label').textContent : 'เพจ';
+
+    Swal.fire({
+        title: '🤖 AI กำลังดูรูปภาพ & คิดแคปชั่น...',
+        text: `ระบบกำลังวิเคราะห์ภาพจริง และแต่งหัวข้อกับแคปชั่นการตลาดให้ตรงกับเพจ "${activeName}"...`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/caption_from_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image_path: currentUploadedImagePath,
+                user_hint: hint
+            })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            const topicInput = document.getElementById('post-topic');
+            const captionInput = document.getElementById('post-caption');
+            const previewText = document.getElementById('preview-text');
+            const counter = document.getElementById('caption-counter');
+
+            if (topicInput && data.topic) {
+                topicInput.value = data.topic;
+            }
+            if (captionInput && data.caption) {
+                captionInput.value = data.caption;
+                if (counter) counter.textContent = `${data.caption.length} ตัวอักษร`;
+                if (previewText) previewText.textContent = data.caption;
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: '✨ AI แต่งแคปชั่นจากรูปภาพเรียบร้อย!',
+                html: `
+                    <p class="text-sm text-slate-600 mb-2">หัวข้อ: <strong>${data.topic || ''}</strong></p>
+                    <div class="p-3 bg-blue-50 text-blue-900 rounded-xl text-xs font-semibold text-left border border-blue-200">
+                        💡 <strong>เนื้อหาถูกใส่ลงในช่องแคปชั่นแล้ว:</strong> คุณสามารถตรวจทาน ปรับแต่ง หรือพิมพ์แก้ไขเนื้อหาได้ตามใจชอบก่อนกดโพสต์
+                    </div>
+                `,
+                confirmButtonText: 'ไปตรวจทาน / แก้ไขเนื้อหา',
+                confirmButtonColor: '#0B3B60'
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'AI ไม่สามารถวิเคราะห์รูปภาพได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบ AI ได้: ' + e.message, 'error');
     }
 }
 
@@ -431,8 +506,9 @@ async function submitPost(mode) {
     }
 
     if (mode === 'now') {
+        const activeName = document.getElementById('current-page-label') ? document.getElementById('current-page-label').textContent : 'เพจ';
         const confirm = await Swal.fire({
-            title: 'ยืนยันการโพสต์ขึ้นเพจ FixPack?',
+            title: `ยืนยันการโพสต์ขึ้นเพจ "${activeName}"?`,
             text: 'ข้อความและรูปภาพจะถูกส่งไปยังเพจจริงทันที',
             icon: 'question',
             showCancelButton: true,

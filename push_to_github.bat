@@ -7,7 +7,7 @@ echo.
 echo 1. ไปที่ https://github.com/new แล้วกดสร้าง New Repository (ตั้งชื่ออะไรก็ได้ เช่น fixpack-bot)
 echo 2. คัดลอกลิงก์ Repository มาวางที่นี่ (เช่น https://github.com/your-username/fixpack-bot.git)
 echo.
-set /p repo_url="👉 วางลิงก์ GitHub Repository: "
+set /p repo_url="https://github.com/pexi747/auto-post-facebook.git"
 
 if "%repo_url%"=="" (
     echo ❌ ยกเลิก
