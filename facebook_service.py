@@ -22,14 +22,19 @@ class FacebookPoster:
 
         # 1. ดึงข้อมูลจากเพจที่กำลัง Active ในระบบเป็นอันดับแรก เพื่อให้ตรงกับที่เลือกบนหน้าเว็บเสมอ
         active = {}
+        target_token = access_token
         try:
             import pages_manager
             active = pages_manager.get_active_page() or {}
+            if page_id and not target_token:
+                target_p = pages_manager.get_page(page_id)
+                if target_p and target_p.get("access_token"):
+                    target_token = target_p.get("access_token")
         except Exception:
             pass
 
         self.page_id = str(page_id or active.get("id") or os.getenv("FACEBOOK_PAGE_ID", "")).strip()
-        self.access_token = str(access_token or active.get("access_token") or os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")).strip()
+        self.access_token = str(target_token or active.get("access_token") or os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")).strip()
         self.api_version = api_version
         self.base_url = f"https://graph.facebook.com/{self.api_version}"
         self._ensure_page_token()

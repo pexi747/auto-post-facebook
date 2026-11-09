@@ -89,10 +89,10 @@ async def lifespan(app: FastAPI):
     # Background Scheduler Task
     async def scheduler_loop():
         print("🚀 [FastAPI] ระบบ Background Auto-Pilot Scheduler เริ่มต้นทำงานแล้ว...")
-        poster = FacebookPoster()
         last_autopilot = {"date": ""}
         while True:
             try:
+                poster = FacebookPoster()
                 check_and_execute_due_posts(poster)
                 check_and_execute_autopilot_daily(poster, last_autopilot)
             except Exception as e:
@@ -271,12 +271,17 @@ class PostCreateRequest(BaseModel):
 @app.post("/api/posts")
 async def create_post(payload: PostCreateRequest, request: Request):
     user = require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = active_page.get("id")
+    page_name = active_page.get("brand_name") or active_page.get("name")
     
     if payload.post_immediately:
         # สั่งโพสต์ขึ้น Facebook ทันที
         poster = FacebookPoster()
         item = {
             "id": f"post_{int(time.time())}",
+            "page_id": page_id,
+            "page_name": page_name,
             "date": payload.date,
             "time": payload.time,
             "topic": payload.topic,
@@ -300,7 +305,9 @@ async def create_post(payload: PostCreateRequest, request: Request):
         time_str=payload.time,
         content=payload.content or "",
         topic=payload.topic or "",
-        image_path=payload.image_path or ""
+        image_path=payload.image_path,
+        page_id=page_id,
+        page_name=page_name
     )
     new_post["created_by"] = user["username"]
     posts = load_schedule()

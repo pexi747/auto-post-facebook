@@ -70,7 +70,9 @@ def add_scheduled_post(
     time_str: str = "09:30",
     content: str = "",
     topic: str = "",
-    image_path: str = "fixpack_ai_banner.png"
+    image_path: Optional[str] = None,
+    page_id: Optional[str] = None,
+    page_name: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     เพิ่มโพสต์ลงในตารางล่วงหน้า
@@ -78,13 +80,17 @@ def add_scheduled_post(
     :param time_str: เวลาในรูปแบบ HH:MM เช่น 10:00
     :param content: ข้อความที่ต้องการโพสต์ (หากเว้นว่าง ระบบจะนำ topic ไปให้ AI เขียนให้)
     :param topic: หัวข้อสำหรับให้ AI เขียนโพสต์
-    :param image_path: รูปภาพที่จะแนบ (ค่าเริ่มต้นคือแบนเนอร์ช่าง AI FixPack)
+    :param image_path: รูปภาพที่จะแนบ
+    :param page_id: ID ของเพจ Facebook ปลายทาง
+    :param page_name: ชื่อเพจหรือแบรนด์
     """
     posts = load_schedule()
     new_id = f"post_{int(time.time())}_{len(posts) + 1}"
     
     post_item = {
         "id": new_id,
+        "page_id": page_id,
+        "page_name": page_name,
         "date": date_str,
         "time": time_str,
         "topic": topic,
@@ -120,6 +126,15 @@ def resolve_image_path(path: Optional[str]) -> Optional[str]:
 
 def execute_single_post(post: Dict[str, Any], poster: FacebookPoster) -> bool:
     """สั่งโพสต์ข้อมูล 1 โพสต์ขึ้นเพจ Facebook"""
+    if post.get("page_id") and str(post.get("page_id")) != str(poster.page_id):
+        try:
+            import pages_manager
+            target_page = pages_manager.get_page(post.get("page_id"))
+            if target_page and target_page.get("access_token"):
+                poster = FacebookPoster(page_id=str(post.get("page_id")), access_token=target_page.get("access_token"))
+        except Exception as e:
+            print(f"⚠️ ไม่สามารถสลับไปยังเพจ {post.get('page_id')}: {e}")
+
     content = post.get("content", "").strip()
     topic = post.get("topic", "").strip()
 

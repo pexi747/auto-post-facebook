@@ -82,6 +82,14 @@ def get_active_page() -> Optional[Dict[str, Any]]:
         return pages[0]
     return None
 
+def get_page(page_id: str) -> Optional[Dict[str, Any]]:
+    """ค้นหาข้อมูลเพจตาม ID"""
+    data = load_pages_data()
+    for p in data.get("pages", []):
+        if str(p.get("id")) == str(page_id):
+            return p
+    return None
+
 def set_active_page(page_id: str) -> bool:
     """สลับเพจที่กำลังใช้งาน"""
     data = load_pages_data()
