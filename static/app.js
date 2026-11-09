@@ -12,6 +12,10 @@ function switchTab(tabId) {
 
     if (tabId === 'calendar') loadPosts();
     if (tabId === 'users') loadUsers();
+    if (tabId === 'ci') {
+        loadBrandConfigForm();
+        loadBrandDocuments();
+    }
 }
 
 // Live Character Counter & Facebook Preview
@@ -27,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         dateInput.value = tomorrow.toISOString().split('T')[0];
+    }
+
+    if (document.getElementById('brand-docs-container')) {
+        loadBrandDocuments();
     }
 
     if (captionEl) {
@@ -723,18 +731,82 @@ async function triggerAutoPilotNow() {
     }
 }
 
+// Helper: Color sync between picker and text input
+function syncColorInput(type) {
+    const picker = document.getElementById(`ci-${type}`);
+    const text = document.getElementById(`ci-${type}-text`);
+    if (picker && text) text.value = picker.value.toUpperCase();
+}
+
+function syncColorPicker(type) {
+    const picker = document.getElementById(`ci-${type}`);
+    const text = document.getElementById(`ci-${type}-text`);
+    if (picker && text && text.value.startsWith('#') && (text.value.length === 7 || text.value.length === 4)) {
+        picker.value = text.value;
+    }
+}
+
+function setTonePreset(preset) {
+    const toneInput = document.getElementById('ci-tone');
+    if (toneInput) toneInput.value = preset;
+}
+
+// Load Brand Config into Form
+async function loadBrandConfigForm() {
+    try {
+        const res = await fetch('/api/admin/brand');
+        if (!res.ok) return;
+        const brand = await res.json();
+
+        if (document.getElementById('ci-name')) document.getElementById('ci-name').value = brand.brand_name || '';
+        if (document.getElementById('ci-tagline')) document.getElementById('ci-tagline').value = brand.tagline || '';
+        if (document.getElementById('ci-primary')) document.getElementById('ci-primary').value = brand.primary_color || '#0B3B60';
+        if (document.getElementById('ci-primary-text')) document.getElementById('ci-primary-text').value = (brand.primary_color || '#0B3B60').toUpperCase();
+        if (document.getElementById('ci-accent')) document.getElementById('ci-accent').value = brand.accent_color || '#FF5B00';
+        if (document.getElementById('ci-accent-text')) document.getElementById('ci-accent-text').value = (brand.accent_color || '#FF5B00').toUpperCase();
+        if (document.getElementById('ci-phone')) document.getElementById('ci-phone').value = brand.phone || '';
+        if (document.getElementById('ci-price')) document.getElementById('ci-price').value = brand.price_tag || '';
+        if (document.getElementById('ci-daily-time')) document.getElementById('ci-daily-time').value = brand.daily_post_time || '09:30';
+        if (document.getElementById('ci-page-id')) document.getElementById('ci-page-id').value = brand.facebook_page_id || '';
+
+        // Brand Identity & Story fields
+        if (document.getElementById('ci-business-type')) document.getElementById('ci-business-type').value = brand.business_type || '';
+        if (document.getElementById('ci-brand-story')) document.getElementById('ci-brand-story').value = brand.brand_story || '';
+        if (document.getElementById('ci-target-audience')) document.getElementById('ci-target-audience').value = brand.target_audience || '';
+        if (document.getElementById('ci-core-services')) document.getElementById('ci-core-services').value = brand.core_services || '';
+        if (document.getElementById('ci-selling-points')) document.getElementById('ci-selling-points').value = brand.selling_points || '';
+        if (document.getElementById('ci-tone')) document.getElementById('ci-tone').value = brand.tone_of_voice || '';
+        if (document.getElementById('ci-negative')) document.getElementById('ci-negative').value = brand.negative_guidelines || '';
+    } catch (e) {
+        console.error('Error loading brand config:', e);
+    }
+}
+
 // Save Brand Config (Admin)
 async function saveBrandConfig(e) {
     e.preventDefault();
     const data = {
-        brand_name: document.getElementById('ci-name').value,
-        tagline: document.getElementById('ci-tagline').value,
-        primary_color: document.getElementById('ci-primary').value,
-        accent_color: document.getElementById('ci-accent').value,
-        phone: document.getElementById('ci-phone').value,
-        price_tag: document.getElementById('ci-price').value,
-        daily_post_time: document.getElementById('ci-daily-time').value
+        brand_name: document.getElementById('ci-name') ? document.getElementById('ci-name').value : '',
+        tagline: document.getElementById('ci-tagline') ? document.getElementById('ci-tagline').value : '',
+        primary_color: document.getElementById('ci-primary') ? document.getElementById('ci-primary').value : '#0B3B60',
+        accent_color: document.getElementById('ci-accent') ? document.getElementById('ci-accent').value : '#FF5B00',
+        phone: document.getElementById('ci-phone') ? document.getElementById('ci-phone').value : '',
+        price_tag: document.getElementById('ci-price') ? document.getElementById('ci-price').value : '',
+        daily_post_time: document.getElementById('ci-daily-time') ? document.getElementById('ci-daily-time').value : '09:30',
+        business_type: document.getElementById('ci-business-type') ? document.getElementById('ci-business-type').value : '',
+        brand_story: document.getElementById('ci-brand-story') ? document.getElementById('ci-brand-story').value : '',
+        target_audience: document.getElementById('ci-target-audience') ? document.getElementById('ci-target-audience').value : '',
+        core_services: document.getElementById('ci-core-services') ? document.getElementById('ci-core-services').value : '',
+        selling_points: document.getElementById('ci-selling-points') ? document.getElementById('ci-selling-points').value : '',
+        tone_of_voice: document.getElementById('ci-tone') ? document.getElementById('ci-tone').value : '',
+        negative_guidelines: document.getElementById('ci-negative') ? document.getElementById('ci-negative').value : ''
     };
+
+    Swal.fire({
+        title: 'กำลังบันทึกข้อมูล...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
 
     try {
         const res = await fetch('/api/admin/brand', {
@@ -743,11 +815,225 @@ async function saveBrandConfig(e) {
             body: JSON.stringify(data)
         });
         const result = await res.json();
+        Swal.close();
+
         if (result.success) {
-            Swal.fire('สำเร็จ', 'บันทึกการตั้งค่า CI แบรนด์เรียบร้อยแล้ว', 'success');
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกสำเร็จ!',
+                text: 'บันทึกการตั้งค่า CI และตัวตนแบรนด์เรียบร้อยแล้ว',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire('ข้อผิดพลาด', result.error || 'บันทึกไม่สำเร็จ', 'error');
         }
     } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
+        Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    }
+}
+
+// ================= BRAND KNOWLEDGE DOCUMENTS JS =================
+
+async function loadBrandDocuments() {
+    const container = document.getElementById('brand-docs-container');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/brand/documents');
+        const data = await res.json();
+        const docs = data.documents || [];
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-6 bg-slate-50/60 rounded-xl border border-slate-200">
+                    <p class="text-xs text-slate-400">ยังไม่มีเอกสารแนบสำหรับเพจนี้ (สามารถแนบ PDF, Word, รูปภาพเมนู/โบรชัวร์ ด้านบนได้เลย)</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = docs.map(doc => {
+            const ext = doc.filename.split('.').pop().toLowerCase();
+            let iconClass = 'fa-file-lines text-slate-500';
+            if (ext === 'pdf') iconClass = 'fa-file-pdf text-red-500';
+            else if (['doc', 'docx'].includes(ext)) iconClass = 'fa-file-word text-blue-500';
+            else if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) iconClass = 'fa-file-image text-purple-500';
+            else if (['csv', 'xlsx', 'xls'].includes(ext)) iconClass = 'fa-file-excel text-emerald-500';
+
+            return `
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 flex items-start justify-between gap-3 shadow-xs hover:border-slate-300 transition">
+                    <div class="flex items-start gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 text-xl">
+                            <i class="fa-solid ${iconClass}"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-xs font-bold text-slate-800 truncate" title="${doc.filename}">${doc.filename}</h4>
+                            <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
+                                <span><i class="fa-solid fa-hard-drive"></i> ${doc.size}</span>
+                                <span>•</span>
+                                <span><i class="fa-regular fa-clock"></i> ${doc.uploaded_at}</span>
+                                <span>•</span>
+                                <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-check"></i> สกัดข้อความแล้ว (${doc.text_length} ตัวอักษร)</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 line-clamp-1 mt-1 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                💡 ${doc.summary || 'ไม่มีข้อความสรุป'}
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="deleteBrandDocument('${doc.id}')" class="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition shrink-0" title="ลบเอกสาร">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+    } catch (e) {
+        container.innerHTML = `<div class="p-3 text-center text-xs text-red-500">เกิดข้อผิดพลาดในการโหลดเอกสาร: ${e}</div>`;
+    }
+}
+
+async function handleBrandDocUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+        Swal.fire('ขนาดไฟล์ใหญ่เกินไป', 'ขนาดไฟล์สูงสุดไม่เกิน 20 MB', 'warning');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    Swal.fire({
+        title: 'กำลังอัปโหลดและสกัดข้อความ...',
+        html: `กำลังอ่านข้อมูลจากไฟล์ <strong>${file.name}</strong> เพื่อบันทึกเข้าฐานความรู้ของแบรนด์...`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/brand/documents/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'อัปโหลดสำเร็จ!',
+                text: `สกัดข้อความจากเอกสาร ${data.document.filename} เรียบร้อยแล้ว`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+            loadBrandDocuments();
+            // Reset input
+            e.target.value = '';
+        } else {
+            Swal.fire('ข้อผิดพลาด', data.error || 'อัปโหลดล้มเหลว', 'error');
+        }
+    } catch (err) {
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    }
+}
+
+async function deleteBrandDocument(docId) {
+    const confirm = await Swal.fire({
+        title: 'ยืนยันการลบไฟล์เอกสารนี้?',
+        text: 'เมื่อลบแล้ว AI จะไม่สามารถเข้าถึงข้อมูลจากเอกสารนี้ได้อีก',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'ลบไฟล์',
+        cancelButtonText: 'ยกเลิก'
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+        const res = await fetch(`/api/brand/documents/${docId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'ลบเอกสารเรียบร้อยแล้ว',
+                timer: 1200,
+                showConfirmButton: false
+            });
+            loadBrandDocuments();
+        } else {
+            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถลบเอกสารได้', 'error');
+        }
+    } catch (err) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อล้มเหลว', 'error');
+    }
+}
+
+async function analyzeBrandDocumentsWithAI() {
+    const activeName = document.getElementById('current-page-label') ? document.getElementById('current-page-label').textContent : 'เพจ';
+    const confirm = await Swal.fire({
+        title: 'ให้ AI สรุปข้อมูลจากเอกสารเข้า Brand DNA?',
+        html: `AI จะอ่านข้อความจากทุกไฟล์ที่แนบไว้สำหรับเพจ <strong>${activeName}</strong> แล้วนำข้อมูลมาเติมลงในช่อง <strong>เรื่องราวแบรนด์, สินค้า/บริการหลัก, จุดเด่น, กลุ่มเป้าหมาย</strong> ให้อัตโนมัติ`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#7c3aed',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '✨ ให้ AI เริ่มวิเคราะห์',
+        cancelButtonText: 'ยกเลิก'
+    });
+    if (!confirm.isConfirmed) return;
+
+    Swal.fire({
+        title: 'AI กำลังวิเคราะห์เอกสารทั้งหมด...',
+        html: 'กำลังสกัดอัตลักษณ์แบรนด์ เรื่องราว ความเป็นมา และรายการสินค้า/บริการ...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/brand/documents/analyze', { method: 'POST' });
+        const result = await res.json();
+        Swal.close();
+
+        if (result.success && result.brand_dna) {
+            const dna = result.brand_dna;
+            // Fill into form fields
+            if (dna.brand_name && document.getElementById('ci-name')) document.getElementById('ci-name').value = dna.brand_name;
+            if (dna.tagline && document.getElementById('ci-tagline')) document.getElementById('ci-tagline').value = dna.tagline;
+            if (dna.business_type && document.getElementById('ci-business-type')) document.getElementById('ci-business-type').value = dna.business_type;
+            if (dna.brand_story && document.getElementById('ci-brand-story')) document.getElementById('ci-brand-story').value = dna.brand_story;
+            if (dna.target_audience && document.getElementById('ci-target-audience')) document.getElementById('ci-target-audience').value = dna.target_audience;
+            if (dna.core_services && document.getElementById('ci-core-services')) {
+                document.getElementById('ci-core-services').value = Array.isArray(dna.core_services) ? dna.core_services.join('\n') : dna.core_services;
+            }
+            if (dna.selling_points && document.getElementById('ci-selling-points')) {
+                document.getElementById('ci-selling-points').value = Array.isArray(dna.selling_points) ? dna.selling_points.join('\n') : dna.selling_points;
+            }
+            if (dna.tone_of_voice && document.getElementById('ci-tone')) document.getElementById('ci-tone').value = dna.tone_of_voice;
+            if (dna.negative_guidelines && document.getElementById('ci-negative')) document.getElementById('ci-negative').value = dna.negative_guidelines;
+            if (dna.phone && document.getElementById('ci-phone')) document.getElementById('ci-phone').value = dna.phone;
+            if (dna.price_tag && document.getElementById('ci-price')) document.getElementById('ci-price').value = dna.price_tag;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'สกัดข้อมูลเข้า Brand DNA สำเร็จ!',
+                html: `
+                    <div class="text-left text-xs space-y-1 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p><strong>🎯 ธุรกิจ:</strong> ${dna.business_type || '-'}</p>
+                        <p><strong>📖 เรื่องราว:</strong> ${(dna.brand_story || '-').substring(0, 100)}...</p>
+                        <p><strong>👥 กลุ่มเป้าหมาย:</strong> ${dna.target_audience || '-'}</p>
+                        <p class="text-purple-700 font-semibold mt-2">✨ ข้อมูลถูกเติมลงในฟอร์มด้านบนเรียบร้อยแล้ว คุณสามารถตรวจสอบและปรับแต่งเพิ่มเติมก่อนกดบันทึก</p>
+                    </div>
+                `,
+                confirmButtonColor: '#7c3aed'
+            });
+        } else {
+            Swal.fire('ข้อผิดพลาด', result.error || 'ไม่สามารถวิเคราะห์เอกสารได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
     }
 }
 

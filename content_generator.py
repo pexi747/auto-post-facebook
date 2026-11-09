@@ -85,16 +85,34 @@ def _resolve_brand_context(page_info: Optional[Dict[str, Any]] = None, product_o
     price_tag = page_info.get("price_tag") or brand_dna.get("price_tag") or ""
     page_name = page_info.get("name", brand_name)
 
+    # ข้อมูลอัตลักษณ์ตัวตนเพิ่มเติม
+    page_id = str(page_info.get("id") or "")
+    brand_story = page_info.get("brand_story") or brand_dna.get("brand_story") or ""
+    negative_guidelines = page_info.get("negative_guidelines") or brand_dna.get("negative_guidelines") or ""
+
+    # ดึงข้อมูลจากเอกสารประกอบที่แนบไว้
+    docs_knowledge = ""
+    if page_id:
+        try:
+            import document_knowledge_engine
+            docs_knowledge = document_knowledge_engine.get_all_documents_context(page_id, max_chars=3500)
+        except Exception:
+            pass
+
     if product_or_service:
         display_product = product_or_service
     else:
         display_product = f"{brand_name} ({business_type})"
 
     return {
+        "page_id": page_id,
         "brand_name": brand_name,
         "page_name": page_name,
         "business_type": business_type,
         "tagline": tagline,
+        "brand_story": brand_story,
+        "negative_guidelines": negative_guidelines,
+        "docs_knowledge": docs_knowledge,
         "target_audience": target_audience,
         "core_services": core_services,
         "core_services_str": core_services_str,
@@ -127,20 +145,24 @@ def generate_post_with_ai(
         from google import genai
         client = genai.Client(api_key=api_key)
 
+        story_line = f"- เรื่องราว/ตัวตนของแบรนด์: {ctx['brand_story']}\n" if ctx.get('brand_story') else ""
+        negative_line = f"- ข้อควรระวัง/สิ่งที่ไม่ควรพูด: {ctx['negative_guidelines']}\n" if ctx.get('negative_guidelines') else ""
+        docs_section = f"\nข้อมูลสำคัญจากเอกสารประกอบ/สินค้าจริง:\n{ctx['docs_knowledge']}\n" if ctx.get('docs_knowledge') else ""
+
         prompt = f"""
 คุณเป็นผู้เชี่ยวชาญด้านการเขียน Copywriting และการตลาดบน Facebook ภาษาไทย สำหรับแบรนด์ "{ctx['brand_name']}"
 
-ข้อมูลอัตลักษณ์ของแบรนด์ (Brand DNA):
-- ชื่อเพจ: {ctx['page_name']}
+ข้อมูลอัตลักษณ์ของแบรนด์ (Brand DNA & Identity):
+- ชื่อเพจ/แบรนด์: {ctx['page_name']}
 - ประเภทธุรกิจ: {ctx['business_type']}
 - สโลแกน / คอนเซ็ปต์: {ctx['tagline']}
-- กลุ่มลูกค้าเป้าหมาย: {ctx['target_audience']}
+{story_line}- กลุ่มลูกค้าเป้าหมาย: {ctx['target_audience']}
 - สินค้าหรือบริการหลัก: {ctx['core_services_str']}
 - จุดเด่นและจุดขายที่แตกต่าง: {ctx['selling_points_str']}
 - โทนเสียงและการสื่อสาร: {ctx['tone_of_voice']}
-- ช่องทางติดต่อ: โทร {ctx['phone']} หรือทักแชท Inbox เพจ
+{negative_line}- ช่องทางติดต่อ: โทร {ctx['phone']} หรือทักแชท Inbox เพจ
 - ข้อมูลราคา/โปรโมชั่น: {ctx['price_tag'] or 'สอบถามเพิ่มเติมทาง Inbox'}
-
+{docs_section}
 โจทย์: กรุณาเขียนโพสต์ Facebook 1 โพสต์ สำหรับหัวข้อ: "{topic}"
 
 โครงสร้างของโพสต์ที่ต้องการ:
@@ -210,6 +232,10 @@ def generate_caption_from_image(
         client = genai.Client(api_key=api_key)
         img = Image.open(image_path)
 
+        story_line = f"- เรื่องราว/ตัวตนของแบรนด์: {ctx['brand_story']}\n" if ctx.get('brand_story') else ""
+        negative_line = f"- ข้อควรระวัง/สิ่งที่ไม่ควรพูด: {ctx['negative_guidelines']}\n" if ctx.get('negative_guidelines') else ""
+        docs_section = f"\nข้อมูลสำคัญจากเอกสารประกอบ/สินค้าจริง:\n{ctx['docs_knowledge']}\n" if ctx.get('docs_knowledge') else ""
+
         prompt = f"""
 คุณเป็นสุดยอดผู้เชี่ยวชาญด้าน Copywriting และการตลาดบน Facebook ภาษาไทย สำหรับแบรนด์ "{b_name}"
 
@@ -217,13 +243,14 @@ def generate_caption_from_image(
 - ชื่อแบรนด์/เพจ: {ctx['page_name']}
 - ประเภทธุรกิจ: {b_category}
 - สโลแกน/จุดยืน: {b_tagline}
-- กลุ่มลูกค้าเป้าหมาย: {ctx['target_audience']}
+{story_line}- กลุ่มลูกค้าเป้าหมาย: {ctx['target_audience']}
 - สินค้าหรือบริการหลัก: {ctx['core_services_str']}
 - จุดเด่นและจุดขายสำคัญ: {ctx['selling_points_str']}
 - โทนเสียงและการเล่าเรื่อง: {ctx['tone_of_voice']}
-- เบอร์โทรติดต่อ: {b_phone}
+{negative_line}- เบอร์โทรติดต่อ: {b_phone}
 - ราคา/โปรโมชั่น: {b_price or 'สอบถามเพิ่มเติมทาง Inbox'}
 - ข้อมูลเพิ่มเติม/คำบอกใบ้จากผู้ใช้: {user_hint or 'ไม่มี (ให้วิเคราะห์จากภาพเป็นหลัก)'}
+{docs_section}
 
 คำสั่ง:
 1. ดูและวิเคราะห์รูปภาพนี้อย่างละเอียด: มีองค์ประกอบอะไรบ้าง อาหาร รถยนต์ อะไหล่ งานช่าง เอกสาร พื้นที่ ความรู้สึก หรือสิ่งที่เกิดขึ้นในภาพคืออะไร

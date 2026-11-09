@@ -580,12 +580,44 @@ async def api_autopilot_run_now(request: Request):
     save_schedule(posts)
     return {"success": success, "error": auto_post.get("error")}
 
-# ================= ADMIN APIS =================
+# ================= ADMIN & BRAND CI APIS =================
 
 @app.get("/api/admin/brand")
 async def get_brand(request: Request):
     require_admin(request)
-    return load_brand_config()
+    active_page = pages_manager.get_active_page() or {}
+    cfg = load_brand_config()
+    dna = active_page.get("brand_dna", {}) or {}
+
+    core_services = dna.get("core_services", [])
+    if isinstance(core_services, list):
+        core_services_text = "\n".join(core_services)
+    else:
+        core_services_text = str(core_services or "")
+
+    selling_points = dna.get("selling_points", [])
+    if isinstance(selling_points, list):
+        selling_points_text = "\n".join(selling_points)
+    else:
+        selling_points_text = str(selling_points or "")
+
+    return {
+        "brand_name": active_page.get("brand_name") or dna.get("brand_name") or cfg.get("brand_name", ""),
+        "tagline": active_page.get("tagline") or dna.get("tagline") or cfg.get("tagline", ""),
+        "business_type": dna.get("business_type") or active_page.get("category", ""),
+        "brand_story": dna.get("brand_story") or active_page.get("brand_story", ""),
+        "target_audience": dna.get("target_audience") or active_page.get("target_audience", ""),
+        "core_services": core_services_text,
+        "selling_points": selling_points_text,
+        "tone_of_voice": dna.get("tone_of_voice") or active_page.get("tone_of_voice", ""),
+        "negative_guidelines": dna.get("negative_guidelines") or active_page.get("negative_guidelines", ""),
+        "primary_color": active_page.get("primary_color") or cfg.get("primary_color", "#0B3B60"),
+        "accent_color": active_page.get("accent_color") or cfg.get("accent_color", "#FF5B00"),
+        "phone": active_page.get("phone") or cfg.get("phone", "066-097-1257"),
+        "price_tag": active_page.get("price_tag") or cfg.get("price_tag", ""),
+        "daily_post_time": active_page.get("daily_post_time") or cfg.get("daily_post_time", "09:30"),
+        "facebook_page_id": str(active_page.get("id", ""))
+    }
 
 class BrandConfigRequest(BaseModel):
     brand_name: str
@@ -595,14 +627,149 @@ class BrandConfigRequest(BaseModel):
     phone: str
     price_tag: str
     daily_post_time: str
+    business_type: Optional[str] = ""
+    brand_story: Optional[str] = ""
+    target_audience: Optional[str] = ""
+    core_services: Optional[str] = ""
+    selling_points: Optional[str] = ""
+    tone_of_voice: Optional[str] = ""
+    negative_guidelines: Optional[str] = ""
 
 @app.post("/api/admin/brand")
 async def update_brand(payload: BrandConfigRequest, request: Request):
     require_admin(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+
+    def _to_list(val: Optional[str]) -> List[str]:
+        if not val:
+            return []
+        lines = [line.strip().lstrip("•-*1234567890. ") for line in val.replace(",", "\n").split("\n")]
+        return [l for l in lines if l]
+
+    core_services_list = _to_list(payload.core_services)
+    selling_points_list = _to_list(payload.selling_points)
+
+    # 1. Update managed_pages.json for active page
+    if page_id:
+        pages_data = pages_manager.load_pages_data()
+        for p in pages_data.get("pages", []):
+            if str(p.get("id")) == page_id:
+                p["brand_name"] = payload.brand_name
+                p["tagline"] = payload.tagline
+                p["primary_color"] = payload.primary_color
+                p["accent_color"] = payload.accent_color
+                p["phone"] = payload.phone
+                p["price_tag"] = payload.price_tag
+                p["daily_post_time"] = payload.daily_post_time
+
+                dna = p.get("brand_dna", {}) or {}
+                dna["brand_name"] = payload.brand_name
+                dna["tagline"] = payload.tagline
+                dna["primary_color"] = payload.primary_color
+                dna["accent_color"] = payload.accent_color
+                dna["phone"] = payload.phone
+                dna["price_tag"] = payload.price_tag
+                dna["business_type"] = payload.business_type or dna.get("business_type", "")
+                dna["brand_story"] = payload.brand_story or ""
+                dna["target_audience"] = payload.target_audience or ""
+                dna["core_services"] = core_services_list if core_services_list else dna.get("core_services", [])
+                dna["selling_points"] = selling_points_list if selling_points_list else dna.get("selling_points", [])
+                dna["tone_of_voice"] = payload.tone_of_voice or ""
+                dna["negative_guidelines"] = payload.negative_guidelines or ""
+                p["brand_dna"] = dna
+                break
+        pages_manager.save_pages_data(pages_data)
+
+    # 2. Update brand_config.json
     cfg = load_brand_config()
     cfg.update(payload.dict())
     save_brand_config(cfg)
-    return {"success": True}
+
+    return {"success": True, "message": "บันทึกการตั้งค่า CI และตัวตนแบรนด์เรียบร้อยแล้ว"}
+
+# ================= BRAND DOCUMENTS & KNOWLEDGE APIS =================
+
+@app.get("/api/brand/documents")
+async def get_brand_documents_api(request: Request):
+    require_admin(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    import document_knowledge_engine as dke
+    docs = dke.load_documents_metadata(page_id)
+    return {"success": True, "documents": docs}
+
+@app.post("/api/brand/documents/upload")
+async def upload_brand_document_api(request: Request, file: UploadFile = File(...)):
+    require_admin(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    if not page_id:
+        return {"success": False, "error": "ไม่พบรหัสเพจที่กำลังใช้งาน"}
+
+    content = await file.read()
+    if not content:
+        return {"success": False, "error": "ไฟล์ว่างเปล่า"}
+
+    import document_knowledge_engine as dke
+    doc_info = dke.add_document(page_id, file.filename, content)
+    return {"success": True, "document": doc_info}
+
+@app.delete("/api/brand/documents/{doc_id}")
+async def delete_brand_document_api(doc_id: str, request: Request):
+    require_admin(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    import document_knowledge_engine as dke
+    deleted = dke.delete_document(page_id, doc_id)
+    return {"success": deleted}
+
+@app.post("/api/brand/documents/analyze")
+async def analyze_brand_documents_api(request: Request):
+    require_admin(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    if not page_id:
+        return {"success": False, "error": "ไม่พบรหัสเพจ"}
+
+    import document_knowledge_engine as dke
+    current_dna = active_page.get("brand_dna", {}) or {}
+    result = dke.analyze_documents_and_extract_brand_dna(page_id, current_dna)
+
+    if result.get("success") and "brand_dna" in result:
+        extracted = result["brand_dna"]
+        pages_data = pages_manager.load_pages_data()
+        for p in pages_data.get("pages", []):
+            if str(p.get("id")) == page_id:
+                p_dna = p.get("brand_dna", {}) or {}
+                for k, v in extracted.items():
+                    if v:
+                        p_dna[k] = v
+                p["brand_dna"] = p_dna
+                if extracted.get("brand_name"):
+                    p["brand_name"] = extracted["brand_name"]
+                if extracted.get("tagline"):
+                    p["tagline"] = extracted["tagline"]
+                if extracted.get("phone"):
+                    p["phone"] = extracted["phone"]
+                if extracted.get("price_tag"):
+                    p["price_tag"] = extracted["price_tag"]
+                break
+        pages_manager.save_pages_data(pages_data)
+
+        # Update brand_config.json as well
+        cfg = load_brand_config()
+        if extracted.get("brand_name"):
+            cfg["brand_name"] = extracted["brand_name"]
+        if extracted.get("tagline"):
+            cfg["tagline"] = extracted["tagline"]
+        if extracted.get("phone"):
+            cfg["phone"] = extracted["phone"]
+        if extracted.get("price_tag"):
+            cfg["price_tag"] = extracted["price_tag"]
+        save_brand_config(cfg)
+
+    return result
 
 @app.get("/api/admin/users")
 async def get_users_api(request: Request):

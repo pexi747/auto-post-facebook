@@ -7,6 +7,10 @@ __pycache__/
 # Sensitive credentials (DO NOT COMMIT)
 .env
 
+# User uploaded brand documents (Keep local)
+brand_documents/*
+!brand_documents/.gitkeep
+
 # Virtual Environment
 venv/
 .venv/

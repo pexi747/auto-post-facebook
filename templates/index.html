@@ -454,75 +454,203 @@
         </section>
 
         {% if current_user.role == 'admin' %}
-        <!-- ================= TAB 4: BRAND CI SETTINGS (ADMIN ONLY) ================= -->
-        <section id="tab-ci" class="tab-content hidden">
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 max-w-4xl space-y-6">
-                <div class="border-b border-slate-100 pb-4">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-palette text-[#FF5B00]"></i> กำหนดค่า CI แบรนด์และการตั้งค่าระบบ
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-1">ตั้งค่าอัตลักษณ์แบรนด์ โทนสี ข้อมูลติดต่อ และเวลาโพสต์อัตโนมัติประจำวัน</p>
+        <!-- ================= TAB 4: BRAND CI & IDENTITY SETTINGS (ADMIN ONLY) ================= -->
+        <section id="tab-ci" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 max-w-4xl space-y-8">
+                
+                <!-- Header -->
+                <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-[#FF5B00]"></i> กำหนดค่า CI และเรื่องราวตัวตนของแบรนด์
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            จัดการสี CI, เรื่องราวตัวตน, จุดขาย, สินค้า/บริการ และแนบไฟล์เอกสารอ้างอิงสำหรับเพจ <strong class="text-slate-700">{{ active_page.brand_name or active_page.name }}</strong>
+                        </p>
+                    </div>
+                    <button type="button" onclick="learnBrandNow()" class="shrink-0 text-xs px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-[#0B3B60] font-semibold rounded-xl border border-blue-200 transition flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-brain text-purple-600"></i> ให้ AI สแกนเพจใหม่
+                    </button>
                 </div>
 
-                <form id="brand-form" onsubmit="saveBrandConfig(event)" class="space-y-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อแบรนด์ (Brand Name)</label>
-                            <input type="text" id="ci-name" value="{{ brand.brand_name }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
+                <form id="brand-form" onsubmit="saveBrandConfig(event)" class="space-y-8">
+                    
+                    <!-- ส่วนที่ 1: สีและอัตลักษณ์ภายนอก (Visual CI & Contact) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">
+                            <span class="w-6 h-6 rounded-lg bg-blue-100 text-[#0B3B60] flex items-center justify-center text-xs">1</span>
+                            อัตลักษณ์และข้อมูลติดต่อพื้นฐาน
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">สโลแกน (Tagline)</label>
-                            <input type="text" id="ci-tagline" value="{{ brand.tagline }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
-                        </div>
-                    </div>
 
-                    <!-- Colors -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">สีหลักแบรนด์ (Primary Navy Color)</label>
-                            <div class="flex items-center gap-3">
-                                <input type="color" id="ci-primary" value="{{ brand.primary_color }}" class="w-12 h-10 rounded-lg cursor-pointer border border-slate-300">
-                                <input type="text" id="ci-primary-text" value="{{ brand.primary_color }}" class="w-32 px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-mono">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อแบรนด์ (Brand Name)</label>
+                                <input type="text" id="ci-name" value="{{ active_page.brand_name or brand.brand_name }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">สโลแกน / คำโปรย (Tagline)</label>
+                                <input type="text" id="ci-tagline" value="{{ active_page.tagline or brand.tagline }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
                             </div>
                         </div>
+
+                        <!-- Colors -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">สีหลักแบรนด์ (Primary Color)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" id="ci-primary" value="{{ active_page.primary_color or brand.primary_color }}" onchange="syncColorInput('primary')" class="w-12 h-10 rounded-lg cursor-pointer border border-slate-300">
+                                    <input type="text" id="ci-primary-text" value="{{ active_page.primary_color or brand.primary_color }}" oninput="syncColorPicker('primary')" class="w-32 px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono uppercase">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">สีเด่นแบรนด์ (Accent Color)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" id="ci-accent" value="{{ active_page.accent_color or brand.accent_color }}" onchange="syncColorInput('accent')" class="w-12 h-10 rounded-lg cursor-pointer border border-slate-300">
+                                    <input type="text" id="ci-accent-text" value="{{ active_page.accent_color or brand.accent_color }}" oninput="syncColorPicker('accent')" class="w-32 px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono uppercase">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">เบอร์โทรติดต่อ</label>
+                                <input type="text" id="ci-phone" value="{{ active_page.phone or brand.phone }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ราคาเริ่มต้น / โปรโมชั่นเด่น</label>
+                                <input type="text" id="ci-price" value="{{ active_page.price_tag or brand.price_tag }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]" placeholder="เช่น เริ่มต้น 490.-, เหมาจ่าย 1,500.-">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาโพสต์อัตโนมัติประจำวัน</label>
+                                <input type="time" id="ci-daily-time" value="{{ active_page.daily_post_time or brand.daily_post_time }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
+                            </div>
+                        </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">สีเด่นแบรนด์ (Accent Orange Color)</label>
-                            <div class="flex items-center gap-3">
-                                <input type="color" id="ci-accent" value="{{ brand.accent_color }}" class="w-12 h-10 rounded-lg cursor-pointer border border-slate-300">
-                                <input type="text" id="ci-accent-text" value="{{ brand.accent_color }}" class="w-32 px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-mono">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Facebook Page ID</label>
+                            <input type="text" id="ci-page-id" value="{{ active_page.id or brand.facebook_page_id }}" readonly class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-sm font-mono">
+                        </div>
+                    </div>
+
+                    <!-- ส่วนที่ 2: ตัวตนและเรื่องราวของแบรนด์ (Brand Story & Identity) -->
+                    <div class="space-y-4 pt-4 border-t border-slate-100">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <div class="flex items-center gap-2 text-sm font-bold text-slate-800">
+                                <span class="w-6 h-6 rounded-lg bg-orange-100 text-[#FF5B00] flex items-center justify-center text-xs">2</span>
+                                เรื่องราวและตัวตนของแบรนด์ (Brand Story & DNA)
+                            </div>
+                            <span class="text-[11px] text-slate-400">AI จะนำข้อมูลส่วนนี้ไปใช้เป็นแก่นในการแต่งคอนเทนต์</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ประเภทธุรกิจ (Business Type / Category)</label>
+                                <input type="text" id="ci-business-type" value="{{ active_page.brand_dna.business_type if active_page.brand_dna else (active_page.category or '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]" placeholder="เช่น อาหารกล่องสัมมนาและจัดเลี้ยง, ช่างซ่อมบ้านครบวงจร">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">กลุ่มลูกค้าเป้าหมาย (Target Audience)</label>
+                                <input type="text" id="ci-target-audience" value="{{ active_page.brand_dna.target_audience if active_page.brand_dna else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]" placeholder="เช่น พนักงานออฟฟิศ, ฝ่ายจัดเลี้ยงสัมมนา, เจ้าของบ้าน">
+                            </div>
+                        </div>
+
+                        <!-- Brand Story Textarea -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-700">
+                                    📖 เรื่องราวและความเป็นมาของแบรนด์ (Brand Story & Mission)
+                                </label>
+                                <span class="text-[11px] text-slate-400">เล่าที่มา ความตั้งใจ หรือจุดเริ่มต้นของแบรนด์</span>
+                            </div>
+                            <textarea id="ci-brand-story" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] leading-relaxed" placeholder="เช่น เริ่มต้นจากคุณแม่ที่ชอบทำอาหารส่งให้ลูกๆ ทานที่ทำงาน จนเพื่อนร่วมงานติดใจ จึงเกิดเป็นบริการข้าวกล่องรสมือแม่ส่งตรงถึงออฟฟิศ เน้นความสด สะอาด เหมือนแม่ทำให้ทาน">{{ active_page.brand_dna.brand_story if active_page.brand_dna else '' }}</textarea>
+                        </div>
+
+                        <!-- Core Services & Selling Points -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                    🛍️ สินค้าหรือบริการหลัก (บรรทัดละ 1 รายการ)
+                                </label>
+                                <textarea id="ci-core-services" rows="4" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] font-sans leading-relaxed" placeholder="ข้าวกล่องสัมมนา&#10;ขนมปังปิ้งสังขยาใบเตย&#10;น้ำพริกคุณแม่&#10;ชุดจัดเบรกงานบุญ">{{ (active_page.brand_dna.core_services | join('
+')) if (active_page.brand_dna and active_page.brand_dna.core_services) else '' }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                    ⭐ จุดเด่นและจุดขายที่แตกต่าง (USPs) (บรรทัดละ 1 ข้อ)
+                                </label>
+                                <textarea id="ci-selling-points" rows="4" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] font-sans leading-relaxed" placeholder="วัตถุดิบสดใหม่ ไม่ใส่วัตถุกันเสีย&#10;จัดส่งฟรีโซนสยาม สีลม สาทร&#10;ไม่มีขั้นต่ำในการสั่ง">{{ (active_page.brand_dna.selling_points | join('
+')) if (active_page.brand_dna and active_page.brand_dna.selling_points) else '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Tone & Negative Guidelines -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                    🗣️ น้ำเสียงและบุคลิกของแบรนด์ (Tone of Voice)
+                                </label>
+                                <input type="text" id="ci-tone" value="{{ active_page.brand_dna.tone_of_voice if active_page.brand_dna else 'น่าเชื่อถือ เป็นกันเอง อบอุ่น' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]" placeholder="เช่น อบอุ่น เป็นกันเอง ชวนหิว หรือ มืออาชีพ มั่นใจ ตรงไปตรงมา">
+                                <div class="flex flex-wrap gap-1.5 mt-2">
+                                    <button type="button" onclick="setTonePreset('อบอุ่น เหมือนคนในครอบครัว เป็นกันเอง')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition">อบอุ่นเป็นกันเอง</button>
+                                    <button type="button" onclick="setTonePreset('มืออาชีพ น่าเชื่อถือ เชี่ยวชาญ รวดเร็ว')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition">มืออาชีพน่าเชื่อถือ</button>
+                                    <button type="button" onclick="setTonePreset('สนุกสนาน สดใส วัยรุ่น ทันสมัย')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition">สนุกสนานสดใส</button>
+                                    <button type="button" onclick="setTonePreset('พรีเมียม สุภาพ ประณีต ใส่ใจรายละเอียด')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition">พรีเมียมสุภาพ</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                    🚫 ข้อควรระวัง / สิ่งที่ไม่ควรสื่อสาร (Negative Guidelines)
+                                </label>
+                                <textarea id="ci-negative" rows="3" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]" placeholder="เช่น ไม่โอ้อวดเกินจริง, ห้ามลดราคาตัดคู่แข่ง, ไม่ใช้คำหยาบ">{{ active_page.brand_dna.negative_guidelines if active_page.brand_dna else '' }}</textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรติดต่อ</label>
-                            <input type="text" id="ci-phone" value="{{ brand.phone }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">ราคาโปรโมชั่น</label>
-                            <input type="text" id="ci-price" value="{{ brand.price_tag }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">เวลาโพสต์อัตโนมัติประจำวัน</label>
-                            <input type="time" id="ci-daily-time" value="{{ brand.daily_post_time }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60]">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Facebook Page ID</label>
-                        <input type="text" id="ci-page-id" value="{{ brand.facebook_page_id }}" readonly class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-sm">
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-100 flex gap-3">
+                    <!-- Action Buttons for Saving Form -->
+                    <div class="pt-4 border-t border-slate-100 flex flex-wrap gap-3">
                         <button type="submit" class="py-2.5 px-6 bg-[#0B3B60] hover:bg-[#082b47] text-white font-semibold rounded-xl text-sm transition shadow flex items-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า CI แบรนด์
+                            <i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า CI และตัวตนแบรนด์
                         </button>
                         <button type="button" onclick="regenerateBannerWithCI()" class="py-2.5 px-6 bg-[#FF5B00] hover:bg-[#e05000] text-white font-semibold rounded-xl text-sm transition shadow flex items-center gap-2">
                             <i class="fa-solid fa-rotate"></i> สร้างรูปภาพแบนเนอร์ใหม่ตามค่าสีนี้
                         </button>
                     </div>
                 </form>
+
+                <!-- ส่วนที่ 3: แนบไฟล์เอกสารประกอบข้อมูลแบรนด์ (Brand Knowledge Documents) -->
+                <div class="pt-6 border-t border-slate-200 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                            <div class="flex items-center gap-2 text-sm font-bold text-slate-800">
+                                <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs">3</span>
+                                แนบไฟล์เอกสารประกอบข้อมูลแบรนด์ (Brand Knowledge Documents)
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                แนบโบรชัวร์, เมนูราคา, แคตตาล็อก, สรุปบริการ (PDF, Word .docx, Text, CSV หรือรูปภาพ) เพื่อให้ AI ใช้เป็นฐานข้อมูลจริง
+                            </p>
+                        </div>
+                        <button type="button" onclick="analyzeBrandDocumentsWithAI()" id="btn-analyze-docs" class="shrink-0 px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> ให้ AI สรุปข้อมูลจากไฟล์เข้า Brand DNA อัตโนมัติ
+                        </button>
+                    </div>
+
+                    <!-- Upload Box -->
+                    <div class="border-2 border-dashed border-slate-300 hover:border-purple-400 bg-slate-50 hover:bg-purple-50/20 rounded-2xl p-6 text-center transition cursor-pointer" onclick="document.getElementById('brand-doc-file-input').click()">
+                        <input type="file" id="brand-doc-file-input" class="hidden" accept=".pdf,.docx,.txt,.md,.csv,.json,.png,.jpg,.jpeg,.webp" onchange="handleBrandDocUpload(event)">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700">คลิกที่นี่ หรือลากไฟล์มาวางเพื่อแนบเอกสารข้อมูลแบรนด์</p>
+                        <p class="text-xs text-slate-400 mt-1">รองรับ PDF, Word (.docx), ข้อความ (.txt, .md, .csv) และรูปภาพโบรชัวร์/เมนู (.jpg, .png)</p>
+                    </div>
+
+                    <!-- Documents List Container -->
+                    <div id="brand-docs-container" class="space-y-2">
+                        <div class="text-center py-6 text-xs text-slate-400">
+                            กำลังโหลดรายการเอกสาร...
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
