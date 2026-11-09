@@ -11,6 +11,10 @@ __pycache__/
 brand_documents/*
 !brand_documents/.gitkeep
 
+# Uploaded and generated media
+static/uploads/*
+!static/uploads/.gitkeep
+
 # Virtual Environment
 venv/
 .venv/

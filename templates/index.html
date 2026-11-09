@@ -270,68 +270,95 @@
                                   class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none leading-relaxed"></textarea>
                     </div>
 
-                    <!-- Image Selection (4 Flexible Modes) -->
+                    <!-- Image Selection (3 Flexible Modes: AI Gen, Upload, Text Only) -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-sm font-medium text-slate-700">รูปภาพประกอบโพสต์ (เลือกได้ตามต้องการ)</label>
-                            <span class="text-xs text-slate-400">อัปโหลดเอง / ให้ AI ตกแต่ง / ให้ AI สร้างใหม่</span>
+                            <span class="text-xs text-slate-400">AI เจนตามแคปชั่น / อัปโหลดเอง / โพสต์เฉพาะข้อความ</span>
                         </div>
                         
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="image-picker-group">
-                            <!-- Choice 1: Brand Banner -->
-                            <label class="cursor-pointer border-2 border-[#FF5B00] bg-orange-50/40 p-2.5 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-banner" style="border-color: {{ active_page.accent_color or '#FF5B00' }};">
-                                <input type="radio" name="image-choice" value="banner" checked class="hidden" onchange="updateImageChoice('banner')">
-                                <img src="/static/fixpack_ai_banner.png" id="img-thumb-banner" class="w-full h-20 object-cover rounded-lg shadow-xs" onerror="this.src='{{ active_page.picture_url or '/static/profile.jpg' }}'">
-                                <span class="text-xs font-semibold text-slate-800 leading-tight">แบนเนอร์ CI {{ active_page.brand_name or 'เพจ' }}</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="image-picker-group">
+                            <!-- Choice 1: AI Generate Image from Caption -->
+                            <label class="cursor-pointer border-2 border-[#FF5B00] bg-orange-50/40 p-3 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-aigen" style="border-color: {{ active_page.accent_color or '#FF5B00' }};">
+                                <input type="radio" name="image-choice" value="aigen" checked class="hidden" onchange="updateImageChoice('aigen')">
+                                <div id="aigen-thumb-box" class="w-full h-24 rounded-lg bg-slate-900 overflow-hidden relative shadow-xs">
+                                    <img src="/static/cover.jpg" id="img-thumb-aigen" class="w-full h-full object-cover">
+                                    <div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/60 text-[9px] text-white flex items-center gap-1">
+                                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> ลายน้ำแบรนด์
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1 mt-1">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> AI สร้างรูปตามแคปชั่น
+                                </span>
                             </label>
 
                             <!-- Choice 2: Upload Own Photo -->
-                            <label class="cursor-pointer border-2 border-slate-200 hover:border-slate-300 p-2.5 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-upload">
+                            <label class="cursor-pointer border-2 border-slate-200 hover:border-slate-300 p-3 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-upload">
                                 <input type="radio" name="image-choice" value="upload" class="hidden" onchange="updateImageChoice('upload')">
-                                <div id="upload-preview-box" class="w-full h-20 rounded-lg bg-slate-100 flex flex-col items-center justify-center text-slate-500 overflow-hidden border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400 mb-0.5"></i>
+                                <div id="upload-preview-box" class="w-full h-24 rounded-lg bg-slate-100 flex flex-col items-center justify-center text-slate-500 overflow-hidden border border-dashed border-slate-300">
+                                    <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-400 mb-1"></i>
                                     <span class="text-[11px] font-medium">อัปโหลดรูปเอง</span>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-800 leading-tight">รูปภาพหน้างานจริง</span>
+                                <span class="text-xs font-semibold text-slate-800 leading-tight flex items-center gap-1 mt-1">
+                                    <i class="fa-solid fa-camera text-blue-600"></i> อัปโหลดรูปเอง (หน้างานจริง)
+                                </span>
                             </label>
 
-                            <!-- Choice 3: AI Technician Photo -->
-                            <label class="cursor-pointer border-2 border-slate-200 hover:border-slate-300 p-2.5 rounded-xl flex flex-col items-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-technician">
-                                <input type="radio" name="image-choice" value="technician" class="hidden" onchange="updateImageChoice('technician')">
-                                <img src="/static/ai_technician.jpg" class="w-full h-20 object-cover rounded-lg shadow-xs" onerror="this.src='/static/profile.jpg'">
-                                <span class="text-xs font-semibold text-slate-800 leading-tight">รูปถ่ายช่าง AI (เต็มรูป)</span>
-                            </label>
-
-                            <!-- Choice 4: No Image -->
-                            <label class="cursor-pointer border-2 border-slate-200 hover:border-slate-300 p-2.5 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-none">
+                            <!-- Choice 3: Text Only / No Image -->
+                            <label class="cursor-pointer border-2 border-slate-200 hover:border-slate-300 p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition hover:shadow-sm" id="label-img-none">
                                 <input type="radio" name="image-choice" value="none" class="hidden" onchange="updateImageChoice('none')">
-                                <div class="w-full h-20 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
-                                    <i class="fa-solid fa-ban text-2xl"></i>
+                                <div class="w-full h-24 rounded-lg bg-slate-50 flex flex-col items-center justify-center text-slate-400 gap-1 border border-slate-200">
+                                    <i class="fa-solid fa-align-left text-2xl text-slate-400"></i>
+                                    <span class="text-[11px]">ไม่มีรูปภาพแนบ</span>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-800 leading-tight">โพสต์ข้อความล้วน</span>
+                                <span class="text-xs font-semibold text-slate-800 leading-tight flex items-center gap-1 mt-1">
+                                    <i class="fa-solid fa-file-lines text-slate-500"></i> ใส่เฉพาะข้อความ
+                                </span>
                             </label>
                         </div>
 
                         <!-- Sub-action Panel for Image Controls -->
                         <div id="image-action-panel" class="mt-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                            <!-- Banner Action Subpanel -->
-                            <div id="subpanel-banner" class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="text-xs text-slate-600">
-                                    <i class="fa-solid fa-circle-check text-emerald-500"></i> แบนเนอร์มาตรฐานพร้อมราคาและเบอร์โทร
-                                </span>
-                                <button type="button" onclick="generateNewBannerWithAI()" class="text-xs px-3 py-1.5 bg-[#0B3B60] hover:bg-[#082b47] text-white font-medium rounded-lg transition flex items-center gap-1.5 shadow-xs">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-yellow-400"></i> ให้ AI เจนแบนเนอร์ตามหัวข้อนี้
-                                </button>
+                            <!-- AI Gen Action Subpanel (Visible by default) -->
+                            <div id="subpanel-aigen" class="space-y-3">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                                    <div class="space-y-0.5">
+                                        <span class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> ให้ AI ออกแบบภาพถ่ายโฆษณาตามเนื้อหาแคปชั่น
+                                        </span>
+                                        <p class="text-[11px] text-slate-500">สร้างภาพถ่ายสต็อกระดับพรีเมียม 1024x1024 เข้ากับเนื้อหา <strong>{{ active_page.brand_name or active_page.name }}</strong></p>
+                                    </div>
+                                    <button type="button" onclick="generateAIImageForPost()" class="shrink-0 text-xs px-3.5 py-2 text-white font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm" style="background-color: {{ active_page.accent_color or '#FF5B00' }};">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> ให้ AI เจนเนอเรตรูปภาพตามแคปชั่นนี้
+                                    </button>
+                                </div>
+                                <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                                    <label class="flex items-center gap-2 cursor-pointer text-xs select-none">
+                                        <input type="checkbox" id="aigen-watermark-checkbox" checked class="w-4 h-4 rounded text-[#FF5B00] border-slate-300">
+                                        <span class="font-medium text-slate-700 flex items-center gap-1">
+                                            <i class="fa-solid fa-shield-halved text-emerald-600"></i> ใส่ลายน้ำเล็กน้อยป้องกันการเอารูปไปใช้ทุกครั้ง (© {{ active_page.brand_name or 'Brand' }})
+                                        </span>
+                                    </label>
+                                    <span class="text-[11px] text-slate-400">ป้ายชื่อแบรนด์มุมขวาล่าง + ลายน้ำจาง</span>
+                                </div>
                             </div>
 
                             <!-- Upload Action Subpanel (Hidden by default) -->
                             <div id="subpanel-upload" class="hidden space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <input type="file" id="user-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
-                                    <button type="button" onclick="document.getElementById('user-file-input').click()" class="text-xs px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition flex items-center gap-1.5 shadow-xs">
-                                        <i class="fa-solid fa-folder-open" style="color: {{ active_page.accent_color or '#FF5B00' }};"></i> เลือกไฟล์ภาพจากเครื่อง
-                                    </button>
-                                    <span class="text-xs text-slate-500" id="upload-filename-text">ยังไม่ได้เลือกไฟล์</span>
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="file" id="user-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                                        <button type="button" onclick="document.getElementById('user-file-input').click()" class="text-xs px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition flex items-center gap-1.5 shadow-xs">
+                                            <i class="fa-solid fa-folder-open" style="color: {{ active_page.accent_color or '#FF5B00' }};"></i> เลือกไฟล์ภาพจากเครื่อง
+                                        </button>
+                                        <span class="text-xs text-slate-500" id="upload-filename-text">ยังไม่ได้เลือกไฟล์</span>
+                                    </div>
+                                    <label class="flex items-center gap-2 cursor-pointer text-xs select-none">
+                                        <input type="checkbox" id="upload-watermark-checkbox" checked class="w-4 h-4 rounded text-[#FF5B00] border-slate-300">
+                                        <span class="font-medium text-slate-700 flex items-center gap-1">
+                                            <i class="fa-solid fa-shield-halved text-emerald-600"></i> ประทับลายน้ำแบรนด์ป้องกันการขโมยรูป
+                                        </span>
+                                    </label>
                                 </div>
 
                                 <!-- Vision AI: analyze uploaded image and write post -->
@@ -346,20 +373,17 @@
                                         <i class="fa-solid fa-eye text-yellow-300"></i> ให้ AI แต่งแคปชั่นจากรูปนี้
                                     </button>
                                 </div>
-                                
-                                <div id="upload-enhance-row" class="hidden pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-                                    <span class="text-xs text-slate-600">
-                                        💡 มีรูปหน้างานแล้ว อยากให้ภาพดูเป็นมืออาชีพ?
-                                    </span>
-                                    <button type="button" onclick="enhanceUploadedImageWithCI()" class="text-xs px-3 py-1.5 text-white font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm" style="background-color: {{ active_page.accent_color or '#FF5B00' }};">
-                                        <i class="fa-solid fa-wand-magic-sparkles"></i> ให้ AI ใส่กรอบแบรนด์ + ป้ายราคา {{ active_page.price_tag or '' }}
-                                    </button>
-                                </div>
+                            </div>
+
+                            <!-- Text Only Subpanel (Hidden by default) -->
+                            <div id="subpanel-none" class="hidden p-2 text-xs text-slate-600 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-blue-500 text-sm"></i>
+                                <span>โพสต์นี้จะเผยแพร่เฉพาะข้อความแคปชั่นบน Facebook โดยไม่มีรูปภาพแนบ เหมาะสำหรับโพสต์เล่าเรื่อง สาระน่ารู้ หรือประกาศด่วน</span>
                             </div>
                         </div>
 
                         <!-- Hidden input to store chosen image path -->
-                        <input type="hidden" id="selected-image-path" value="fixpack_ai_banner.png">
+                        <input type="hidden" id="selected-image-path" value="">
                     </div>
 
                     <!-- Action Buttons -->

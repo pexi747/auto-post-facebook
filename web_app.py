@@ -265,7 +265,7 @@ class PostCreateRequest(BaseModel):
     time: str
     topic: Optional[str] = ""
     content: Optional[str] = ""
-    image_path: Optional[str] = "fixpack_ai_banner.png"
+    image_path: Optional[str] = None
     post_immediately: Optional[bool] = False
 
 @app.post("/api/posts")
@@ -340,7 +340,7 @@ async def post_item_now(post_id: str, request: Request):
 # ================= IMAGE UPLOAD & AI BRANDING APIS =================
 
 @app.post("/api/upload_image")
-async def upload_image_api(request: Request, file: UploadFile = File(...)):
+async def upload_image_api(request: Request, file: UploadFile = File(...), watermark: bool = Form(True)):
     require_auth(request)
     os.makedirs("static/uploads", exist_ok=True)
     clean_name = os.path.basename(file.filename or "image.jpg").replace(" ", "_")
@@ -351,10 +351,65 @@ async def upload_image_api(request: Request, file: UploadFile = File(...)):
     with open(save_path, "wb") as f:
         f.write(contents)
 
+    if watermark:
+        try:
+            active_page = pages_manager.get_active_page() or {}
+            brand_dna = active_page.get("brand_dna", {}) or {}
+            brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or "Official"
+            phone = active_page.get("phone") or brand_dna.get("phone") or ""
+            import image_service
+            image_service.apply_subtle_watermark(save_path, brand_name=brand_name, phone=phone)
+        except Exception as e:
+            print(f"[Watermark Error on Upload] {e}")
+
     return {
         "success": True,
         "image_path": save_path,
         "url": f"/static/uploads/{filename}"
+    }
+
+class GenerateImageRequest(BaseModel):
+    topic: Optional[str] = ""
+    caption: Optional[str] = ""
+    apply_watermark: Optional[bool] = True
+
+@app.post("/api/ai/generate_image")
+async def generate_image_api(payload: GenerateImageRequest, request: Request):
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    brand_dna = active_page.get("brand_dna", {}) or {}
+    brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or active_page.get("name") or "Official"
+    business_type = brand_dna.get("business_type") or active_page.get("category") or ""
+    phone = active_page.get("phone") or brand_dna.get("phone") or ""
+
+    import image_service
+    result = image_service.generate_ai_image(
+        topic=payload.topic or "ภาพถ่ายสินค้าและบริการมืออาชีพ",
+        caption=payload.caption or "",
+        brand_name=brand_name,
+        business_type=business_type,
+        phone=phone,
+        apply_watermark=payload.apply_watermark if payload.apply_watermark is not None else True
+    )
+    return result
+
+class WatermarkRequest(BaseModel):
+    image_path: str
+
+@app.post("/api/ai/apply_watermark")
+async def apply_watermark_api(payload: WatermarkRequest, request: Request):
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    brand_dna = active_page.get("brand_dna", {}) or {}
+    brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or active_page.get("name") or "Official"
+    phone = active_page.get("phone") or brand_dna.get("phone") or ""
+    import image_service
+    out_path = image_service.apply_subtle_watermark(payload.image_path, brand_name=brand_name, phone=phone)
+    rel_url = "/" + out_path.replace("\\", "/").lstrip("/")
+    return {
+        "success": True,
+        "image_path": out_path,
+        "url": rel_url
     }
 
 class EnhanceImageRequest(BaseModel):

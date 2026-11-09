@@ -65,17 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global state for images
 let currentUploadedImagePath = "";
+let currentAIGenImagePath = "";
 
-// Update Image choice for Preview
+// Update Image choice for Preview (AI Gen, Upload, Text Only)
 function updateImageChoice(choice) {
     const previewImg = document.getElementById('preview-img');
     const previewContainer = document.getElementById('preview-image-container');
     const pathInput = document.getElementById('selected-image-path');
-    const subBanner = document.getElementById('subpanel-banner');
+    const subAIGen = document.getElementById('subpanel-aigen');
     const subUpload = document.getElementById('subpanel-upload');
+    const subNone = document.getElementById('subpanel-none');
 
     // Reset styles
-    ['banner', 'upload', 'technician', 'none'].forEach(id => {
+    ['aigen', 'upload', 'none'].forEach(id => {
         const lbl = document.getElementById(`label-img-${id}`);
         if (lbl) {
             lbl.classList.remove('border-[#FF5B00]', 'bg-orange-50/40');
@@ -90,33 +92,106 @@ function updateImageChoice(choice) {
     }
 
     // Toggle sub-action panels
-    if (subBanner) subBanner.classList.add('hidden');
+    if (subAIGen) subAIGen.classList.add('hidden');
     if (subUpload) subUpload.classList.add('hidden');
+    if (subNone) subNone.classList.add('hidden');
 
-    if (choice === 'banner') {
-        if (subBanner) subBanner.classList.remove('hidden');
-        previewContainer.classList.remove('hidden');
-        const bannerSrc = document.getElementById('img-thumb-banner') ? document.getElementById('img-thumb-banner').src : '/static/fixpack_ai_banner.png';
-        previewImg.src = bannerSrc;
-        if (pathInput) pathInput.value = "fixpack_ai_banner.png";
+    if (choice === 'aigen') {
+        if (subAIGen) subAIGen.classList.remove('hidden');
+        if (previewContainer) previewContainer.classList.remove('hidden');
+        if (currentAIGenImagePath) {
+            const displayUrl = currentAIGenImagePath.startsWith('/') ? currentAIGenImagePath : '/' + currentAIGenImagePath;
+            if (previewImg) previewImg.src = displayUrl;
+            if (pathInput) pathInput.value = currentAIGenImagePath;
+        } else {
+            if (previewImg) previewImg.src = '/static/cover.jpg';
+            if (pathInput) pathInput.value = "";
+        }
     } else if (choice === 'upload') {
         if (subUpload) subUpload.classList.remove('hidden');
-        previewContainer.classList.remove('hidden');
+        if (previewContainer) previewContainer.classList.remove('hidden');
         if (currentUploadedImagePath) {
-            previewImg.src = currentUploadedImagePath.startsWith('/') ? currentUploadedImagePath : '/' + currentUploadedImagePath;
+            const displayUrl = currentUploadedImagePath.startsWith('/') ? currentUploadedImagePath : '/' + currentUploadedImagePath;
+            if (previewImg) previewImg.src = displayUrl;
             if (pathInput) pathInput.value = currentUploadedImagePath;
             const visionRow = document.getElementById('upload-vision-ai-row');
             if (visionRow) visionRow.classList.remove('hidden');
         } else {
-            previewImg.src = '/static/cover.jpg';
+            if (previewImg) previewImg.src = '/static/cover.jpg';
+            if (pathInput) pathInput.value = "";
         }
-    } else if (choice === 'technician') {
-        previewContainer.classList.remove('hidden');
-        previewImg.src = '/static/ai_technician.jpg';
-        if (pathInput) pathInput.value = "ai_technician.jpg";
-    } else {
-        previewContainer.classList.add('hidden');
+    } else { // none (text only)
+        if (subNone) subNone.classList.remove('hidden');
+        if (previewContainer) previewContainer.classList.add('hidden');
         if (pathInput) pathInput.value = "";
+    }
+}
+
+// Generate photorealistic AI image based on caption & brand context
+async function generateAIImageForPost() {
+    const topic = document.getElementById('post-topic').value.trim() || 'ภาพบริการระดับมืออาชีพ';
+    const caption = document.getElementById('post-caption').value.trim();
+    const watermarkCheck = document.getElementById('aigen-watermark-checkbox');
+    const applyWatermark = watermarkCheck ? watermarkCheck.checked : true;
+
+    Swal.fire({
+        title: '🎨 AI กำลังออกแบบและสร้างภาพประกอบ...',
+        html: `
+            <div class="space-y-2 text-xs text-slate-600 mt-2 text-left bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <p>1. วิเคราะห์บริบทแคปชั่นและ Brand DNA</p>
+                <p>2. เรนเดอร์ภาพถ่ายโฆษณาคมชัดสูง (1024x1024 Commercial Quality)</p>
+                ${applyWatermark ? '<p class="text-emerald-700 font-semibold">3. 🛡️ ประทับลายน้ำแบรนด์ป้องกันการคัดลอกรูปไปใช้</p>' : ''}
+            </div>
+        `,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/generate_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                topic: topic,
+                caption: caption,
+                apply_watermark: applyWatermark
+            })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success && data.image_path) {
+            currentAIGenImagePath = data.image_path;
+            const pathInput = document.getElementById('selected-image-path');
+            if (pathInput) pathInput.value = data.image_path;
+
+            const previewImg = document.getElementById('preview-img');
+            if (previewImg) previewImg.src = data.url + '?t=' + Date.now();
+
+            const thumbImg = document.getElementById('img-thumb-aigen');
+            if (thumbImg) thumbImg.src = data.url + '?t=' + Date.now();
+
+            const previewContainer = document.getElementById('preview-image-container');
+            if (previewContainer) previewContainer.classList.remove('hidden');
+
+            Swal.fire({
+                icon: 'success',
+                title: '✨ AI สร้างภาพประกอบสำเร็จ!',
+                html: `
+                    <div class="space-y-2 text-left text-xs">
+                        <img src="${data.url}?t=${Date.now()}" class="w-full max-h-52 object-cover rounded-xl border border-slate-200 shadow-sm mb-2">
+                        <p class="text-slate-700"><strong>ภาพถูกบันทึกและพร้อมโพสต์:</strong> เข้ากับเนื้อหาแคปชั่นเรียบร้อย</p>
+                        ${applyWatermark ? '<div class="p-2.5 bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-200 font-medium">🛡️ ปลอดภัย: ประทับลายน้ำแบรนด์เรียบร้อย ป้องกันการเอารูปไปใช้</div>' : ''}
+                    </div>
+                `,
+                confirmButtonText: 'ยอดเยี่ยม ตกลง',
+                confirmButtonColor: '#0B3B60'
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถสร้างภาพได้ในขณะนี้', 'error');
+        }
+    } catch (err) {
+        Swal.fire('เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', err.message, 'error');
     }
 }
 
@@ -135,6 +210,8 @@ async function handleFileUpload(event) {
 
     const formData = new FormData();
     formData.append('file', file);
+    const wmCheck = document.getElementById('upload-watermark-checkbox');
+    formData.append('watermark', (wmCheck && wmCheck.checked) ? 'true' : 'false');
 
     try {
         const res = await fetch('/api/upload_image', {
@@ -502,15 +579,16 @@ async function submitPost(mode) {
     const topic = document.getElementById('post-topic').value;
     const content = document.getElementById('post-caption').value;
     
-    // Selected image
-    const selectedImg = document.querySelector('input[name="image-choice"]:checked').value;
+    // Selected image (aigen, upload, or none)
+    const selectedChoice = document.querySelector('input[name="image-choice"]:checked');
+    const selectedImg = selectedChoice ? selectedChoice.value : 'aigen';
     let image_path = null;
-    if (selectedImg === 'banner') {
-        image_path = document.getElementById('selected-image-path').value || "fixpack_ai_banner.png";
+    if (selectedImg === 'aigen') {
+        image_path = document.getElementById('selected-image-path').value || currentAIGenImagePath || null;
     } else if (selectedImg === 'upload') {
-        image_path = currentUploadedImagePath || "cover.jpg";
-    } else if (selectedImg === 'technician') {
-        image_path = "ai_technician.jpg";
+        image_path = currentUploadedImagePath || null;
+    } else {
+        image_path = null; // none = text-only
     }
 
     if (mode === 'now') {
