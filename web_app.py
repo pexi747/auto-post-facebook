@@ -365,7 +365,13 @@ async def upload_image_api(request: Request, file: UploadFile = File(...), water
             brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or "Official"
             phone = active_page.get("phone") or brand_dna.get("phone") or ""
             import image_service
-            image_service.apply_subtle_watermark(save_path, brand_name=brand_name, phone=phone)
+            image_service.apply_subtle_watermark(
+                save_path,
+                brand_name=brand_name,
+                phone=phone,
+                page_id=active_page.get("id"),
+                picture_url=active_page.get("picture_url")
+            )
         except Exception as e:
             print(f"[Watermark Error on Upload] {e}")
 
@@ -396,6 +402,8 @@ async def generate_image_api(payload: GenerateImageRequest, request: Request):
         brand_name=brand_name,
         business_type=business_type,
         phone=phone,
+        page_id=active_page.get("id"),
+        picture_url=active_page.get("picture_url"),
         apply_watermark=payload.apply_watermark if payload.apply_watermark is not None else True
     )
     return result
@@ -411,7 +419,13 @@ async def apply_watermark_api(payload: WatermarkRequest, request: Request):
     brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or active_page.get("name") or "Official"
     phone = active_page.get("phone") or brand_dna.get("phone") or ""
     import image_service
-    out_path = image_service.apply_subtle_watermark(payload.image_path, brand_name=brand_name, phone=phone)
+    out_path = image_service.apply_subtle_watermark(
+        payload.image_path,
+        brand_name=brand_name,
+        phone=phone,
+        page_id=active_page.get("id"),
+        picture_url=active_page.get("picture_url")
+    )
     rel_url = "/" + out_path.replace("\\", "/").lstrip("/")
     return {
         "success": True,

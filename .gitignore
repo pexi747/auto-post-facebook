@@ -20,6 +20,8 @@ venv/
 .venv/
 env/
 
-# OS files
+# Scratch and temp files
+scratch/
+scratch_*.py
 Thumbs.db
 .DS_Store
