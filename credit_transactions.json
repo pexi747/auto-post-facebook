@@ -1,0 +1,46 @@
+[
+  {
+    "id": "tx_1794281654528_test_cust_somchai",
+    "username": "test_cust_somchai",
+    "tx_type": "topup",
+    "action": "topup",
+    "amount": 350,
+    "balance_after": 352,
+    "description": "เติมเครดิตแพ็กเกจ pkg_m (+350 เครดิต)",
+    "package_id": "pkg_m",
+    "timestamp": "2026-11-10 10:34:14"
+  },
+  {
+    "id": "tx_1794281654519_test_cust_somchai",
+    "username": "test_cust_somchai",
+    "tx_type": "deduct",
+    "action": "image",
+    "amount": -3,
+    "balance_after": 46,
+    "description": "AI สร้างภาพโฆษณาพร้อมลายน้ำ",
+    "package_id": null,
+    "timestamp": "2026-11-10 10:34:14"
+  },
+  {
+    "id": "tx_1794281654516_test_cust_somchai",
+    "username": "test_cust_somchai",
+    "tx_type": "deduct",
+    "action": "caption",
+    "amount": -1,
+    "balance_after": 49,
+    "description": "AI คิดแคปชั่น",
+    "package_id": null,
+    "timestamp": "2026-11-10 10:34:14"
+  },
+  {
+    "id": "tx_1794281654512_test_cust_somchai",
+    "username": "test_cust_somchai",
+    "tx_type": "welcome",
+    "action": "welcome_bonus",
+    "amount": 50,
+    "balance_after": 50,
+    "description": "🎁 โบนัสต้อนรับสมาชิกใหม่ฟรี 50 เครดิต",
+    "package_id": null,
+    "timestamp": "2026-11-10 10:34:14"
+  }
+]

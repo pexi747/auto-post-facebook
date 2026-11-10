@@ -1,3 +1,4 @@
+import credit_service
 """
 FixPack Facebook Auto-Pilot Web Application (FastAPI)
 ระบบบริหารจัดการคอนเทนต์และโพสต์ Facebook อัตโนมัติ รองรับผู้ใช้หลายระดับ
@@ -156,6 +157,60 @@ async def login_submit(username: str = Form(...), password: str = Form(...)):
     
     return RedirectResponse("/login?error=ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", status_code=302)
 
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request, error: Optional[str] = None):
+    user = get_current_user(request)
+    if user:
+        return RedirectResponse("/", status_code=302)
+    return templates.TemplateResponse(request=request, name="register.html", context={"error": error})
+
+@app.post("/register")
+async def register_submit(
+    name: str = Form(...),
+    username: str = Form(...),
+    phone: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...)
+):
+    clean_user = username.strip().lower()
+    if len(clean_user) < 3:
+        return RedirectResponse("/register?error=ชื่อผู้ใช้ต้องมีความยาวอย่างน้อย 3 ตัวอักษร", status_code=302)
+    if password != confirm_password:
+        return RedirectResponse("/register?error=รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน", status_code=302)
+    if len(password) < 4:
+        return RedirectResponse("/register?error=รหัสผ่านต้องมีความยาวอย่างน้อย 4 ตัวอักษร", status_code=302)
+
+    users = load_users()
+    if any(u.get("username", "").lower() == clean_user for u in users):
+        return RedirectResponse("/register?error=ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาใช้ชื่ออื่น", status_code=302)
+
+    new_user = {
+        "username": clean_user,
+        "name": name.strip(),
+        "phone": phone.strip(),
+        "password_hash": hash_password(password),
+        "role": "customer",
+        "credits": 50,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    users.append(new_user)
+    save_users(users)
+
+    # บันทึกโบนัสต้อนรับ 50 เครดิต
+    credit_service.record_transaction(
+        username=clean_user,
+        tx_type="welcome",
+        action="welcome_bonus",
+        amount=50,
+        balance_after=50,
+        description="🎁 โบนัสต้อนรับสมาชิกใหม่ฟรี 50 เครดิต"
+    )
+
+    resp = RedirectResponse("/", status_code=302)
+    resp.set_cookie(key="session_user", value=clean_user, max_age=86400 * 7, httponly=True)
+    return resp
+
+
 @app.get("/logout")
 async def logout():
     resp = RedirectResponse("/login", status_code=302)
@@ -168,28 +223,37 @@ async def dashboard_page(request: Request):
     if not user:
         return RedirectResponse("/login", status_code=302)
 
-    active_page = pages_manager.get_active_page() or {}
-    all_pages = pages_manager.get_all_pages()
+    username = user.get("username")
+    role = user.get("role", "customer")
+    user_credits = credit_service.get_user_credit(username)
+    user_pages = pages_manager.get_pages_for_user(username, role)
+    active_page = pages_manager.get_active_page_for_user(username, role) or {}
     brand = load_brand_config()
 
     return templates.TemplateResponse(request=request, name="index.html", context={
         "current_user": user,
+        "user_credits": user_credits,
+        "user_role": role,
+        "user_name": user.get("name", username),
         "brand": brand,
         "active_page": active_page,
-        "all_pages": all_pages
+        "all_pages": user_pages
     })
 
 # ================= MULTI-PAGE MANAGEMENT APIS =================
 
 @app.get("/api/pages")
 async def get_pages_api(request: Request):
-    require_auth(request)
-    pages = pages_manager.get_all_pages()
-    active_page = pages_manager.get_active_page()
+    user = require_auth(request)
+    username = user.get("username")
+    role = user.get("role", "customer")
+    pages = pages_manager.get_pages_for_user(username, role)
+    active_page = pages_manager.get_active_page_for_user(username, role) or {}
     return {
         "active_page_id": active_page.get("id") if active_page else "",
         "active_page": active_page,
-        "pages": pages
+        "pages": pages,
+        "count": len(pages)
     }
 
 class SwitchPageRequest(BaseModel):
@@ -197,10 +261,12 @@ class SwitchPageRequest(BaseModel):
 
 @app.post("/api/pages/switch")
 async def switch_page_api(payload: SwitchPageRequest, request: Request):
-    require_auth(request)
-    success = pages_manager.set_active_page(payload.page_id)
+    user = require_auth(request)
+    username = user.get("username")
+    role = user.get("role", "customer")
+    success = pages_manager.set_active_page_for_user(username, role, payload.page_id)
     if success:
-        active = pages_manager.get_active_page()
+        active = pages_manager.get_active_page_for_user(username, role)
         # ซิงค์ค่า brand_config เข้ากับเพจใหม่
         if active:
             cfg = load_brand_config()
@@ -388,7 +454,10 @@ class GenerateImageRequest(BaseModel):
 
 @app.post("/api/ai/generate_image")
 async def generate_image_api(payload: GenerateImageRequest, request: Request):
-    require_auth(request)
+    user = require_auth(request)
+    deduct = credit_service.deduct_credit(user.get("username"), "image", 3, "AI สร้างภาพโฆษณาพร้อมลายน้ำแบรนด์")
+    if not deduct.get("success"):
+        return JSONResponse(status_code=402, content=deduct)
     active_page = pages_manager.get_active_page() or {}
     brand_dna = active_page.get("brand_dna", {}) or {}
     brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or active_page.get("name") or "Official"
@@ -560,7 +629,10 @@ class GenerateCaptionRequest(BaseModel):
 
 @app.post("/api/ai/generate_caption")
 async def api_generate_caption(payload: GenerateCaptionRequest, request: Request):
-    require_auth(request)
+    user = require_auth(request)
+    deduct = credit_service.deduct_credit(user.get("username"), "caption", 1, "AI คิดแคปชั่นและหัวข้อ")
+    if not deduct.get("success"):
+        return JSONResponse(status_code=402, content=deduct)
     try:
         active_page = pages_manager.get_active_page() or {}
         brand_name = active_page.get("brand_name") or "แบรนด์คุณภาพ"
@@ -1029,6 +1101,121 @@ async def schedule_single_holiday_api(payload: ScheduleSingleHolidayRequest, req
         "holiday": holiday,
         "post": scheduled_post
     }
+
+
+# ================= WALLET & CREDIT MANAGEMENT APIS =================
+
+@app.get("/api/credits/balance")
+async def get_credit_balance_api(request: Request):
+    """ดึงยอดเครดิตปัจจุบันและประวัติธุรกรรมล่าสุดของผู้ใช้"""
+    user = require_auth(request)
+    username = user.get("username")
+    role = user.get("role", "customer")
+    balance = credit_service.get_user_credit(username)
+    txs = credit_service.get_user_transactions(username, limit=20)
+    return {
+        "success": True,
+        "username": username,
+        "role": role,
+        "credits": balance,
+        "unlimited": role == "admin",
+        "transactions": txs
+    }
+
+@app.get("/api/credits/packages")
+async def get_credit_packages_api(request: Request):
+    """ดึงรายการแพ็กเกจเติมเครดิตทั้งหมด"""
+    return {
+        "success": True,
+        "packages": credit_service.CREDIT_PACKAGES
+    }
+
+class GenerateQRRequest(BaseModel):
+    package_id: str
+
+@app.post("/api/credits/generate_qr")
+async def generate_qr_api(payload: GenerateQRRequest, request: Request):
+    """สร้าง PromptPay EMVCo Payload พร้อมข้อมูลสำหรับเรนเดอร์ QR Code"""
+    user = require_auth(request)
+    pkg = next((p for p in credit_service.CREDIT_PACKAGES if p["id"] == payload.package_id), None)
+    if not pkg:
+        raise HTTPException(status_code=404, detail="ไม่พบแพ็กเกจที่เลือก")
+
+    brand_cfg = load_brand_config()
+    promptpay_id = os.getenv("PROMPTPAY_ID", brand_cfg.get("phone", "0660971257"))
+    payload_str = credit_service.generate_promptpay_payload(promptpay_id, float(pkg["price_thb"]))
+
+    return {
+        "success": True,
+        "package": pkg,
+        "promptpay_id": promptpay_id,
+        "amount": pkg["price_thb"],
+        "qr_payload": payload_str
+    }
+
+class TopupInstantRequest(BaseModel):
+    package_id: str
+
+@app.post("/api/credits/topup_instant")
+async def topup_instant_api(payload: TopupInstantRequest, request: Request):
+    """จำลองการยืนยันชำระเงินและเติมเครดิตเข้าบัญชี"""
+    user = require_auth(request)
+    pkg = next((p for p in credit_service.CREDIT_PACKAGES if p["id"] == payload.package_id), None)
+    if not pkg:
+        raise HTTPException(status_code=404, detail="ไม่พบแพ็กเกจที่เลือก")
+
+    total_credits = pkg["credits"]
+    res = credit_service.topup_credit(
+        username=user.get("username"),
+        amount=total_credits,
+        package_id=pkg["id"],
+        note=f"ชำระเงินสำเร็จผ่านพร้อมเพย์ {pkg['name']} (+{total_credits} เครดิต)"
+    )
+    return res
+
+class AdminAdjustRequest(BaseModel):
+    username: str
+    amount: int
+    reason: Optional[str] = ""
+
+@app.post("/api/credits/admin_adjust")
+async def admin_adjust_credit_api(payload: AdminAdjustRequest, request: Request):
+    """Admin ปรับยอดเครดิตให้ผู้ใช้โดยตรง"""
+    require_admin(request)
+    return credit_service.admin_adjust_credit(
+        target_username=payload.username,
+        amount=payload.amount,
+        reason=payload.reason
+    )
+
+# ================= CUSTOMER FACEBOOK PAGE LINKING APIS =================
+
+class FetchCustomerFBRequest(BaseModel):
+    user_token: str
+
+@app.post("/api/customer/facebook/fetch_pages")
+async def fetch_customer_fb_pages_api(payload: FetchCustomerFBRequest, request: Request):
+    """ดึงรายการเพจทั้งหมดจากบัญชี Facebook ของลูกค้าเพื่อนำมาเลือก"""
+    require_auth(request)
+    res = pages_manager.fetch_facebook_pages(payload.user_token)
+    return res
+
+class ImportCustomerFBRequest(BaseModel):
+    user_token: str
+    page_ids: Optional[List[str]] = None
+
+@app.post("/api/customer/facebook/import_pages")
+async def import_customer_fb_pages_api(payload: ImportCustomerFBRequest, request: Request):
+    """นำเข้าเพจที่ลูกค้าเลือกเข้าสู่ระบบ พร้อมผูก owner_username เป็นชื่อลูกค้า"""
+    user = require_auth(request)
+    username = user.get("username")
+    res = pages_manager.sync_customer_facebook_pages(
+        username=username,
+        user_token=payload.user_token,
+        selected_page_ids=payload.page_ids
+    )
+    return res
+
 
 # ================= ENTRY POINT =================
 

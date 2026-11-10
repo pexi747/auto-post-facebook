@@ -1605,3 +1605,282 @@ async function autoScheduleAllHolidays() {
         Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
     }
 }
+
+// ================= WALLET & CREDIT MANAGEMENT FRONTEND =================
+
+let currentTopupPackageId = null;
+let currentDiscoveredPages = [];
+
+async function loadUserCreditBalance() {
+    try {
+        const res = await fetch('/api/credits/balance');
+        const data = await res.json();
+        if (data.success) {
+            const balanceStr = data.unlimited ? '∞ (Admin)' : (data.credits || 0).toLocaleString();
+            
+            const headerBadge = document.getElementById('header-credit-balance');
+            if (headerBadge) headerBadge.textContent = balanceStr;
+
+            const walletDisplay = document.getElementById('wallet-balance-display');
+            if (walletDisplay) walletDisplay.textContent = balanceStr;
+
+            renderWalletTransactions(data.transactions || []);
+        }
+    } catch (e) {
+        console.warn('Error loading credit balance:', e);
+    }
+}
+
+function renderWalletTransactions(txs) {
+    const tbody = document.getElementById('wallet-transactions-tbody');
+    if (!tbody) return;
+
+    if (txs.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="py-8 text-center text-slate-400">
+                    <i class="fa-solid fa-receipt text-2xl mb-2 text-slate-300"></i>
+                    <p>ยังไม่มีประวัติการทำรายการ</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = txs.map(t => {
+        const isPlus = t.amount > 0;
+        const amountClass = isPlus ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
+        const sign = isPlus ? '+' : '';
+
+        let badgeType = '<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold text-[10px]">ใช้งานระบบ</span>';
+        if (t.tx_type === 'welcome') {
+            badgeType = '<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold text-[10px]">🎁 ต้อนรับสมาชิก</span>';
+        } else if (t.tx_type === 'topup') {
+            badgeType = '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px]">💳 เติมเงิน</span>';
+        } else if (t.tx_type === 'admin_adjust') {
+            badgeType = '<span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold text-[10px]">👑 ผู้ดูแลปรับยอด</span>';
+        }
+
+        return `
+            <tr class="hover:bg-slate-50 transition">
+                <td class="py-3 px-4 text-slate-500">${t.timestamp}</td>
+                <td class="py-3 px-4">${badgeType}</td>
+                <td class="py-3 px-4 text-slate-700 font-medium">${t.description || t.action}</td>
+                <td class="py-3 px-4 text-right ${amountClass}">${sign}${t.amount}</td>
+                <td class="py-3 px-4 text-right text-slate-800 font-bold">${t.balance_after !== undefined ? t.balance_after : '-'}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function openTopupModal(packageId) {
+    currentTopupPackageId = packageId;
+    const modal = document.getElementById('modal-topup-qr');
+    const qrContainer = document.getElementById('topup-qrcode-canvas');
+    if (!modal || !qrContainer) return;
+
+    qrContainer.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-2xl text-orange-500"></i>';
+    modal.classList.remove('hidden');
+
+    try {
+        const res = await fetch('/api/credits/generate_qr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ package_id: packageId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            document.getElementById('topup-pkg-name').textContent = data.package.name;
+            document.getElementById('topup-pkg-price').textContent = data.package.price_thb;
+            document.getElementById('topup-pkg-credits').textContent = data.package.credits;
+
+            qrContainer.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContainer, {
+                    text: data.qr_payload,
+                    width: 170,
+                    height: 170,
+                    colorDark: "#0B3B60",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } else {
+                qrContainer.innerHTML = `<p class="text-xs text-slate-600 break-all p-2 font-mono">${data.qr_payload}</p>`;
+            }
+        } else {
+            qrContainer.innerHTML = `<p class="text-xs text-red-500 p-4">${data.detail || 'ไม่สามารถสร้าง QR ได้'}</p>`;
+        }
+    } catch (e) {
+        qrContainer.innerHTML = `<p class="text-xs text-red-500 p-4">เชื่อมต่อเซิร์ฟเวอร์ขัดข้อง: ${e}</p>`;
+    }
+}
+
+function closeTopupModal() {
+    const modal = document.getElementById('modal-topup-qr');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function confirmDemoTopup() {
+    if (!currentTopupPackageId) return;
+
+    Swal.fire({
+        title: 'กำลังตรวจสอบการชำระเงิน...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/credits/topup_instant', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ package_id: currentTopupPackageId })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            closeTopupModal();
+            Swal.fire({
+                icon: 'success',
+                title: 'เติมเครดิตสำเร็จ!',
+                html: `
+                    <div class="text-left text-xs space-y-1.5 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p>🎉 ยอดเครดิตที่ได้รับ: <strong>+${data.added} เครดิต</strong></p>
+                        <p>🪙 ยอดเครดิตคงเหลือใหม่: <strong>${data.balance} เครดิต</strong></p>
+                    </div>
+                `,
+                confirmButtonColor: '#0B3B60'
+            });
+            loadUserCreditBalance();
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถเติมเครดิตได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+// ================= CUSTOMER FACEBOOK PAGE LINKING =================
+
+function openCustomerLinkFacebookModal() {
+    const modal = document.getElementById('modal-customer-link-fb');
+    if (!modal) return;
+    document.getElementById('fb-link-step-1').classList.remove('hidden');
+    document.getElementById('fb-link-step-2').classList.add('hidden');
+    document.getElementById('customer-fb-token-input').value = '';
+    modal.classList.remove('hidden');
+}
+
+function closeCustomerLinkFacebookModal() {
+    const modal = document.getElementById('modal-customer-link-fb');
+    if (modal) modal.classList.add('hidden');
+}
+
+function backToStep1FBLoing() {
+    document.getElementById('fb-link-step-1').classList.remove('hidden');
+    document.getElementById('fb-link-step-2').classList.add('hidden');
+}
+
+async function fetchCustomerPagesFromToken() {
+    const tokenInput = document.getElementById('customer-fb-token-input');
+    const token = tokenInput ? tokenInput.value.strip ? tokenInput.value.strip() : tokenInput.value.trim() : '';
+    if (!token) {
+        Swal.fire('กรุณากรอก Token', 'โปรดวาง User Access Token ของคุณก่อนดำเนินการ', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('btn-fetch-customer-pages');
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบเพจของคุณ...';
+
+    try {
+        const res = await fetch('/api/customer/facebook/fetch_pages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_token: token })
+        });
+        const data = await res.json();
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> ค้นหาเพจที่ฉันดูแล';
+
+        if (data.success && data.pages && data.pages.length > 0) {
+            currentDiscoveredPages = data.pages;
+            const container = document.getElementById('discovered-pages-list');
+            container.innerHTML = data.pages.map(p => `
+                <label class="flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 cursor-pointer transition">
+                    <input type="checkbox" name="selected_fb_pages" value="${p.id}" checked 
+                           class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                    <img src="${p.picture_url || '/static/profile.jpg'}" class="w-8 h-8 rounded-lg object-cover border border-slate-200" onerror="this.src='/static/profile.jpg'">
+                    <div class="truncate flex-1 text-xs">
+                        <div class="font-bold text-slate-800 truncate">${p.name}</div>
+                        <div class="text-[10px] text-slate-400">ID: ${p.id} • ${p.category}</div>
+                    </div>
+                </label>
+            `).join('');
+
+            document.getElementById('fb-link-step-1').classList.add('hidden');
+            document.getElementById('fb-link-step-2').classList.remove('hidden');
+        } else {
+            Swal.fire('ไม่พบเพจ', data.error || 'ไม่พบเพจที่บัญชีนี้เป็นผู้ดูแล หรือสิทธิ์ Token ไม่เพียงพอ', 'error');
+        }
+    } catch (e) {
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> ค้นหาเพจที่ฉันดูแล';
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อ Facebook API ล้มเหลว', 'error');
+    }
+}
+
+function selectAllDiscoveredPages(checked) {
+    document.querySelectorAll('input[name="selected_fb_pages"]').forEach(cb => {
+        cb.checked = checked;
+    });
+}
+
+async function confirmImportSelectedPages() {
+    const token = document.getElementById('customer-fb-token-input').value.trim();
+    const selectedBoxes = Array.from(document.querySelectorAll('input[name="selected_fb_pages"]:checked'));
+    if (selectedBoxes.length === 0) {
+        Swal.fire('กรุณาเลือกเพจ', 'โปรดเลือกอย่างน้อย 1 เพจที่ต้องการนำเข้า', 'warning');
+        return;
+    }
+
+    const selectedIds = selectedBoxes.map(b => b.value);
+
+    Swal.fire({
+        title: 'กำลังนำเข้าเพจของคุณ...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/customer/facebook/import_pages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_token: token,
+                page_ids: selectedIds
+            })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            closeCustomerLinkFacebookModal();
+            Swal.fire({
+                icon: 'success',
+                title: `นำเข้าเพจสำเร็จ (${data.count} เพจ)!`,
+                text: 'ระบบได้เชื่อมต่อเพจ Facebook เข้าสู่บัญชีของคุณเรียบร้อยแล้ว',
+                confirmButtonColor: '#0B3B60'
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถนำเข้าเพจได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+// Global hook: load credit balance on document ready
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserCreditBalance();
+});

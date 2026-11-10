@@ -17,6 +17,7 @@
             font-weight: 600;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
@@ -70,6 +71,10 @@
                                 {% endfor %}
                             </div>
                             <div class="p-2 border-t border-slate-100 bg-slate-50">
+                                <button onclick="openCustomerLinkFacebookModal()" class="w-full mt-1.5 py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition">
+                                    <i class="fa-brands fa-facebook text-white"></i> 🔗 ลิ้งค์เพจ Facebook ของฉัน
+                                </button>
+
                                 <button onclick="openSyncPagesModal()" class="w-full py-2 px-3 bg-[#0B3B60] hover:bg-[#082b47] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition">
                                     <i class="fa-solid fa-key text-orange-400"></i> อัปเดต Token & ซิงค์ใส่ .env อัตโนมัติ
                                 </button>
@@ -80,6 +85,15 @@
 
                 <!-- User Profile & Quick Actions -->
                 <div class="flex items-center gap-4">
+                                        <!-- User Credit Badge -->
+                    <div class="flex items-center gap-2 bg-white/15 hover:bg-white/20 px-3 py-1.5 rounded-xl border border-white/25 text-xs font-semibold text-white shadow-xs transition cursor-pointer" onclick="switchTab('wallet')" title="คลิกเพื่อเติมเครดิต">
+                        <span class="text-base">🪙</span>
+                        <span><strong id="header-credit-balance" class="text-amber-300 font-bold text-sm">{{ user_credits or 0 }}</strong> เครดิต</span>
+                        <button type="button" class="ml-1 px-2 py-0.5 rounded-md bg-[#FF5B00] hover:bg-[#e05000] text-white text-[11px] font-bold shadow-xs transition">
+                            + เติมเงิน
+                        </button>
+                    </div>
+
                     <div class="text-right hidden sm:block">
                         <div class="text-sm font-semibold">{{ current_user.name }}</div>
                         <div class="text-xs">
@@ -106,6 +120,9 @@
                 </button>
                 <button onclick="switchTab('create')" id="tab-btn-create" class="tab-btn px-4 py-3 text-white/80 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-pen-to-square text-orange-400"></i> สร้าง & โพสต์คอนเทนต์
+                </button>
+                                <button onclick="switchTab('wallet')" id="tab-btn-wallet" class="tab-btn px-4 py-3 text-white/80 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-wallet text-amber-300"></i> กระเป๋าเงิน & เติมเครดิต
                 </button>
                 <button onclick="switchTab('planner')" id="tab-btn-planner" class="tab-btn px-4 py-3 text-white/80 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-wand-magic-sparkles text-orange-400"></i> AI คิดแผนคอนเทนต์
@@ -761,7 +778,357 @@
         </section>
         {% endif %}
 
+    
+        <!-- ================= TAB: WALLET & CREDIT TOP-UP ================= -->
+        <section id="tab-wallet" class="tab-content hidden space-y-6">
+            
+            <!-- Credit Balance & Rates Banner -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Current Balance Card -->
+                <div class="bg-gradient-to-br from-[#0B3B60] via-[#0d4775] to-[#12588f] text-white p-6 sm:p-8 rounded-2xl shadow-lg border border-blue-400/30 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-white/5 text-9xl font-black select-none pointer-events-none">
+                        🪙
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs uppercase font-bold tracking-wider text-orange-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wallet"></i> ยอดเครดิตคงเหลือของคุณ
+                            </span>
+                            <button onclick="loadUserCreditBalance()" class="text-xs text-white/70 hover:text-white flex items-center gap-1 transition">
+                                <i class="fa-solid fa-rotate-right"></i> รีเฟรช
+                            </button>
+                        </div>
+                        <div class="mt-4 flex items-baseline gap-2">
+                            <span id="wallet-balance-display" class="text-5xl font-black text-amber-300 tracking-tight">{{ user_credits or 0 }}</span>
+                            <span class="text-sm font-semibold text-white/80">เครดิต</span>
+                        </div>
+                        <p class="text-xs text-white/70 mt-2">
+                            ผู้ใช้งาน: <strong>{{ current_user.name }}</strong> ({{ current_user.username }})
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/80">
+                        <span>สถานะสิทธิ์:</span>
+                        {% if current_user.role == 'admin' %}
+                        <span class="px-2.5 py-0.5 rounded-full bg-purple-500/30 text-purple-200 font-bold border border-purple-400/40">👑 Admin (ไม่จำกัด)</span>
+                        {% else %}
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 font-bold border border-emerald-400/40">✔ สมาชิกทั่วไป (Pay-as-you-go)</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Pricing Rates Card -->
+                <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-tags text-[#FF5B00]"></i> อัตราค่าบริการระบบ (เครดิตต่อการใช้งาน)
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">หักเครดิตตามจริงเมื่อมีการเรียกใช้งาน AI หรือการโพสต์ ไม่มีค่าธรรมเนียมรายเดือนแอบแฝง</p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-orange-100 text-[#FF5B00] flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">AI คิดแคปชั่น</h4>
+                                    <p class="text-[11px] text-slate-500">วิเคราะห์รูป & แบรนด์</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-[#0B3B60] flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">AI สร้างภาพโฆษณา</h4>
+                                    <p class="text-[11px] text-slate-500">พร้อมลายน้ำแบรนด์</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">ตั้งเวลาโพสต์</h4>
+                                    <p class="text-[11px] text-slate-500">คิวโพสต์ลงเพจ</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">โพสต์วันสำคัญ AI</h4>
+                                    <p class="text-[11px] text-slate-500">เทศกาล/วันสำคัญไทย</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">โพสต์ขึ้นเพจทันที</h4>
+                                    <p class="text-[11px] text-slate-500">Direct Facebook Post</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">ฟรี</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800">ลิ้งค์เพจ Facebook</h4>
+                                    <p class="text-[11px] text-slate-500">เชื่อมต่อไม่จำกัดเพจ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
+                        <span>💡 เครดิตไม่มีวันหมดอายุ สามารถใช้งานได้ตลอดเวลา</span>
+                        <span class="text-[#FF5B00] font-semibold">สแกนจ่ายผ่าน Thai PromptPay QR รับเครดิตทันที</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top-up Packages Grid -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-credit-card text-[#FF5B00]"></i> เลือกแพ็กเกจเติมเครดิต (Credit Packages)
+                    </h3>
+                    <p class="text-xs text-slate-500">เลือกแพ็กเกจที่ต้องการเพื่อสแกน QR Code พร้อมเพย์ เครดิตจะเข้าสู่บัญชีของคุณทันที</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- Package S -->
+                    <div class="rounded-2xl border border-slate-200 p-5 flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">ทดลองใช้งาน</span>
+                            <h4 class="text-base font-bold text-slate-800 mt-2">Starter (S)</h4>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-[#0B3B60]">100</span>
+                                <span class="text-xs font-medium text-slate-500">บาท</span>
+                            </div>
+                            <div class="mt-2 text-sm font-bold text-amber-600 flex items-center gap-1">
+                                <span>🪙 ได้รับ 100 เครดิต</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                เหมาะสำหรับผู้เริ่มต้นใช้งาน โพสต์ได้ประมาณ 25-50 โพสต์
+                            </p>
+                        </div>
+                        <button onclick="openTopupModal('pkg_s')" class="mt-6 w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-qrcode"></i> เติม 100 บาท
+                        </button>
+                    </div>
+
+                    <!-- Package M (Popular) -->
+                    <div class="rounded-2xl border-2 border-[#FF5B00] bg-orange-50/20 p-5 flex flex-col justify-between shadow-sm relative">
+                        <span class="absolute -top-3 right-4 px-3 py-0.5 rounded-full text-[10px] font-black bg-[#FF5B00] text-white shadow-xs uppercase tracking-wider">
+                            ⭐ ยอดนิยม คุ้มค่า
+                        </span>
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-100 text-[#FF5B00]">แถมฟรี +50 เครดิต!</span>
+                            <h4 class="text-base font-bold text-slate-800 mt-2">Standard (M)</h4>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-[#FF5B00]">300</span>
+                                <span class="text-xs font-medium text-slate-500">บาท</span>
+                            </div>
+                            <div class="mt-2 text-sm font-bold text-amber-600 flex items-center gap-1">
+                                <span>🪙 ได้รับ 350 เครดิต</span>
+                                <span class="text-[10px] text-emerald-600 font-semibold">(+50 โบนัส)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                โพสต์ได้ต่อเนื่อง 2-4 สัปดาห์ พร้อมสร้างภาพ AI โฆษณาครบชุด
+                            </p>
+                        </div>
+                        <button onclick="openTopupModal('pkg_m')" class="mt-6 w-full py-2.5 px-3 bg-[#FF5B00] hover:bg-[#e05000] text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-qrcode"></i> เติม 300 บาท
+                        </button>
+                    </div>
+
+                    <!-- Package L -->
+                    <div class="rounded-2xl border border-slate-200 p-5 flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-[#0B3B60]">สุดคุ้ม +150 เครดิต</span>
+                            <h4 class="text-base font-bold text-slate-800 mt-2">Pro Business (L)</h4>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-[#0B3B60]">500</span>
+                                <span class="text-xs font-medium text-slate-500">บาท</span>
+                            </div>
+                            <div class="mt-2 text-sm font-bold text-amber-600 flex items-center gap-1">
+                                <span>🪙 ได้รับ 650 เครดิต</span>
+                                <span class="text-[10px] text-emerald-600 font-semibold">(+150 โบนัส)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                สำหรับธุรกิจที่โพสต์ทุกวันตลอดเดือน และใช้ Auto-Pilot วันสำคัญครบถ้วน
+                            </p>
+                        </div>
+                        <button onclick="openTopupModal('pkg_l')" class="mt-6 w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-qrcode"></i> เติม 500 บาท
+                        </button>
+                    </div>
+
+                    <!-- Package VIP -->
+                    <div class="rounded-2xl border border-purple-200 bg-purple-50/20 p-5 flex flex-col justify-between hover:border-purple-300 hover:shadow-md transition">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700">VIP โบนัส 50%</span>
+                            <h4 class="text-base font-bold text-slate-800 mt-2">VIP Enterprise</h4>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-purple-700">1,000</span>
+                                <span class="text-xs font-medium text-slate-500">บาท</span>
+                            </div>
+                            <div class="mt-2 text-sm font-bold text-amber-600 flex items-center gap-1">
+                                <span>🪙 ได้รับ 1,500 เครดิต</span>
+                                <span class="text-[10px] text-purple-700 font-semibold">(+500 โบนัส)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                โควตาจุใจ รองรับการดูแลหลายเพจ โพสต์ทั้งปีได้ยาวนาน
+                            </p>
+                        </div>
+                        <button onclick="openTopupModal('pkg_vip')" class="mt-6 w-full py-2.5 px-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-qrcode"></i> เติม 1,000 บาท
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-slate-600"></i> ประวัติการใช้งานและเติมเครดิตล่าสุด
+                        </h3>
+                        <p class="text-xs text-slate-500">บันทึกรายการหักเครดิตและการเติมเงินทุกรายการอย่างโปร่งใส</p>
+                    </div>
+                    <button onclick="loadUserCreditBalance()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition flex items-center gap-1">
+                        <i class="fa-solid fa-arrows-rotate"></i> อัปเดตรายการ
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">วัน-เวลา</th>
+                                <th class="py-3 px-4">ประเภทรายการ</th>
+                                <th class="py-3 px-4">รายละเอียด</th>
+                                <th class="py-3 px-4 text-right">จำนวนเครดิต</th>
+                                <th class="py-3 px-4 text-right">ยอดคงเหลือ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wallet-transactions-tbody" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-lg mb-1"></i>
+                                    <p>กำลังโหลดประวัติธุรกรรม...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </main>
+
+    
+    <!-- ================= MODAL: TOP-UP PROMPTPAY QR ================= -->
+    <div id="modal-topup-qr" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center space-y-4 animate-scale-in">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-1.5">
+                    <span class="text-lg">🪙</span> เติมเครดิตผ่าน PromptPay QR
+                </h3>
+                <button onclick="closeTopupModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+
+            <div>
+                <p id="topup-pkg-name" class="font-bold text-[#0B3B60] text-sm">Standard Package (M)</p>
+                <div class="text-2xl font-black text-[#FF5B00] mt-1">
+                    ฿<span id="topup-pkg-price">300</span>
+                </div>
+                <p class="text-xs text-amber-600 font-semibold mt-0.5">
+                    ได้รับ <strong id="topup-pkg-credits">350</strong> เครดิต
+                </p>
+            </div>
+
+            <!-- QR Code Render Container -->
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block shadow-inner mx-auto">
+                <div id="topup-qrcode-canvas" class="flex justify-center items-center w-48 h-48 bg-white p-2 rounded-xl border border-slate-200">
+                    <!-- QR code will be generated here -->
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2">สแกนได้ด้วยแอปธนาคารทุกแห่งในไทย</p>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="confirmDemoTopup()" id="btn-confirm-topup" 
+                        class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>ยืนยันชำระเงินสำเร็จ (รับเครดิตทันที) 🚀</span>
+                </button>
+
+                <button onclick="closeTopupModal()" class="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-700">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CUSTOMER LINK FACEBOOK PAGE ================= -->
+    <div id="modal-customer-link-fb" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-in">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-brands fa-facebook text-blue-600 text-xl"></i>
+                    <span>ลิ้งค์เพจ Facebook ของคุณ</span>
+                </h3>
+                <button onclick="closeCustomerLinkFacebookModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+
+            <!-- Step 1: Input User Token -->
+            <div id="fb-link-step-1" class="space-y-3">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    นำ <strong>Facebook User Access Token</strong> ของบัญชี Facebook ที่คุณเป็นผู้ดูแลเพจมากรอก เพื่อให้ระบบดึงรายการเพจของคุณมาแสดงและเลือกนำเข้า
+                </p>
+
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 text-xs text-[#0B3B60] space-y-1">
+                    <p class="font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-info-circle"></i> สิทธิ์ที่ต้องการ (Permissions):
+                    </p>
+                    <p class="text-[11px] text-slate-600">pages_show_list, pages_read_engagement, pages_manage_posts</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">User Access Token</label>
+                    <textarea id="customer-fb-token-input" rows="3" placeholder="วาง Facebook User Access Token ที่ขึ้นต้นด้วย EAA..." 
+                              class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 text-xs font-mono"></textarea>
+                </div>
+
+                <button onclick="fetchCustomerPagesFromToken()" id="btn-fetch-customer-pages" 
+                        class="w-full py-3 bg-[#0B3B60] hover:bg-[#082b47] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>ค้นหาเพจที่ฉันดูแล</span>
+                </button>
+            </div>
+
+            <!-- Step 2: Select Pages to Import -->
+            <div id="fb-link-step-2" class="hidden space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700">เลือกเพจที่ต้องการนำเข้าสู่บัญชีของคุณ:</span>
+                    <button onclick="selectAllDiscoveredPages(true)" class="text-[11px] text-[#FF5B00] font-semibold hover:underline">เลือกทั้งหมด</button>
+                </div>
+
+                <div id="discovered-pages-list" class="max-h-60 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl p-2 bg-slate-50 space-y-1">
+                    <!-- Dynamic pages checkboxes -->
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    <button onclick="backToStep1FBLoing()" class="w-1/3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                        ย้อนกลับ
+                    </button>
+                    <button onclick="confirmImportSelectedPages()" id="btn-import-pages-submit" 
+                            class="w-2/3 py-2.5 bg-[#FF5B00] hover:bg-[#e05000] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>นำเข้าเพจที่เลือกเข้าสู่ระบบ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">

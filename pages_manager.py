@@ -20,12 +20,10 @@ if hasattr(sys.stdout, "reconfigure"):
 PAGES_CONFIG_FILE = "managed_pages.json"
 
 def load_pages_data() -> Dict[str, Any]:
-    """โหลดข้อมูลเพจทั้งหมดจากไฟล์"""
+    """โหลดข้อมูลเพจทั้งหมดจากไฟล์ พร้อมรับประกันว่าทุกเพจมี owner_username"""
     if not os.path.exists(PAGES_CONFIG_FILE):
-        # สร้างข้อมูลเพจเริ่มต้น (FixPack) จาก .env หรือค่า default
         default_page_id = os.getenv("FACEBOOK_PAGE_ID", "764713456731551")
         default_token = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")
-        
         initial_data = {
             "active_page_id": default_page_id,
             "pages": [
@@ -41,7 +39,8 @@ def load_pages_data() -> Dict[str, Any]:
                     "phone": "066-097-1257",
                     "price_tag": "เหมาจ่าย 1,500.-",
                     "daily_post_time": "09:30",
-                    "auto_pilot_enabled": True
+                    "auto_pilot_enabled": True,
+                    "owner_username": "admin"
                 }
             ]
         }
@@ -50,7 +49,17 @@ def load_pages_data() -> Dict[str, Any]:
 
     try:
         with open(PAGES_CONFIG_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            # รับประกันว่าเพจเดิมทุกเพจมี owner_username = 'admin'
+            pages = data.get("pages", [])
+            modified = False
+            for p in pages:
+                if "owner_username" not in p:
+                    p["owner_username"] = "admin"
+                    modified = True
+            if modified:
+                save_pages_data(data)
+            return data
     except Exception as e:
         print(f"⚠️ ไม่สามารถอ่านไฟล์ {PAGES_CONFIG_FILE}: {e}")
         return {"active_page_id": "", "pages": []}
@@ -407,6 +416,163 @@ def sync_pages_from_facebook(user_token: str) -> Dict[str, Any]:
             "success": True,
             "count": synced_count,
             "pages": current_data["pages"]
+        }
+    except Exception as e:
+        return {"success": False, "error": f"Exception: {str(e)}"}
+
+# ================= MULTI-TENANT & CUSTOMER PAGES =================
+
+def get_pages_for_user(username: str, role: str) -> List[Dict[str, Any]]:
+    """ดึงรายการเพจตามสิทธิ์ของผู้ใช้งาน"""
+    pages = get_all_pages()
+    if role == "admin":
+        return pages
+    # ลูกค้าทั่วไปจะเห็นเฉพาะเพจที่ตนเป็นเจ้าของ
+    return [p for p in pages if p.get("owner_username") == username]
+
+def get_active_page_for_user(username: str, role: str) -> Optional[Dict[str, Any]]:
+    """คืนค่าเพจ Active ที่ผู้ใช้คนนั้นเป็นเจ้าของ"""
+    user_pages = get_pages_for_user(username, role)
+    if not user_pages:
+        return None
+
+    data = load_pages_data()
+    active_id = str(data.get("active_page_id", ""))
+
+    for p in user_pages:
+        if str(p.get("id")) == active_id:
+            return p
+
+    # ถ้า active_page ไม่ได้อยู่ในรายการของผู้ใช้นี้ ให้ใช้เพจแรกของผู้ใช้
+    return user_pages[0]
+
+def set_active_page_for_user(username: str, role: str, page_id: str) -> bool:
+    """สลับ Active Page โดยตรวจสอบสิทธิ์การเป็นเจ้าของก่อนเสมอ"""
+    user_pages = get_pages_for_user(username, role)
+    page_id_str = str(page_id)
+    target_page = next((p for p in user_pages if str(p.get("id")) == page_id_str), None)
+    
+    if not target_page:
+        return False
+
+    data = load_pages_data()
+    data["active_page_id"] = page_id_str
+    save_pages_data(data)
+
+    update_env_active_page(target_page.get("id"), target_page.get("access_token"))
+    return True
+
+def fetch_facebook_pages(user_token: str) -> Dict[str, Any]:
+    """ดึงรายการเพจทั้งหมดจากบัญชี Facebook เพื่อให้ลูกค้า Preview และเลือกลิ้งค์"""
+    user_token = user_token.strip()
+    if not user_token:
+        return {"success": False, "error": "กรุณาระบุ Facebook User Access Token"}
+
+    url = "https://graph.facebook.com/v21.0/me/accounts"
+    params = {
+        "fields": "id,name,category,access_token,picture.type(large)",
+        "limit": 100,
+        "access_token": user_token
+    }
+
+    try:
+        res = requests.get(url, params=params, timeout=20)
+        data = res.json()
+        if res.status_code != 200:
+            err_msg = data.get("error", {}).get("message", "Token ไม่ถูกต้องหรือหมดอายุ")
+            return {"success": False, "error": f"Facebook Error: {err_msg}"}
+
+        pages = data.get("data", [])
+        formatted = []
+        for p in pages:
+            formatted.append({
+                "id": str(p.get("id")),
+                "name": p.get("name"),
+                "category": p.get("category", "Facebook Page"),
+                "picture_url": p.get("picture", {}).get("data", {}).get("url"),
+                "has_token": bool(p.get("access_token"))
+            })
+        return {"success": True, "pages": formatted, "count": len(formatted)}
+    except Exception as e:
+        return {"success": False, "error": f"Exception: {str(e)}"}
+
+def sync_customer_facebook_pages(username: str, user_token: str, selected_page_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+    """นำเข้าเพจของ Customer จาก Facebook เข้าสู่ managed_pages.json โดยกำหนด owner_username เป็นชื่อลูกค้า"""
+    user_token = user_token.strip()
+    if not user_token:
+        return {"success": False, "error": "กรุณาระบุ User Access Token"}
+
+    url = "https://graph.facebook.com/v21.0/me/accounts"
+    params = {
+        "fields": "id,name,category,access_token,picture.type(large)",
+        "limit": 100,
+        "access_token": user_token
+    }
+
+    try:
+        res = requests.get(url, params=params, timeout=20)
+        data = res.json()
+        if res.status_code != 200:
+            err_msg = data.get("error", {}).get("message", "Token ไม่ถูกต้องหรือหมดอายุ")
+            return {"success": False, "error": f"Facebook Error: {err_msg}"}
+
+        fb_pages = data.get("data", [])
+        if not fb_pages:
+            return {"success": False, "error": "ไม่พบเพจที่บัญชี Facebook นี้เป็นผู้ดูแล"}
+
+        current_data = load_pages_data()
+        all_pages = current_data.get("pages", [])
+        page_dict = {str(p["id"]): p for p in all_pages}
+
+        imported_count = 0
+        for p in fb_pages:
+            p_id = str(p.get("id"))
+            if selected_page_ids and p_id not in selected_page_ids:
+                continue
+
+            p_name = p.get("name")
+            p_cat = p.get("category", "General")
+            p_token = p.get("access_token")
+            pic_url = p.get("picture", {}).get("data", {}).get("url")
+
+            if p_id in page_dict:
+                page_dict[p_id]["access_token"] = p_token
+                page_dict[p_id]["name"] = p_name
+                page_dict[p_id]["owner_username"] = username
+                if pic_url:
+                    page_dict[p_id]["picture_url"] = pic_url
+            else:
+                page_dict[p_id] = {
+                    "id": p_id,
+                    "name": p_name,
+                    "category": p_cat,
+                    "access_token": p_token,
+                    "picture_url": pic_url,
+                    "brand_name": p_name.split(" ")[0] if p_name else "My Brand",
+                    "tagline": p_name,
+                    "primary_color": "#0B3B60",
+                    "accent_color": "#FF5B00",
+                    "phone": "066-097-1257",
+                    "price_tag": "โปรโมชั่นพิเศษ",
+                    "daily_post_time": "09:30",
+                    "auto_pilot_enabled": True,
+                    "owner_username": username
+                }
+            imported_count += 1
+
+        current_data["pages"] = list(page_dict.values())
+        
+        # ตั้ง active page เป็นเพจที่เพิ่งลิ้งค์ ถ้ายังไม่มี
+        user_pages = [p for p in current_data["pages"] if p.get("owner_username") == username]
+        if user_pages:
+            current_data["active_page_id"] = user_pages[0]["id"]
+            update_env_active_page(user_pages[0]["id"], user_pages[0]["access_token"])
+
+        save_pages_data(current_data)
+        return {
+            "success": True,
+            "count": imported_count,
+            "pages": user_pages
         }
     except Exception as e:
         return {"success": False, "error": f"Exception: {str(e)}"}
