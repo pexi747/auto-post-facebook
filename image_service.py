@@ -1,3 +1,4 @@
+import ai_client_resolver
 """
 โมดูลบริการสร้างรูปภาพด้วย AI และระบบใส่ลายน้ำป้องกันการคัดลอก (AI Image & Watermark Service)
 หน้าที่:
@@ -226,27 +227,217 @@ def apply_subtle_watermark(
         print(f"⚠️ Error applying watermark: {e}")
         return image_path
 
+# Diff / Replacement for image_service.py:
+
+
+# คลังข้อมูลธีมภาพถ่าย 25 วันสำคัญไทย (Authentic Cultural Visual Themes)
+THAI_HOLIDAYS_THEMES_TABLE = [
+    {
+        "id": "loy_krathong", "name": "วันลอยกระทง",
+        "keywords": ["ลอยกระทง", "กระทง", "วันเพ็ญเดือนสิบสอง", "loy krathong"],
+        "visual_theme": "Illuminated banana leaf Krathong with candle and fresh lotus flowers floating peacefully on calm river under luminous full moon, ethereal golden reflections, traditional Thai celebration photography"
+    },
+    {
+        "id": "fathers_day", "name": "วันพ่อแห่งชาติ / วันชาติ",
+        "keywords": ["วันพ่อ", "วันพ่อแห่งชาติ", "วันชาติ", "5 ธันวา", "๕ ธันวา", "รัชกาลที่ 9", "รัชกาลที่ ๙", "fathers day"],
+        "visual_theme": "Respectful tribute on Thai Father's Day, golden yellow Ratchaphruek blossoms, warm morning sunlight, peaceful Thai reverence atmosphere, elegant traditional composition"
+    },
+    {
+        "id": "mothers_day", "name": "วันแม่แห่งชาติ",
+        "keywords": ["วันแม่", "วันแม่แห่งชาติ", "12 สิงหา", "๑๒ สิงหา", "mothers day"],
+        "visual_theme": "Warm heartfelt Thai Mother's Day scene, delicate fragrant white Jasmine garland Malai on ornate silver tray, gentle soft morning sunlight, symbol of maternal love"
+    },
+    {
+        "id": "songkran", "name": "เทศกาลสงกรานต์",
+        "keywords": ["สงกรานต์", "วันสงกรานต์", "ปีใหม่ไทย", "songkran"],
+        "visual_theme": "Traditional Thai Songkran festival, splashing clean sparkling water drops in joyful celebration, floral jasmine scented water in traditional brass bowl, warm festive sunlight"
+    },
+    {
+        "id": "visakha_bucha", "name": "วันวิสาขบูชา",
+        "keywords": ["วิสาขบูชา", "วิสาขะ", "visakha bucha"],
+        "visual_theme": "Serene Thai Buddhist temple courtyard at twilight, gentle candlelight procession Wian Tian, glowing lotus flowers, peaceful spiritual ambiance, warm golden temple reflections"
+    },
+    {
+        "id": "makha_bucha", "name": "วันมาฆบูชา",
+        "keywords": ["มาฆบูชา", "มาฆะ", "makha bucha"],
+        "visual_theme": "Spiritual Makha Bucha candlelight ceremony at tranquil golden Thai pagoda, soft glowing candles held in prayer, peaceful evening meditation atmosphere, serene Buddhist spirituality"
+    },
+    {
+        "id": "asalha_bucha", "name": "วันอาสาฬหบูชา",
+        "keywords": ["อาสาฬหบูชา", "อาสาฬหะ", "asalha bucha"],
+        "visual_theme": "Serene Buddhist Asalha Bucha reflection, golden Dharma wheel emblem, fresh lotus offerings at ancient tranquil Thai temple, calm morning natural light"
+    },
+    {
+        "id": "khao_phansa", "name": "วันเข้าพรรษา",
+        "keywords": ["เข้าพรรษา", "khao phansa", "buddhist lent"],
+        "visual_theme": "Magnificent intricately carved Thai Khao Phansa Buddhist Lent beeswax candle, glowing gently in traditional temple sanctuary, peaceful spiritual atmosphere"
+    },
+    {
+        "id": "awk_phansa", "name": "วันออกพรรษา",
+        "keywords": ["ออกพรรษา", "awk phansa"],
+        "visual_theme": "Glowing illuminated boat procession on Thai river during Awk Phansa festival, colorful lanterns reflecting on calm water under moonlit evening sky"
+    },
+    {
+        "id": "new_year", "name": "วันขึ้นปีใหม่",
+        "keywords": ["วันขึ้นปีใหม่", "ปีใหม่", "สวัสดีปีใหม่", "happy new year", "new year"],
+        "visual_theme": "Joyful modern celebratory New Year scene, magnificent warm golden fireworks illuminating night sky, festive celebration photography, elegant bokeh lights"
+    },
+    {
+        "id": "christmas", "name": "วันคริสต์มาส",
+        "keywords": ["คริสต์มาส", "คริสต์มาสอีฟ", "christmas", "xmas"],
+        "visual_theme": "Cozy festive Christmas scene, sparkling warm golden fairy lights, beautifully decorated green pine tree, elegant celebratory gifts, cinematic cozy warm lighting"
+    },
+    {
+        "id": "chinese_new_year", "name": "เทศกาลตรุษจีน",
+        "keywords": ["ตรุษจีน", "วันตรุษจีน", "chinese new year", "cny"],
+        "visual_theme": "Vibrant festive Chinese New Year celebration, red silk lanterns, blooming pink peach blossoms, lucky golden mandarins, auspicious holiday celebration photography"
+    },
+    {
+        "id": "children_day", "name": "วันเด็กแห่งชาติ",
+        "keywords": ["วันเด็ก", "วันเด็กแห่งชาติ", "childrens day"],
+        "visual_theme": "Cheerful smiling Thai children in bright happy creative environment, colorful balloons and toys, joyful playful atmosphere, natural warm sunlight"
+    },
+    {
+        "id": "teachers_day", "name": "วันครู",
+        "keywords": ["วันครู", "วันครูแห่งชาติ", "teachers day"],
+        "visual_theme": "Respectful Thai Teachers Day tribute, traditional floral phan wai kru flower tray, open classic books under gentle morning library sunlight, honoring education"
+    },
+    {
+        "id": "chulalongkorn_day", "name": "วันปิยมหาราช",
+        "keywords": ["ปิยมหาราช", "23 ตุลา", "๒๓ ตุลา", "รัชกาลที่ 5", "รัชกาลที่ ๕", "chulalongkorn"],
+        "visual_theme": "Solemn commemorative tribute with pink and white roses, dignified memorial tribute composition, gentle soft morning light, peaceful Thai historical remembrance"
+    },
+    {
+        "id": "navamindra_day", "name": "วันนวมินทรมหาราช",
+        "keywords": ["นวมินทร", "นวมินทรมหาราช", "13 ตุลา", "๑๓ ตุลา", "วันคล้ายวันสวรรคต ร.9"],
+        "visual_theme": "Solemn and respectful Thai tribute, golden yellow Dok Dao Ruang marigold blossoms, soft warm morning light, profound national remembrance"
+    },
+    {
+        "id": "chakri_day", "name": "วันจักรี",
+        "keywords": ["วันจักรี", "จักรี", "6 เมษา", "๖ เมษา", "chakri memorial"],
+        "visual_theme": "Royal Chakri remembrance tribute, auspicious golden ornamentation, traditional Thai royal tribute flowers, dignified peaceful heritage photography"
+    },
+    {
+        "id": "constitution_day", "name": "วันรัฐธรรมนูญ",
+        "keywords": ["วันรัฐธรรมนูญ", "รัฐธรรมนูญ", "10 ธันวา", "๑๐ ธันวา", "constitution day"],
+        "visual_theme": "Thai Constitution remembrance tribute, golden constitutional tray phan decoration, dignified respectful national celebration, clean bright architectural lighting"
+    },
+    {
+        "id": "coronation_day", "name": "วันฉัตรมงคล",
+        "keywords": ["ฉัตรมงคล", "4 พฤษภา", "๔ พฤษภา", "coronation day"],
+        "visual_theme": "Dignified coronation tribute scene, royal yellow and golden Thai flowers, respectful celebratory ambiance, elegant traditional composition"
+    },
+    {
+        "id": "royal_ploughing", "name": "วันพืชมงคล",
+        "keywords": ["พืชมงคล", "จรดพระนังคัล", "royal ploughing"],
+        "visual_theme": "Lush vibrant green fertile rice paddies under morning sun, traditional Thai agricultural ceremony celebration, golden ripe rice ears, natural vitality"
+    },
+    {
+        "id": "valentines_day", "name": "วันวาเลนไทน์",
+        "keywords": ["วาเลนไทน์", "valentine"],
+        "visual_theme": "Warm romantic Valentine celebration, elegant fresh velvet red roses, delicate heart motif, soft bokeh romantic ambient photography, clean modern aesthetic"
+    },
+    {
+        "id": "womens_day", "name": "วันสตรีสากล",
+        "keywords": ["สตรีสากล", "วันสตรี", "womens day", "iwd"],
+        "visual_theme": "Inspiring celebration of International Women's Day, purple ribbons and blooming purple orchids, graceful radiant morning lighting, empowering atmosphere"
+    },
+    {
+        "id": "labour_day", "name": "วันแรงงาน",
+        "keywords": ["วันแรงงาน", "วันแรงงานแห่งชาติ", "1 พฤษภา", "๑ พฤษภา", "labour day", "labor day"],
+        "visual_theme": "Dignified celebration of dedication and craftsmanship, warm golden sunrise, honest inspiring composition, celebrating hard work and community"
+    },
+    {
+        "id": "thai_language_day", "name": "วันภาษาไทยแห่งชาติ",
+        "keywords": ["ภาษาไทยแห่งชาติ", "วันภาษาไทย", "29 กรกฎา", "๒๙ กรกฎา"],
+        "visual_theme": "Traditional Thai palm leaf manuscript, vintage Thai script calligraphy, serene wooden desk with fresh lotus blossom, warm library morning light"
+    },
+    {
+        "id": "environment_day", "name": "วันสิ่งแวดล้อม",
+        "keywords": ["สิ่งแวดล้อม", "วันสิ่งแวดล้อมไทย", "วันสิ่งแวดล้อมโลก", "environment day"],
+        "visual_theme": "Lush vibrant green tropical Thai rainforest canopy, glistening dew drops on fresh emerald leaves, crystal clear pristine nature, bright morning sunlight"
+    }
+]
+
+def detect_holiday_theme(topic: str, caption: str = "") -> Optional[Dict[str, Any]]:
+    """
+    ตรวจจับหัวข้อวันสำคัญและเทศกาลของไทย เพื่อแปลงเป็นแนวคิดรูปภาพเชิงวัฒนธรรมที่แท้จริง
+    โดยไม่ปะปนกับอุปกรณ์ช่างหรืองานซ่อม
+    """
+    text = f"{topic or ''} {caption or ''}".lower()
+    
+    # 1. Match from predefined 25 Thai holidays table
+    for h in THAI_HOLIDAYS_THEMES_TABLE:
+        for kw in h["keywords"]:
+            if kw.lower() in text:
+                return {
+                    "holiday_id": h["id"],
+                    "holiday_name": h["name"],
+                    "visual_theme": h["visual_theme"],
+                    "is_holiday": True
+                }
+
+    # 2. Check thai_holidays registry if available
+    try:
+        import thai_holidays
+        for event in thai_holidays.HOLIDAYS_DATABASE:
+            if event.get("name") and event["name"].lower() in text:
+                return {
+                    "holiday_id": event.get("id"),
+                    "holiday_name": event.get("name"),
+                    "visual_theme": event.get("visual_theme"),
+                    "is_holiday": True
+                }
+    except Exception:
+        pass
+
+    return None
 
 def craft_visual_prompt_with_gemini(
     topic: str,
     caption: Optional[str] = None,
     brand_name: str = "",
-    business_type: str = ""
+    business_type: str = "",
+    user_config: Optional[Dict[str, Any]] = None
 ) -> str:
     """
-    ใช้ Gemini แปลงหัวข้อและแคปชั่นภาษาไทยให้กลายเป็น Prompt ภาพถ่ายเชิงพาณิชย์ระดับมืออาชีพ
+    สร้าง Prompt ภาษาอังกฤษสำหรับ AI Image Generator:
+    - ถ้าเป็นวันสำคัญ: บังคับตัด business_type ออก 100% และใช้ Visual Theme วัฒนธรรมแท้จริง
+    - ถ้าเป็นโพสต์ทั่วไป: ใช้ AI สร้าง Prompt เชิงพาณิชย์ตาม Brand DNA
     """
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    fallback_prompt = f"Professional commercial photography of {business_type or brand_name or 'service'}, modern bright clean lighting, award winning product photo, 4k"
+    holiday = detect_holiday_theme(topic=topic, caption=caption or "")
 
-    if not api_key:
-        return fallback_prompt
-
-    try:
-        from google import genai
-        client = genai.Client(api_key=api_key)
+    if holiday:
+        # วันสำคัญ: ห้ามใส่ business_type และ Fallback ต้องเป็นธีมวันสำคัญเท่านั้น!
+        fallback_prompt = holiday["visual_theme"]
 
         prompt_maker = f"""
+You are an expert Creative Art Director and AI Image Prompt Engineer.
+Create a short, culturally authentic English prompt (max 35 words) for stock photography of the Thai holiday: "{holiday['holiday_name']}".
+
+Context Theme: {holiday['visual_theme']}
+Additional details: {(caption or '')[:180]}
+
+STRICT REQUIREMENTS:
+- Depict ONLY the authentic cultural celebration, traditional symbols, warm festive lighting, and natural/temple atmosphere.
+- ABSOLUTELY NO handyman tools, repair work, commercial products, or business props.
+- ABSOLUTELY NO text, letters, watermarks, or logos in the image.
+- Return ONLY 1 concise English paragraph without explanations.
+"""
+        try:
+            ai_res = ai_client_resolver.call_ai_completion(prompt_maker, user_config=user_config)
+            if ai_res and len(ai_res.strip()) > 10:
+                cleaned = ai_res.strip().replace('"', '').replace('\n', ' ')
+                return cleaned[:300]
+        except Exception as e:
+            print(f"⚠️ Holiday prompt crafting error: {e}")
+
+        return fallback_prompt
+
+    # โพสต์ธุรกิจปกติ
+    fallback_prompt = f"Professional commercial photography of {business_type or brand_name or 'service'}, modern bright clean lighting, award winning product photo, 4k"
+
+    prompt_maker = f"""
 คุณเป็นผู้เชี่ยวชาญด้าน Creative Art Director และ AI Image Prompt Engineer
 กรุณาเปลี่ยนหัวข้อและเนื้อหาแคปชั่นภาษาไทยต่อไปนี้ ให้เป็น "English Prompt" สั้นๆ (ความยาวไม่เกิน 40 คำ) 
 สำหรับสร้างภาพถ่ายสต็อกเชิงพาณิชย์ (Commercial Photography) ที่สวยงาม น่าเชื่อถือ และเข้ากับบริบท:
@@ -261,15 +452,15 @@ def craft_visual_prompt_with_gemini(
 - ห้ามมีข้อความตัวหนังสือ หรือตัวอักษรใดๆ ในภาพ (No text, no typography, no watermarks, no logos)
 - ตอบเฉพาะข้อความภาษาอังกฤษ 1 ย่อหน้าเท่านั้น ห้ามมีคำอธิบายอื่น
 """
-        resp = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt_maker)
-        if resp and resp.text:
-            cleaned = resp.text.strip().replace('"', '').replace('\n', ' ')
+    try:
+        ai_res = ai_client_resolver.call_ai_completion(prompt_maker, user_config=user_config)
+        if ai_res and len(ai_res.strip()) > 10:
+            cleaned = ai_res.strip().replace('"', '').replace('\n', ' ')
             return cleaned[:300]
     except Exception as e:
         print(f"⚠️ Prompt crafting error: {e}")
 
     return fallback_prompt
-
 
 def generate_ai_image(
     topic: str,
@@ -280,21 +471,30 @@ def generate_ai_image(
     page_id: Optional[str] = None,
     picture_url: Optional[str] = None,
     logo_path: Optional[str] = None,
-    apply_watermark: bool = True
+    apply_watermark: bool = True,
+    user_config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
-    สร้างรูปภาพด้วย AI ตามหัวข้อ/แคปชั่น และใส่ลายน้ำแบรนด์ป้องกันการคัดลอกอัตโนมัติ
+    สร้างรูปภาพด้วย AI พร้อมแยกแยะวันสำคัญกับโพสต์ธุรกิจอย่างแม่นยำ
     """
-    # 1. เขียน Prompt ภาษาอังกฤษด้วย Gemini
+    holiday = detect_holiday_theme(topic=topic, caption=caption or "")
+
+    if holiday:
+        effective_biz = ""
+        style_tags = "hyperrealistic, sharp focus, 8k resolution, authentic cultural photography, soft natural lighting, no text, no watermark"
+    else:
+        effective_biz = business_type
+        style_tags = "hyperrealistic, sharp focus, 8k resolution, commercial advertising style, no text, no watermark"
+
     english_prompt = craft_visual_prompt_with_gemini(
         topic=topic,
         caption=caption,
         brand_name=brand_name,
-        business_type=business_type
+        business_type=effective_biz,
+        user_config=user_config
     )
 
-    # เติมสไตล์เน้นความชัดและตัดตัวหนังสือออก
-    final_prompt = f"{english_prompt}, hyperrealistic, sharp focus, 8k resolution, commercial advertising style, no text, no watermark"
+    final_prompt = f"{english_prompt}, {style_tags}"
     encoded_prompt = urllib.parse.quote(final_prompt)
     seed = int(time.time()) % 100000
 
@@ -317,7 +517,6 @@ def generate_ai_image(
         with open(out_path, "wb") as f:
             f.write(image_bytes)
 
-        # 2. ใส่ลายน้ำแบรนด์ป้องกันการคัดลอก (Subtle Watermark)
         if apply_watermark:
             apply_subtle_watermark(
                 image_path=out_path,

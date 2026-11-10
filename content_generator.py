@@ -1,3 +1,4 @@
+import ai_client_resolver
 """
 โมดูลสำหรับสร้างเนื้อหาโพสต์ Facebook ตามแนวทางของแต่ละแบรนด์ (Brand-Aware AI Content Generator)
 รองรับ:
@@ -130,27 +131,19 @@ def generate_post_with_ai(
     topic: str,
     tone: Optional[str] = None,
     page_info: Optional[Dict[str, Any]] = None,
-    product_or_service: Optional[str] = None
+    product_or_service: Optional[str] = None,
+    user_config: Optional[Dict[str, Any]] = None
 ) -> str:
     """
     สร้างเนื้อหาโพสต์ด้วย Google Gemini AI โดยคำนึงถึง Brand DNA ของแต่ละเพจโดยตรง
     """
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not api_key:
-        return ""
-
     ctx = _resolve_brand_context(page_info=page_info, product_or_service=product_or_service, tone=tone)
 
-    try:
-        from google import genai
-        client = genai.Client(api_key=api_key)
+    story_line = f"- เรื่องราว/ตัวตนของแบรนด์: {ctx['brand_story']}\n" if ctx.get('brand_story') else ""
+    negative_line = f"- ข้อควรระวัง/สิ่งที่ไม่ควรพูด: {ctx['negative_guidelines']}\n" if ctx.get('negative_guidelines') else ""
+    docs_section = f"\nข้อมูลสำคัญจากเอกสารประกอบ/สินค้าจริง:\n{ctx['docs_knowledge']}\n" if ctx.get('docs_knowledge') else ""
 
-        story_line = f"- เรื่องราว/ตัวตนของแบรนด์: {ctx['brand_story']}\n" if ctx.get('brand_story') else ""
-        negative_line = f"- ข้อควรระวัง/สิ่งที่ไม่ควรพูด: {ctx['negative_guidelines']}\n" if ctx.get('negative_guidelines') else ""
-        docs_section = f"\nข้อมูลสำคัญจากเอกสารประกอบ/สินค้าจริง:\n{ctx['docs_knowledge']}\n" if ctx.get('docs_knowledge') else ""
-
-        prompt = f"""
-คุณเป็นผู้เชี่ยวชาญด้านการเขียน Copywriting และการตลาดบน Facebook ภาษาไทย สำหรับแบรนด์ "{ctx['brand_name']}"
+    prompt = f"""คุณเป็นผู้เชี่ยวชาญด้านการเขียน Copywriting และการตลาดบน Facebook ภาษาไทย สำหรับแบรนด์ "{ctx['brand_name']}"
 
 ข้อมูลอัตลักษณ์ของแบรนด์ (Brand DNA & Identity):
 - ชื่อเพจ/แบรนด์: {ctx['page_name']}
@@ -177,6 +170,19 @@ def generate_post_with_ai(
 - จัดย่อหน้าและเว้นบรรทัดให้อ่านสบายตาบนมือถือ
 - ไม่ต้องใส่คำอธิบายเพิ่มเติม ไม่ต้องมี "พาดหัว:", "เนื้อหา:" ให้เขียนเป็นข้อความตัวโพสต์เพียวๆ พร้อมกดโพสต์ได้ทันที
 """
+    # 1. เรียกผ่าน Universal AI Resolver (รองรับโหมดฟรี Gemini 1.5 Flash และ BYO AI ของลูกค้าทุกค่าย)
+    ai_resp = ai_client_resolver.call_ai_completion(prompt, user_config=user_config)
+    if ai_resp and len(ai_resp.strip()) > 10:
+        return ai_resp.strip()
+
+    # 2. Fallback to direct SDK loop
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        return ""
+
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
         models_to_try = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"]
         for model_choice in models_to_try:
             try:
@@ -366,17 +372,24 @@ def create_facebook_post_content(
     topic: str = "",
     tone: Optional[str] = None,
     page_info: Optional[Dict[str, Any]] = None,
-    product: Optional[str] = None
+    product: Optional[str] = None,
+    user_config: Optional[Dict[str, Any]] = None
 ) -> str:
     """
-    ฟังก์ชันหลักสำหรับสร้างเนื้อหาโพสต์ (เรียก Gemini AI ตาม Brand DNA ก่อน หากไม่มี Key ให้ใช้ Dynamic Template)
+    ฟังก์ชันหลักสำหรับสร้างเนื้อหาโพสต์ (เรียก Universal AI Resolver ตาม Brand DNA ก่อน หากไม่มี Key ให้ใช้ Dynamic Template)
     """
     if not topic:
         ctx = _resolve_brand_context(page_info=page_info, product_or_service=product)
         topic = f"บริการแนะนำจาก {ctx['brand_name']}"
 
-    # 1. ลองใช้ Gemini AI
-    ai_content = generate_post_with_ai(topic=topic, tone=tone, page_info=page_info, product_or_service=product)
+    # 1. ลองใช้ Universal AI Resolver (รองรับโหมดฟรี Gemini 1.5 Flash และ BYO AI ของลูกค้า)
+    ai_content = generate_post_with_ai(
+        topic=topic,
+        tone=tone,
+        page_info=page_info,
+        product_or_service=product,
+        user_config=user_config
+    )
     if ai_content:
         return ai_content
 
@@ -384,20 +397,18 @@ def create_facebook_post_content(
     return generate_post_from_template(topic=topic, page_info=page_info, product=product)
 
 
-def generate_brand_topics(page_info: Optional[Dict[str, Any]] = None, days: int = 7) -> List[Dict[str, str]]:
+def generate_brand_topics(
+    page_info: Optional[Dict[str, Any]] = None,
+    days: int = 7,
+    user_config: Optional[Dict[str, Any]] = None
+) -> List[Dict[str, str]]:
     """
-    สร้างแผนหัวข้อคอนเทนต์ตาม Brand DNA สำหรับ N วัน
+    สร้างแผนหัวข้อคอนเทนต์ตาม Brand DNA สำหรับ N วัน (รองรับโหมดฟรี และ BYO AI)
     """
     ctx = _resolve_brand_context(page_info=page_info)
     days = min(max(days, 3), 30)
 
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if api_key:
-        try:
-            from google import genai
-            client = genai.Client(api_key=api_key)
-            prompt = f"""
-คุณเป็นผู้เชี่ยวชาญการวางแผนคอนเทนต์ Facebook สำหรับแบรนด์ "{ctx['brand_name']}"
+    prompt = f"""คุณเป็นผู้เชี่ยวชาญการวางแผนคอนเทนต์ Facebook สำหรับแบรนด์ "{ctx['brand_name']}"
 - ประเภทธุรกิจ: {ctx['business_type']}
 - สโลแกน: {ctx['tagline']}
 - กลุ่มลูกค้าเป้าหมาย: {ctx['target_audience']}
@@ -411,14 +422,15 @@ def generate_brand_topics(page_info: Optional[Dict[str, Any]] = None, days: int 
 ]
 ตอบกลับเฉพาะโค้ด JSON เท่านั้น ห้ามมีคำอธิบายอื่น
 """
-            resp = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt)
-            if resp and resp.text:
-                clean_json = resp.text.strip().replace("```json", "").replace("```", "").strip()
-                match = re.search(r"\[.*\]", clean_json, re.DOTALL)
-                if match:
-                    return json.loads(match.group(0))
-        except Exception as e:
-            print(f"⚠️ Error in generate_brand_topics: {e}")
+    try:
+        raw_res = ai_client_resolver.call_ai_completion(prompt, user_config=user_config)
+        if raw_res:
+            clean_json = raw_res.strip().replace("```json", "").replace("```", "").strip()
+            match = re.search(r"\[.*\]", clean_json, re.DOTALL)
+            if match:
+                return json.loads(match.group(0))
+    except Exception as e:
+        print(f"⚠️ Error in generate_brand_topics: {e}")
 
     # Fallback topics from Brand DNA
     fallback = []
@@ -436,7 +448,8 @@ def generate_brand_topics(page_info: Optional[Dict[str, Any]] = None, days: int 
 
 def generate_holiday_post(
     holiday: Dict[str, Any],
-    page_info: Optional[Dict[str, Any]] = None
+    page_info: Optional[Dict[str, Any]] = None,
+    user_config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     สร้างเนื้อหาโพสต์วันสำคัญ Facebook ที่เชื่อมโยงความหมายของวันสำคัญเข้ากับ Brand DNA
@@ -509,7 +522,26 @@ def generate_holiday_post(
   "visual_concept": "Creative visual prompt in English..."
 }}
 """
-            models = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"]
+            # 1. เรียกผ่าน Universal AI Resolver (Gemini 1.5 Flash ฟรี หรือ AI ของลูกค้า)
+            ai_raw = ai_client_resolver.call_ai_completion(prompt, user_config=user_config)
+            if ai_raw:
+                raw = ai_raw.strip().replace("```json", "").replace("```", "").strip()
+                match = re.search(r"\{.*\}", raw, re.DOTALL)
+                if match:
+                    data = json.loads(match.group(0))
+                    v_concept = data.get("visual_concept") or h_visual_theme
+                    # กรองไม่ให้มีคำว่า tools หรือ mechanic หรือ repairman ใน visual_concept วันสำคัญ
+                    for bad_word in ["toolbox", "tools", "wrench", "mechanic", "repairman", "repair work", "fixpack technician"]:
+                        v_concept = re.sub(re.escape(bad_word), "", v_concept, flags=re.IGNORECASE)
+                    return {
+                        "topic": data.get("topic", f"สุขสันต์{h_name} จากใจ {b_name}"),
+                        "content": data.get("content", "").strip(),
+                        "hashtags": data.get("hashtags", base_hashtags),
+                        "visual_concept": v_concept.strip() or h_visual_theme
+                    }
+
+            # 2. Fallback to direct SDK loop
+            models = ["gemini-1.5-flash", "gemini-3.5-flash", "gemini-3.8-flash"]
             for m in models:
                 try:
                     resp = client.models.generate_content(model=m, contents=prompt)

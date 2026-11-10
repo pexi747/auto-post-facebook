@@ -1880,7 +1880,275 @@ async function confirmImportSelectedPages() {
     }
 }
 
-// Global hook: load credit balance on document ready
+// ================= UNIVERSAL AI RESOLVER & BYOK SYSTEM =================
+
+let currentAIMode = 'free';
+let currentAIProvider = 'gemini';
+let aiProvidersData = {};
+
+function openAISettingsModal() {
+    const modal = document.getElementById('modal-ai-settings');
+    if (modal) {
+        modal.classList.remove('hidden');
+        loadUserAISettings();
+    }
+}
+
+function closeAISettingsModal() {
+    const modal = document.getElementById('modal-ai-settings');
+    if (modal) modal.classList.add('hidden');
+}
+
+function selectAIMode(mode) {
+    currentAIMode = mode;
+    const cardFree = document.getElementById('ai-card-free');
+    const cardCustom = document.getElementById('ai-card-custom');
+    const badgeFree = document.getElementById('ai-free-badge');
+    const badgeCustom = document.getElementById('ai-custom-badge');
+    const customPanel = document.getElementById('ai-custom-panel');
+
+    if (mode === 'free') {
+        if (cardFree) {
+            cardFree.classList.add('border-emerald-500', 'bg-emerald-50/50');
+            cardFree.classList.remove('border-slate-200', 'bg-slate-50/50');
+        }
+        if (cardCustom) {
+            cardCustom.classList.remove('border-blue-500', 'bg-blue-50/50');
+            cardCustom.classList.add('border-slate-200', 'bg-slate-50/50');
+        }
+        if (badgeFree) badgeFree.classList.remove('hidden');
+        if (badgeCustom) badgeCustom.classList.add('hidden');
+        if (customPanel) customPanel.classList.add('hidden');
+    } else {
+        if (cardFree) {
+            cardFree.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+            cardFree.classList.add('border-slate-200', 'bg-slate-50/50');
+        }
+        if (cardCustom) {
+            cardCustom.classList.add('border-blue-500', 'bg-blue-50/50');
+            cardCustom.classList.remove('border-slate-200', 'bg-slate-50/50');
+        }
+        if (badgeFree) badgeFree.classList.add('hidden');
+        if (badgeCustom) badgeCustom.classList.remove('hidden');
+        if (customPanel) customPanel.classList.remove('hidden');
+    }
+}
+
+function selectAIProvider(provider) {
+    currentAIProvider = provider;
+    document.querySelectorAll('.ai-provider-btn').forEach(btn => {
+        btn.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700', 'font-bold');
+        btn.classList.add('border-slate-200', 'text-slate-700');
+    });
+    const targetBtn = document.getElementById(`btn-provider-${provider}`);
+    if (targetBtn) {
+        targetBtn.classList.remove('border-slate-200', 'text-slate-700');
+        targetBtn.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700', 'font-bold');
+    }
+
+    const baseUrlWrapper = document.getElementById('ai-base-url-wrapper');
+    if (baseUrlWrapper) {
+        if (provider === 'custom') {
+            baseUrlWrapper.classList.remove('hidden');
+        } else {
+            baseUrlWrapper.classList.add('hidden');
+        }
+    }
+
+    populateAIModels(provider);
+}
+
+function populateAIModels(provider, selectedModel) {
+    const select = document.getElementById('ai-model-select');
+    if (!select) return;
+    select.innerHTML = '';
+
+    const models = (aiProvidersData && aiProvidersData[provider]) || [];
+    if (models.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = selectedModel || 'default';
+        opt.textContent = selectedModel || 'โมเดลตามที่ Base URL กำหนด';
+        select.appendChild(opt);
+        return;
+    }
+
+    models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.name;
+        if (selectedModel && selectedModel === m.id) {
+            opt.selected = true;
+        } else if (!selectedModel && m.default) {
+            opt.selected = true;
+        }
+        select.appendChild(opt);
+    });
+}
+
+function toggleAIKeyVisibility() {
+    const input = document.getElementById('ai-api-key-input');
+    const icon = document.getElementById('ai-key-eye-icon');
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+async function loadUserAISettings() {
+    try {
+        const res = await fetch('/api/user/ai_settings');
+        const data = await res.json();
+        if (data.success && data.config) {
+            const cfg = data.config;
+            aiProvidersData = data.providers || {};
+
+            selectAIMode(cfg.mode || 'free');
+            selectAIProvider(cfg.provider || 'gemini');
+            populateAIModels(cfg.provider || 'gemini', cfg.model);
+
+            const keyInput = document.getElementById('ai-api-key-input');
+            const keyStatus = document.getElementById('ai-key-status');
+            const baseUrlInput = document.getElementById('ai-base-url-input');
+
+            if (keyInput) {
+                keyInput.value = cfg.api_key || '';
+            }
+            if (keyStatus) {
+                if (cfg.has_key) {
+                    keyStatus.textContent = `มี Key บันทึกไว้ (${cfg.api_key_masked || '••••'})`;
+                    keyStatus.className = 'text-[11px] text-emerald-600 font-semibold';
+                } else {
+                    keyStatus.textContent = 'ยังไม่มี Key';
+                    keyStatus.className = 'text-[11px] text-slate-400';
+                }
+            }
+            if (baseUrlInput) {
+                baseUrlInput.value = cfg.base_url || '';
+            }
+
+            updateHeaderAIModeLabel(cfg.mode, cfg.provider);
+        }
+    } catch (e) {
+        console.error('Error loading AI settings:', e);
+    }
+}
+
+function updateHeaderAIModeLabel(mode, provider) {
+    const label = document.getElementById('header-ai-mode-label');
+    if (!label) return;
+    if (mode === 'custom') {
+        label.textContent = `AI: ${(provider || 'custom').toUpperCase()}`;
+    } else {
+        label.textContent = 'ฟรี: Gemini 1.5 Flash';
+    }
+}
+
+async function testCurrentAIConnection() {
+    const testBox = document.getElementById('ai-test-result-box');
+    const btnTest = document.getElementById('btn-test-ai-conn');
+    if (testBox) {
+        testBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+        testBox.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
+        testBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> กำลังทดสอบการเชื่อมต่อโมเดล AI...';
+    }
+    if (btnTest) btnTest.disabled = true;
+
+    const provider = currentAIMode === 'free' ? 'gemini' : currentAIProvider;
+    const model = currentAIMode === 'free' ? 'gemini-1.5-flash' : (document.getElementById('ai-model-select')?.value || 'gemini-1.5-flash');
+    const apiKey = currentAIMode === 'free' ? '' : (document.getElementById('ai-api-key-input')?.value || '');
+    const baseUrl = currentAIMode === 'free' ? '' : (document.getElementById('ai-base-url-input')?.value || '');
+
+    try {
+        const res = await fetch('/api/user/ai_settings/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                provider: provider,
+                model: model,
+                api_key: apiKey,
+                base_url: baseUrl
+            })
+        });
+        const data = await res.json();
+        if (testBox) {
+            testBox.classList.remove('bg-blue-50', 'text-blue-800', 'border-blue-200');
+            if (data.success) {
+                testBox.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                testBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 text-emerald-700">
+                        <i class="fa-solid fa-circle-check"></i> เชื่อมต่อสำเร็จ! (ความเร็ว: ${data.latency_ms || 0} ms)
+                    </div>
+                    <div class="text-[11px] text-slate-600">คำตอบทดสอบ: "${data.reply || 'เชื่อมต่อสำเร็จ'}"</div>
+                `;
+            } else {
+                testBox.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                testBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 text-rose-700">
+                        <i class="fa-solid fa-triangle-exclamation"></i> เชื่อมต่อไม่สำเร็จ (${data.latency_ms || 0} ms)
+                    </div>
+                    <div class="text-[11px] text-slate-600">${data.error || 'ตรวจสอบ Key หรือการตั้งค่าอีกครั้ง'}</div>
+                `;
+            }
+        }
+    } catch (e) {
+        if (testBox) {
+            testBox.classList.remove('bg-blue-50', 'text-blue-800', 'border-blue-200');
+            testBox.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+            testBox.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว: ${e.message}`;
+        }
+    } finally {
+        if (btnTest) btnTest.disabled = false;
+    }
+}
+
+async function saveUserAISettings() {
+    const btnSave = document.getElementById('btn-save-ai-settings');
+    if (btnSave) btnSave.disabled = true;
+
+    const payload = {
+        mode: currentAIMode,
+        provider: currentAIProvider,
+        model: document.getElementById('ai-model-select')?.value || 'gemini-1.5-flash',
+        api_key: document.getElementById('ai-api-key-input')?.value || '',
+        base_url: document.getElementById('ai-base-url-input')?.value || ''
+    };
+
+    try {
+        const res = await fetch('/api/user/ai_settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+            updateHeaderAIModeLabel(payload.mode, payload.provider);
+            closeAISettingsModal();
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกการตั้งค่า AI สำเร็จ!',
+                text: payload.mode === 'free' 
+                    ? 'ระบบจะใช้งาน Google Gemini 1.5 Flash ฟรี 100% ไม่หักเครดิต' 
+                    : `ระบบจะใช้งาน Bring Your Own AI (${payload.provider.toUpperCase()}) ของคุณ`,
+                confirmButtonColor: '#0B3B60'
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถบันทึกการตั้งค่าได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    } finally {
+        if (btnSave) btnSave.disabled = false;
+    }
+}
+
+// Global hook: load credit balance & AI settings on document ready
 document.addEventListener('DOMContentLoaded', () => {
     loadUserCreditBalance();
+    loadUserAISettings();
 });

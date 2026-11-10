@@ -1,4 +1,5 @@
 import credit_service
+import ai_client_resolver
 """
 FixPack Facebook Auto-Pilot Web Application (FastAPI)
 ระบบบริหารจัดการคอนเทนต์และโพสต์ Facebook อัตโนมัติ รองรับผู้ใช้หลายระดับ
@@ -230,11 +231,13 @@ async def dashboard_page(request: Request):
     active_page = pages_manager.get_active_page_for_user(username, role) or {}
     brand = load_brand_config()
 
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(username)
     return templates.TemplateResponse(request=request, name="index.html", context={
         "current_user": user,
         "user_credits": user_credits,
         "user_role": role,
         "user_name": user.get("name", username),
+        "user_ai_config": user_ai_cfg,
         "brand": brand,
         "active_page": active_page,
         "all_pages": user_pages
@@ -455,9 +458,16 @@ class GenerateImageRequest(BaseModel):
 @app.post("/api/ai/generate_image")
 async def generate_image_api(payload: GenerateImageRequest, request: Request):
     user = require_auth(request)
-    deduct = credit_service.deduct_credit(user.get("username"), "image", 3, "AI สร้างภาพโฆษณาพร้อมลายน้ำแบรนด์")
-    if not deduct.get("success"):
-        return JSONResponse(status_code=402, content=deduct)
+    username = user.get("username")
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(username)
+
+    # หากใช้โหมดฟรี (Gemini 1.5 Flash) หรือใช้ AI Key ของลูกค้าเอง -> ฟรีไม่มีค่าใช้จ่าย (0 เครดิต)
+    is_free_tier = user_ai_cfg.get("mode") in ["free", "custom"]
+    if not is_free_tier:
+        deduct = credit_service.deduct_credit(username, "image", 3, "AI สร้างภาพโฆษณาพร้อมลายน้ำแบรนด์")
+        if not deduct.get("success"):
+            return JSONResponse(status_code=402, content=deduct)
+
     active_page = pages_manager.get_active_page() or {}
     brand_dna = active_page.get("brand_dna", {}) or {}
     brand_name = active_page.get("brand_name") or brand_dna.get("brand_name") or active_page.get("name") or "Official"
@@ -473,7 +483,8 @@ async def generate_image_api(payload: GenerateImageRequest, request: Request):
         phone=phone,
         page_id=active_page.get("id"),
         picture_url=active_page.get("picture_url"),
-        apply_watermark=payload.apply_watermark if payload.apply_watermark is not None else True
+        apply_watermark=payload.apply_watermark if payload.apply_watermark is not None else True,
+        user_config=user_ai_cfg
     )
     return result
 
@@ -630,16 +641,22 @@ class GenerateCaptionRequest(BaseModel):
 @app.post("/api/ai/generate_caption")
 async def api_generate_caption(payload: GenerateCaptionRequest, request: Request):
     user = require_auth(request)
-    deduct = credit_service.deduct_credit(user.get("username"), "caption", 1, "AI คิดแคปชั่นและหัวข้อ")
-    if not deduct.get("success"):
-        return JSONResponse(status_code=402, content=deduct)
+    username = user.get("username")
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(username)
+
+    # หากใช้โหมดฟรี (Gemini 1.5 Flash) หรือใช้ AI Key ของลูกค้าเอง -> ฟรีไม่มีค่าใช้จ่าย (0 เครดิต)
+    is_free_tier = user_ai_cfg.get("mode") in ["free", "custom"]
+    if not is_free_tier:
+        deduct = credit_service.deduct_credit(username, "caption", 1, "AI คิดแคปชั่นและหัวข้อ")
+        if not deduct.get("success"):
+            return JSONResponse(status_code=402, content=deduct)
     try:
         active_page = pages_manager.get_active_page() or {}
         brand_name = active_page.get("brand_name") or "แบรนด์คุณภาพ"
         topic = payload.topic.strip() or f"บริการแนะนำจาก {brand_name}"
 
         from content_generator import create_facebook_post_content
-        caption = create_facebook_post_content(topic=topic, page_info=active_page)
+        caption = create_facebook_post_content(topic=topic, page_info=active_page, user_config=user_ai_cfg)
         return {"success": True, "caption": caption}
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -649,12 +666,14 @@ class PlanTopicsRequest(BaseModel):
 
 @app.post("/api/ai/plan_topics")
 async def api_plan_topics(payload: PlanTopicsRequest, request: Request):
-    require_auth(request)
+    user = require_auth(request)
+    username = user.get("username")
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(username)
     days = min(max(payload.days, 3), 30)
     active_page = pages_manager.get_active_page() or {}
 
     from content_generator import generate_brand_topics
-    topics_data = generate_brand_topics(page_info=active_page, days=days)
+    topics_data = generate_brand_topics(page_info=active_page, days=days, user_config=user_ai_cfg)
     return {"success": True, "topics": topics_data}
 
 @app.post("/api/brand/learn_now")
@@ -1046,11 +1065,14 @@ async def auto_schedule_all_holidays_api(request: Request, payload: Optional[Aut
             for p in posts
         )
         if not is_already:
+            user = get_current_user(request) or {}
+            user_ai_cfg = ai_client_resolver.get_user_ai_config(user.get("username"))
             scheduled_post = auto_schedule_holiday_post(
                 holiday=h,
                 page_id=page_id,
                 page_name=page_name,
-                auto_image=auto_image
+                auto_image=auto_image,
+                user_config=user_ai_cfg
             )
             if scheduled_post:
                 scheduled_results.append({
@@ -1089,11 +1111,14 @@ async def schedule_single_holiday_api(payload: ScheduleSingleHolidayRequest, req
     if not holiday:
         raise HTTPException(status_code=404, detail=f"ไม่พบข้อมูลวันสำคัญรหัส: {payload.holiday_id}")
         
+    user = get_current_user(request) or {}
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(user.get("username"))
     scheduled_post = auto_schedule_holiday_post(
         holiday=holiday,
         page_id=page_id,
         page_name=page_name,
-        auto_image=payload.auto_image if payload.auto_image is not None else True
+        auto_image=payload.auto_image if payload.auto_image is not None else True,
+        user_config=user_ai_cfg
     )
     
     return {
@@ -1216,6 +1241,70 @@ async def import_customer_fb_pages_api(payload: ImportCustomerFBRequest, request
     )
     return res
 
+
+
+# ================= UNIVERSAL AI SETTINGS APIS =================
+
+class UserAISettingsRequest(BaseModel):
+    mode: str = "free"
+    provider: Optional[str] = "gemini"
+    model: Optional[str] = "gemini-1.5-flash"
+    api_key: Optional[str] = ""
+    base_url: Optional[str] = ""
+
+class TestAIConnectionRequest(BaseModel):
+    provider: str = "gemini"
+    model: str = "gemini-1.5-flash"
+    api_key: Optional[str] = ""
+    base_url: Optional[str] = ""
+
+@app.get("/api/user/ai_settings")
+async def get_user_ai_settings_api(request: Request):
+    """ดึงการตั้งค่า AI ของผู้ใช้ (ซ่อนรหัส API Key บางส่วน) พร้อมรายชื่อ Provider ที่รองรับ"""
+    user = require_auth(request)
+    username = user.get("username")
+    cfg = ai_client_resolver.get_user_ai_config(username)
+    masked = dict(cfg)
+    masked["api_key_masked"] = ai_client_resolver.mask_api_key(cfg.get("api_key"))
+    masked["has_key"] = bool(cfg.get("api_key"))
+    masked["api_key"] = masked["api_key_masked"]
+    return {
+        "success": True,
+        "config": masked,
+        "providers": ai_client_resolver.PROVIDER_MODELS
+    }
+
+@app.post("/api/user/ai_settings")
+async def save_user_ai_settings_api(payload: UserAISettingsRequest, request: Request):
+    """บันทึกการตั้งค่า AI ของผู้ใช้ (โหมดฟรี Gemini 1.5 Flash หรือ Bring Your Own AI)"""
+    user = require_auth(request)
+    username = user.get("username")
+    ok = ai_client_resolver.save_user_ai_config(username, payload.dict())
+    if ok:
+        return {"success": True, "message": "บันทึกการตั้งค่า AI เรียบร้อยแล้ว"}
+    return JSONResponse(status_code=500, content={"success": False, "error": "ไม่สามารถบันทึกการตั้งค่าได้"})
+
+@app.post("/api/user/ai_settings/test")
+async def test_user_ai_settings_api(payload: TestAIConnectionRequest, request: Request):
+    """ทดสอบการเชื่อมต่อโมเดล AI พร้อมวัด Latency (ms)"""
+    user = require_auth(request)
+    username = user.get("username")
+    prov = (payload.provider or "gemini").lower()
+    key = (payload.api_key or "").strip()
+
+    # หากส่งค่าที่ mask หรือเว้นว่าง ให้ดึง API Key จริงที่บันทึกไว้ในระบบ
+    if "••••" in key or not key:
+        saved_cfg = ai_client_resolver.get_user_ai_config(username)
+        if saved_cfg.get("provider") == prov and saved_cfg.get("api_key"):
+            key = saved_cfg.get("api_key")
+
+    res = ai_client_resolver.test_ai_connection(
+        provider=prov,
+        api_key=key,
+        model=payload.model,
+        base_url=payload.base_url
+    )
+    return res
 
 # ================= ENTRY POINT =================
 

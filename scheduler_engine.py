@@ -196,34 +196,31 @@ def check_and_execute_due_posts(poster: FacebookPoster):
 
 # ================= THAI HOLIDAYS AUTO-PILOT SCHEDULER =================
 
+# Diff / Replacement for scheduler_engine.py:
+
 def auto_schedule_holiday_post(
     holiday: Dict[str, Any],
     page_id: Optional[str] = None,
     page_name: Optional[str] = None,
-    auto_image: bool = True
+    auto_image: bool = True,
+    user_config: Optional[Dict[str, Any]] = None
 ) -> Optional[Dict[str, Any]]:
-    """
-    ตรวจสอบและตั้งเวลาโพสต์วันสำคัญอัตโนมัติลงใน scheduled_posts.json
-    - ป้องกันการตั้งเวลาซ้ำซ้อนสำหรับเพจเดียวกัน
-    - สั่ง AI ร่างเนื้อหาเฉพาะตาม Brand DNA
-    - สร้างภาพประกอบด้วย AI พร้อมประทับลายน้ำแบรนด์ (Subtle Watermark)
-    """
     posts = load_schedule()
     target_pid = str(page_id) if page_id else ""
     h_id = holiday.get("id")
     h_name = holiday.get("name")
     h_date = holiday.get("date")
 
-    # 1. ตรวจสอบว่าเคยตั้งเวลาโพสต์สำหรับวันสำคัญนี้ในเพจนี้แล้วหรือไม่
+    # 1. ป้องกันการตั้งเวลาซ้ำซ้อน
     for p in posts:
         same_h = (p.get("holiday_id") == h_id) or (
             p.get("date") == h_date and p.get("holiday_name") == h_name
         )
         same_page = (not target_pid) or (not p.get("page_id")) or (str(p.get("page_id")) == target_pid)
         if same_h and same_page:
-            return p  # มีอยู่แล้ว ไม่ต้องสร้างซ้ำ
+            return p
 
-    # 2. ดึงข้อมูลเพจเป้าหมายเพื่อนำ Brand DNA มาใช้
+    # 2. ดึงข้อมูลเพจ
     target_page_info = None
     try:
         import pages_manager
@@ -236,42 +233,39 @@ def auto_schedule_holiday_post(
 
     display_page_name = page_name or (target_page_info.get("brand_name") or target_page_info.get("name") or "FixPack")
 
-    # 3. ให้ AI ร่างเนื้อหาโพสต์วันสำคัญ
+    # 3. ให้ AI ร่างเนื้อหาเฉพาะวันสำคัญ
     from content_generator import generate_holiday_post
-    holiday_content = generate_holiday_post(holiday, page_info=target_page_info)
+    holiday_content = generate_holiday_post(holiday, page_info=target_page_info, user_config=user_config)
     topic = holiday_content.get("topic") or f"สุขสันต์{h_name}"
     content = holiday_content.get("content") or ""
     visual_concept = holiday_content.get("visual_concept") or holiday.get("visual_theme") or topic
 
-    # 4. สร้างรูปภาพประกอบด้วย AI พร้อมลายน้ำแบรนด์
+    # 4. สร้างรูปภาพประกอบวันสำคัญแท้จริง (ไม่ส่ง business_type เพื่อไม่ให้มีช่างหรือเครื่องมือ)
     image_path = None
     if auto_image:
         try:
             import image_service
-            brand_dna = target_page_info.get("brand_dna", {}) if target_page_info else {}
-            biz_type = brand_dna.get("business_type") or target_page_info.get("category") or ""
-            phone = target_page_info.get("phone") or brand_dna.get("phone")
+            phone = target_page_info.get("phone") or (target_page_info.get("brand_dna", {}) or {}).get("phone")
             pic_url = target_page_info.get("picture_url")
 
-            print(f"🎨 [Thai Holiday AI Image] กำลังสร้างภาพประกอบสำหรับ {h_name}...")
+            print(f"🎨 [Thai Holiday AI Image] กำลังสร้างภาพประกอบวัฒนธรรมสำหรับ {h_name}...")
             img_res = image_service.generate_ai_image(
                 topic=topic,
                 caption=visual_concept,
                 brand_name=display_page_name,
-                business_type=biz_type,
+                business_type="",  # ห้ามส่ง business_type สำหรับวันสำคัญ
                 phone=phone,
                 page_id=target_pid,
                 picture_url=pic_url,
-                apply_watermark=True
+                apply_watermark=True,
+                user_config=user_config
             )
             if img_res.get("success") and img_res.get("image_path"):
                 image_path = img_res["image_path"]
         except Exception as e:
             print(f"⚠️ เกิดข้อผิดพลาดในการสร้างภาพ AI วันสำคัญ: {e}")
 
-    # Fallback รูปภาพหากเจนภาพไม่สำเร็จ
-    if not image_path:
-        image_path = "fixpack_ai_banner.png" if os.path.exists("fixpack_ai_banner.png") else None
+    # หมายเหตุ: นำ fallback fixpack_ai_banner.png ออก เพื่อไม่ให้ติดภาพช่างซ่อมในวันสำคัญ
 
     # 5. บันทึกลงตารางโพสต์
     new_id = f"holiday_{h_id}_{int(time.time())}_{random.randint(100, 999)}"
@@ -298,6 +292,41 @@ def auto_schedule_holiday_post(
     save_schedule(posts)
     print(f"✅ [Auto-Pilot Holiday] ตั้งเวลาโพสต์วันสำคัญสำเร็จ: {h_name} ({h_date} {post_item['time']} น.)")
     return post_item
+
+
+def cleanup_holiday_banner_images() -> int:
+    """
+    ตรวจจับโพสต์วันสำคัญใน scheduled_posts.json ที่ติดภาพ fixpack_ai_banner.png
+    แล้วสร้างภาพวัฒนธรรมวันสำคัญจริงมาแทนที่ทันที
+    """
+    posts = load_schedule()
+    updated_count = 0
+    import image_service
+
+    for post in posts:
+        is_holiday = (post.get("type") == "holiday_auto_scheduled") or post.get("holiday_id")
+        img = post.get("image_path")
+        if is_holiday and (img == "fixpack_ai_banner.png" or not img):
+            h_name = post.get("holiday_name") or post.get("topic") or "วันสำคัญ"
+            print(f"🔄 [Holiday Realignment] สร้างภาพวันสำคัญแท้จริงแทนที่แบนเนอร์ช่าง: {h_name}...")
+            img_res = image_service.generate_ai_image(
+                topic=post.get("topic") or h_name,
+                caption=post.get("content") or "",
+                brand_name=post.get("page_name") or "FixPack",
+                business_type="",  # ไม่ใส่ business_type เพื่อภาพวัฒนธรรมแท้จริง
+                page_id=post.get("page_id"),
+                apply_watermark=True
+            )
+            if img_res.get("success") and img_res.get("image_path"):
+                post["image_path"] = img_res["image_path"]
+                updated_count += 1
+                print(f"✅ ปรับภาพวันสำคัญสำเร็จ: {h_name} -> {img_res['image_path']}")
+
+    if updated_count > 0:
+        save_schedule(posts)
+        print(f"🎉 อัปเดตภาพวันสำคัญใน scheduled_posts.json ทั้งหมด {updated_count} รายการ")
+
+    return updated_count
 
 def check_and_execute_autopilot_daily(poster: FacebookPoster, last_autopilot_date: Dict[str, str]):
     """

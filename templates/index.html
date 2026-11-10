@@ -84,8 +84,23 @@
                 </div>
 
                 <!-- User Profile & Quick Actions -->
-                <div class="flex items-center gap-4">
-                                        <!-- User Credit Badge -->
+                <div class="flex items-center gap-3">
+                    <!-- AI Engine Mode Pill -->
+                    <button type="button" onclick="openAISettingsModal()" id="btn-header-ai-mode" 
+                            class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-xl border border-white/25 text-xs font-semibold text-white shadow-xs transition cursor-pointer" 
+                            title="เลือกโมเดล AI / นำ AI ของคุณมาใช้เอง (BYOK)">
+                        <i class="fa-solid fa-robot text-emerald-300"></i>
+                        <span id="header-ai-mode-label">
+                            {% if user_ai_config and user_ai_config.mode == 'custom' %}
+                            AI: {{ user_ai_config.provider|upper }}
+                            {% else %}
+                            ฟรี: Gemini 1.5 Flash
+                            {% endif %}
+                        </span>
+                        <i class="fa-solid fa-gear text-[10px] text-white/70 ml-0.5"></i>
+                    </button>
+
+                    <!-- User Credit Badge -->
                     <div class="flex items-center gap-2 bg-white/15 hover:bg-white/20 px-3 py-1.5 rounded-xl border border-white/25 text-xs font-semibold text-white shadow-xs transition cursor-pointer" onclick="switchTab('wallet')" title="คลิกเพื่อเติมเครดิต">
                         <span class="text-base">🪙</span>
                         <span><strong id="header-credit-balance" class="text-amber-300 font-bold text-sm">{{ user_credits or 0 }}</strong> เครดิต</span>
@@ -1126,6 +1141,137 @@
                         <span>นำเข้าเพจที่เลือกเข้าสู่ระบบ</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: AI SETTINGS & BYOK ================= -->
+    <div id="modal-ai-settings" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-in max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-sm shadow-xs">
+                        <i class="fa-solid fa-robot"></i>
+                    </span>
+                    <span>เลือกใช้ AI สำหรับระบบ (AI Provider & Key)</span>
+                </h3>
+                <button onclick="closeAISettingsModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+                ระบบ FixPack รองรับทั้ง <strong>โหมดฟรี (Google Gemini 1.5 Flash)</strong> ที่ใช้งานได้ทันทีไม่จำกัด และ <strong>Bring Your Own AI (BYOK)</strong> สำหรับลูกค้าที่ต้องการเชื่อมต่อ API Key ของตนเอง เช่น OpenAI, Claude, DeepSeek หรือ Custom Endpoint
+            </p>
+
+            <!-- Mode Selector Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Free Tier Card -->
+                <div id="ai-card-free" onclick="selectAIMode('free')" 
+                     class="cursor-pointer p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 transition relative space-y-1 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-xs text-emerald-800">
+                            <i class="fa-solid fa-gift text-emerald-600 text-sm"></i>
+                            <span>โหมดฟรี (Gemini 1.5 Flash)</span>
+                        </div>
+                        <span id="ai-free-badge" class="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">เลือกอยู่</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600">
+                        พร้อมใช้งานทันที ไม่ต้องกรอก API Key และ<strong>ฟรี 0 เครดิต</strong> ทุกฟีเจอร์คิดแคปชั่นและจัดภาพ
+                    </p>
+                </div>
+
+                <!-- Custom / BYOK Card -->
+                <div id="ai-card-custom" onclick="selectAIMode('custom')" 
+                     class="cursor-pointer p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50/50 hover:bg-slate-100 transition relative space-y-1">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-xs text-slate-700">
+                            <i class="fa-solid fa-key text-blue-600 text-sm"></i>
+                            <span>ใช้ AI ของลูกค้า (BYOK)</span>
+                        </div>
+                        <span id="ai-custom-badge" class="hidden px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold">เลือกอยู่</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600">
+                        เชื่อมต่อ API Key ของคุณเอง (OpenAI, Claude, DeepSeek, Gemini, Custom) ฟรีค่าบริการระบบ
+                    </p>
+                </div>
+            </div>
+
+            <!-- Custom Configuration Panel -->
+            <div id="ai-custom-panel" class="hidden space-y-3.5 pt-2 border-t border-slate-100">
+                <!-- Provider Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">เลือกผู้ให้บริการ AI (AI Provider)</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="ai-provider-buttons">
+                        <button type="button" onclick="selectAIProvider('gemini')" id="btn-provider-gemini" 
+                                class="ai-provider-btn p-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-brands fa-google text-blue-500"></i> Google Gemini
+                        </button>
+                        <button type="button" onclick="selectAIProvider('openai')" id="btn-provider-openai" 
+                                class="ai-provider-btn p-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-brain text-emerald-600"></i> OpenAI
+                        </button>
+                        <button type="button" onclick="selectAIProvider('claude')" id="btn-provider-claude" 
+                                class="ai-provider-btn p-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Claude
+                        </button>
+                        <button type="button" onclick="selectAIProvider('deepseek')" id="btn-provider-deepseek" 
+                                class="ai-provider-btn p-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-bolt text-indigo-600"></i> DeepSeek
+                        </button>
+                        <button type="button" onclick="selectAIProvider('custom')" id="btn-provider-custom" 
+                                class="ai-provider-btn p-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-server text-purple-600"></i> Custom Base URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Model Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">โมเดลที่ต้องการใช้งาน (Model)</label>
+                    <select id="ai-model-select" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <!-- API Key Input -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-bold text-slate-700">API Key</label>
+                        <span id="ai-key-status" class="text-[11px] text-slate-400">ยังไม่มี Key</span>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="ai-api-key-input" placeholder="วาง API Key ของคุณที่นี่ (sk-... หรือ AIza...)" 
+                               class="w-full p-2.5 pr-10 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                        <button type="button" onclick="toggleAIKeyVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+                            <i id="ai-key-eye-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-1">ปล่อยว่างไว้หากต้องการใช้ API Key เดิมที่บันทึกไว้ในระบบ</p>
+                </div>
+
+                <!-- Base URL Input (Optional / Custom) -->
+                <div id="ai-base-url-wrapper" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Custom Base URL (OpenAI-Compatible)</label>
+                    <input type="text" id="ai-base-url-input" placeholder="https://api.groq.com/openai/v1 หรือ http://localhost:11434/v1" 
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                    <p class="text-[10px] text-slate-500 mt-1">รองรับ OpenRouter, Groq, Together AI, Ollama และ OpenAI Compatible Proxy</p>
+                </div>
+            </div>
+
+            <!-- Test Connection Result Banner -->
+            <div id="ai-test-result-box" class="hidden p-3 rounded-xl text-xs space-y-1"></div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <button type="button" onclick="testCurrentAIConnection()" id="btn-test-ai-conn" 
+                        class="py-2.5 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition flex items-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-vial"></i>
+                    <span>ทดสอบการเชื่อมต่อ</span>
+                </button>
+                <button type="button" onclick="saveUserAISettings()" id="btn-save-ai-settings" 
+                        class="flex-1 py-2.5 px-4 bg-[#0B3B60] hover:bg-[#082b47] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>บันทึกการตั้งค่า AI</span>
+                </button>
             </div>
         </div>
     </div>
