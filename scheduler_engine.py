@@ -194,33 +194,158 @@ def check_and_execute_due_posts(poster: FacebookPoster):
     if updated:
         save_schedule(posts)
 
+# ================= THAI HOLIDAYS AUTO-PILOT SCHEDULER =================
+
+def auto_schedule_holiday_post(
+    holiday: Dict[str, Any],
+    page_id: Optional[str] = None,
+    page_name: Optional[str] = None,
+    auto_image: bool = True
+) -> Optional[Dict[str, Any]]:
+    """
+    ตรวจสอบและตั้งเวลาโพสต์วันสำคัญอัตโนมัติลงใน scheduled_posts.json
+    - ป้องกันการตั้งเวลาซ้ำซ้อนสำหรับเพจเดียวกัน
+    - สั่ง AI ร่างเนื้อหาเฉพาะตาม Brand DNA
+    - สร้างภาพประกอบด้วย AI พร้อมประทับลายน้ำแบรนด์ (Subtle Watermark)
+    """
+    posts = load_schedule()
+    target_pid = str(page_id) if page_id else ""
+    h_id = holiday.get("id")
+    h_name = holiday.get("name")
+    h_date = holiday.get("date")
+
+    # 1. ตรวจสอบว่าเคยตั้งเวลาโพสต์สำหรับวันสำคัญนี้ในเพจนี้แล้วหรือไม่
+    for p in posts:
+        same_h = (p.get("holiday_id") == h_id) or (
+            p.get("date") == h_date and p.get("holiday_name") == h_name
+        )
+        same_page = (not target_pid) or (not p.get("page_id")) or (str(p.get("page_id")) == target_pid)
+        if same_h and same_page:
+            return p  # มีอยู่แล้ว ไม่ต้องสร้างซ้ำ
+
+    # 2. ดึงข้อมูลเพจเป้าหมายเพื่อนำ Brand DNA มาใช้
+    target_page_info = None
+    try:
+        import pages_manager
+        if target_pid:
+            target_page_info = pages_manager.get_page(target_pid)
+        if not target_page_info:
+            target_page_info = pages_manager.get_active_page() or {}
+    except Exception:
+        target_page_info = {}
+
+    display_page_name = page_name or (target_page_info.get("brand_name") or target_page_info.get("name") or "FixPack")
+
+    # 3. ให้ AI ร่างเนื้อหาโพสต์วันสำคัญ
+    from content_generator import generate_holiday_post
+    holiday_content = generate_holiday_post(holiday, page_info=target_page_info)
+    topic = holiday_content.get("topic") or f"สุขสันต์{h_name}"
+    content = holiday_content.get("content") or ""
+    visual_concept = holiday_content.get("visual_concept") or holiday.get("visual_theme") or topic
+
+    # 4. สร้างรูปภาพประกอบด้วย AI พร้อมลายน้ำแบรนด์
+    image_path = None
+    if auto_image:
+        try:
+            import image_service
+            brand_dna = target_page_info.get("brand_dna", {}) if target_page_info else {}
+            biz_type = brand_dna.get("business_type") or target_page_info.get("category") or ""
+            phone = target_page_info.get("phone") or brand_dna.get("phone")
+            pic_url = target_page_info.get("picture_url")
+
+            print(f"🎨 [Thai Holiday AI Image] กำลังสร้างภาพประกอบสำหรับ {h_name}...")
+            img_res = image_service.generate_ai_image(
+                topic=topic,
+                caption=visual_concept,
+                brand_name=display_page_name,
+                business_type=biz_type,
+                phone=phone,
+                page_id=target_pid,
+                picture_url=pic_url,
+                apply_watermark=True
+            )
+            if img_res.get("success") and img_res.get("image_path"):
+                image_path = img_res["image_path"]
+        except Exception as e:
+            print(f"⚠️ เกิดข้อผิดพลาดในการสร้างภาพ AI วันสำคัญ: {e}")
+
+    # Fallback รูปภาพหากเจนภาพไม่สำเร็จ
+    if not image_path:
+        image_path = "fixpack_ai_banner.png" if os.path.exists("fixpack_ai_banner.png") else None
+
+    # 5. บันทึกลงตารางโพสต์
+    new_id = f"holiday_{h_id}_{int(time.time())}_{random.randint(100, 999)}"
+    post_item = {
+        "id": new_id,
+        "page_id": target_pid,
+        "page_name": display_page_name,
+        "date": h_date,
+        "time": holiday.get("default_time", "08:30"),
+        "topic": topic,
+        "content": content,
+        "image_path": image_path,
+        "status": "pending",
+        "type": "holiday_auto_scheduled",
+        "holiday_id": h_id,
+        "holiday_name": h_name,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "posted_at": None,
+        "post_url": None
+    }
+
+    posts.append(post_item)
+    posts.sort(key=lambda x: f"{x.get('date', '')} {x.get('time', '')}")
+    save_schedule(posts)
+    print(f"✅ [Auto-Pilot Holiday] ตั้งเวลาโพสต์วันสำคัญสำเร็จ: {h_name} ({h_date} {post_item['time']} น.)")
+    return post_item
+
 def check_and_execute_autopilot_daily(poster: FacebookPoster, last_autopilot_date: Dict[str, str]):
     """
-    ระบบ Auto-Pilot: วันไหนที่ผู้ใช้ไม่ได้ใส่โพสต์ไว้ล่วงหน้า
-    เมื่อถึงเวลาประจำวัน (เช่น 09:30) ระบบจะคิดหัวข้อเองและโพสต์ให้อัตโนมัติทันที
+    ระบบ Auto-Pilot:
+    1. ตรวจสอบและตั้งเวลาโพสต์วันสำคัญล่วงหน้า 7 วันอัตโนมัติ (Thai Holidays Auto-Pilot)
+    2. วันไหนไม่มีโพสต์ที่ตั้งไว้ เมื่อถึงเวลาประจำวัน จะคิดหัวข้อและโพสต์ให้อัตโนมัติทันที
     """
     now = datetime.now()
     today_str = now.strftime("%Y-%m-%d")
     now_time = now.strftime("%H:%M")
 
-    # ถ้าวันนี้เคยทำ autopilot ไปแล้ว ให้ข้าม
+    # 1. ตรวจสอบวันสำคัญล่วงหน้า 7 วัน และตั้งเวลาให้อัตโนมัติ
+    try:
+        import thai_holidays
+        upcoming_holidays = thai_holidays.get_upcoming_holidays(from_date=today_str, days_ahead=7)
+        if upcoming_holidays:
+            target_pid = str(poster.page_id) if poster and poster.page_id else ""
+            target_pname = ""
+            try:
+                import pages_manager
+                active_p = pages_manager.get_page(target_pid) or pages_manager.get_active_page() or {}
+                target_pname = active_p.get("brand_name") or active_p.get("name") or "FixPack"
+            except Exception:
+                target_pname = "FixPack"
+
+            for nh in upcoming_holidays:
+                auto_schedule_holiday_post(
+                    holiday=nh,
+                    page_id=target_pid,
+                    page_name=target_pname,
+                    auto_image=True
+                )
+    except Exception as e:
+        print(f"⚠️ ตรวจสอบวันสำคัญอัตโนมัติขัดข้อง: {e}")
+
+    # 2. Auto-Pilot ประจำวัน (กรณีไม่มีโพสต์ใดๆ ในวันนี้)
     if last_autopilot_date.get("date") == today_str:
         return
 
-    # เช็คว่าถึงเวลาประจำวันหรือยัง
     if now_time >= DEFAULT_DAILY_TIME:
         posts = load_schedule()
-        # เช็คว่ามีโพสต์ของผู้ใช้ในวันนี้หรือไม่ (ทั้ง pending หรือ posted แล้ว)
         has_user_post_today = any(p.get("date") == today_str for p in posts)
         
         if not has_user_post_today:
             print(f"\n💡 [Auto-Pilot FixPack] วันนี้ ({today_str}) ยังไม่มีรายการโพสต์ที่ตั้งไว้ล่วงหน้า")
             print("🚀 ระบบกำลังเริ่มกระบวนการคิดหัวข้อและโพสต์ให้อัตโนมัติ...")
             
-            # สุ่มหัวข้อจากคลังหัวข้อ
             chosen_topic = random.choice(AUTO_TOPIC_POOL)
-            
-            # สร้างรายการใหม่
             auto_post = {
                 "id": f"auto_{int(time.time())}",
                 "date": today_str,

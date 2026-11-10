@@ -11,6 +11,9 @@ function switchTab(tabId) {
     if (targetBtn) targetBtn.classList.add('active');
 
     if (tabId === 'calendar') loadPosts();
+    if (tabId === 'planner') {
+        loadUpcomingHolidays(60);
+    }
     if (tabId === 'users') loadUsers();
     if (tabId === 'ci') {
         loadBrandConfigForm();
@@ -467,6 +470,10 @@ async function loadPosts() {
         container.innerHTML = posts.map(post => {
             const isPending = post.status === 'pending';
             const isPosted = post.status === 'posted';
+                        const isHoliday = post.type === 'holiday_auto_scheduled' || post.holiday_id || post.holiday_name;
+            const holidayBadge = isHoliday 
+                ? `<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1 shrink-0"><i class="fa-solid fa-cake-candles text-rose-500"></i> 🎉 วันสำคัญ: ${post.holiday_name || post.topic || 'เทศกาลวันสำคัญ'}</span>`
+                : '';
             const statusBadge = isPending 
                 ? '<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold text-xs flex items-center gap-1"><i class="fa-solid fa-clock"></i> รอคิวโพสต์</span>'
                 : (isPosted 
@@ -497,6 +504,7 @@ async function loadPosts() {
                                     📅 ${post.date} เวลา ${post.time} น.
                                 </span>
                                 ${statusBadge}
+                                ${holidayBadge}
                                 ${post.type === 'autopilot_generated' ? '<span class="text-[11px] px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-medium">🤖 Auto-Pilot</span>' : ''}
                             </div>
                             <h4 class="font-bold text-slate-800 text-sm">
@@ -1402,5 +1410,198 @@ async function openSyncPagesModal() {
         } catch (e) {
             Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อล้มเหลว', 'error');
         }
+    }
+}
+
+// ================= THAI HOLIDAYS FRONTEND LOGIC =================
+
+async function loadUpcomingHolidays(daysAhead = 60) {
+    const container = document.getElementById('holidays-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="col-span-full text-center py-10 bg-white/70 rounded-xl border border-dashed border-rose-200">
+            <i class="fa-solid fa-spinner fa-spin text-2xl text-rose-500 mb-2"></i>
+            <p class="text-xs text-slate-500">กำลังโหลดรายการวันสำคัญในช่วง ${daysAhead} วัน...</p>
+        </div>
+    `;
+
+    try {
+        const res = await fetch(`/api/holidays/upcoming?days_ahead=${daysAhead}`);
+        const data = await res.json();
+
+        if (!data.success || !data.holidays || data.holidays.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8 bg-white rounded-xl border border-slate-200 text-slate-500 text-xs">
+                    ไม่พบวันสำคัญหรือเทศกาลในช่วง ${daysAhead} วันข้างหน้า
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.holidays.map(h => {
+            const isScheduled = h.is_scheduled === true;
+            const daysUntil = h.days_until;
+            let countdownBadge = '';
+            if (daysUntil === 0) {
+                countdownBadge = '<span class="px-2 py-0.5 rounded-full bg-rose-600 text-white font-bold text-[10px] animate-pulse">วันนี้!</span>';
+            } else if (daysUntil === 1) {
+                countdownBadge = '<span class="px-2 py-0.5 rounded-full bg-amber-500 text-white font-bold text-[10px]">พรุ่งนี้</span>';
+            } else {
+                countdownBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium text-[10px]">อีก ${daysUntil} วัน</span>`;
+            }
+
+            let typeBadgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+            if (h.type === 'buddhist') typeBadgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+            if (h.type === 'festival') typeBadgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+            if (h.type === 'national_holiday') typeBadgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
+
+            return `
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border ${isScheduled ? 'border-emerald-300 shadow-sm bg-emerald-50/20' : 'border-slate-200 shadow-xs hover:border-rose-300 hover:shadow-sm'} flex flex-col justify-between transition gap-3">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md border ${typeBadgeClass}">
+                                ${h.category || 'วันสำคัญ'}
+                            </span>
+                            ${countdownBadge}
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm sm:text-base leading-snug">
+                            ${h.name}
+                        </h4>
+                        <div class="text-xs font-medium text-[#0B3B60] mt-1 flex items-center gap-1.5">
+                            <i class="fa-regular fa-calendar text-rose-500"></i>
+                            <span>${h.formatted_date_th || h.date}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+                            ${h.description || h.greeting || ''}
+                        </p>
+                    </div>
+
+                    <!-- Action Status -->
+                    <div class="pt-3 border-t border-slate-100 mt-auto">
+                        ${isScheduled ? `
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check"></i> ตั้งเวลาโพสต์แล้ว
+                                </span>
+                                <button onclick="switchTab('calendar')" class="text-[11px] text-[#0B3B60] hover:underline font-semibold flex items-center gap-1">
+                                    ดูในตาราง <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                                </button>
+                            </div>
+                        ` : `
+                            <button onclick="scheduleSingleHoliday('${h.id}')" 
+                                    class="w-full py-2 px-3 bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition flex items-center justify-center gap-1.5 shadow-xs">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> ให้ AI สร้าง & ตั้งเวลาโพสต์
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (e) {
+        container.innerHTML = `<div class="col-span-full p-4 text-center text-red-500 text-xs">เกิดข้อผิดพลาดในการโหลดวันสำคัญ: ${e}</div>`;
+    }
+}
+
+async function scheduleSingleHoliday(holidayId) {
+    Swal.fire({
+        title: '🤖 AI กำลังสร้างโพสต์วันสำคัญ...',
+        html: `
+            <div class="text-xs text-slate-600 space-y-1.5 text-left bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <p>1. วิเคราะห์ความหมายของวันสำคัญและ Brand DNA</p>
+                <p>2. เขียนแคปชั่นอวยพรอันอบอุ่น พร้อม Call to Action และแฮชแท็ก</p>
+                <p>3. 🎨 สร้างภาพประกอบ AI คมชัดระดับสต็อก 1024x1024</p>
+                <p>4. 🛡️ ประทับตราลายน้ำแบรนด์ป้องกันการคัดลอกรูปภาพ</p>
+            </div>
+        `,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/holidays/schedule_single', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ holiday_id: holidayId, auto_image: true })
+        });
+        const result = await res.json();
+        Swal.close();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'ตั้งเวลาโพสต์สำเร็จ!',
+                html: `
+                    <div class="text-xs text-left space-y-1 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                        <p><strong>🎉 วันสำคัญ:</strong> ${result.holiday.name}</p>
+                        <p><strong>📅 กำหนดโพสต์:</strong> ${result.post.date} เวลา ${result.post.time} น.</p>
+                        <p><strong>📝 หัวข้อ:</strong> ${result.post.topic}</p>
+                    </div>
+                `,
+                confirmButtonColor: '#0B3B60'
+            });
+            loadUpcomingHolidays(60);
+            loadPosts();
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', result.error || 'ไม่สามารถตั้งเวลาได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function autoScheduleAllHolidays() {
+    const confirm = await Swal.fire({
+        title: '✨ รันระบบ AI วันสำคัญอัตโนมัติ?',
+        html: `
+            <div class="text-xs text-slate-600 space-y-2 text-left">
+                <p>ระบบจะค้นหาวันสำคัญและเทศกาลทั้งหมดใน <strong>60 วันข้างหน้า</strong> ที่ยังไม่ได้ตั้งเวลา</p>
+                <p>จากนั้น AI จะเขียนแคปชั่นตาม Brand DNA และสร้างภาพประกอบพร้อมลายน้ำแบรนด์ให้ครบทุกวันสำคัญในคลิกเดียว!</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#FF5B00',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '🚀 ให้ AI ดำเนินการทันที',
+        cancelButtonText: 'ยกเลิก'
+    });
+    if (!confirm.isConfirmed) return;
+
+    Swal.fire({
+        title: '✨ AI กำลังสร้างและตั้งเวลาโพสต์วันสำคัญทั้งหมด...',
+        html: 'กระบวนการนี้อาจใช้เวลาสักครู่ในการประมวลผลข้อความและภาพ AI คุณภาพสูง...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/holidays/auto_schedule_all', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ days_ahead: 60, auto_image: true })
+        });
+        const result = await res.json();
+        Swal.close();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: `ตั้งเวลาโพสต์สำเร็จ (${result.scheduled_count} รายการ)!`,
+                html: `
+                    <p class="text-xs text-slate-600">
+                        สร้างและบรรจุโพสต์วันสำคัญลงในตารางโพสต์ของเพจ <strong>${result.page_name}</strong> เรียบร้อยแล้ว
+                    </p>
+                `,
+                confirmButtonColor: '#0B3B60'
+            });
+            loadUpcomingHolidays(60);
+            loadPosts();
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', result.error || 'ไม่สามารถดำเนินการได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
     }
 }

@@ -889,6 +889,147 @@ async def delete_user_api(username: str, request: Request):
     save_users(users)
     return {"success": True}
 
+import thai_holidays
+from scheduler_engine import auto_schedule_holiday_post
+
+# ================= THAI HOLIDAYS AUTO-PILOT APIS =================
+
+@app.get("/api/holidays/upcoming")
+async def get_upcoming_holidays_api(request: Request, days_ahead: int = 60):
+    """
+    ดึงรายการวันสำคัญและเทศกาลที่กำลังจะมาถึง พร้อมสถานะการตั้งเวลาโพสต์ของเพจที่กำลัง Active
+    """
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    
+    holidays = thai_holidays.get_upcoming_holidays(days_ahead=days_ahead)
+    posts = load_schedule()
+    
+    enriched = []
+    for h in holidays:
+        h_copy = dict(h)
+        matched_post = None
+        for p in posts:
+            same_h = (p.get("holiday_id") == h["id"]) or (
+                p.get("date") == h["date"] and p.get("holiday_name") == h["name"]
+            )
+            same_page = (not page_id) or (not p.get("page_id")) or (str(p.get("page_id")) == page_id)
+            if same_h and same_page:
+                matched_post = p
+                break
+        
+        if matched_post:
+            h_copy["is_scheduled"] = True
+            h_copy["scheduled_post_id"] = matched_post.get("id")
+            h_copy["scheduled_status"] = matched_post.get("status")
+            h_copy["scheduled_date"] = matched_post.get("date")
+            h_copy["scheduled_time"] = matched_post.get("time")
+            h_copy["scheduled_topic"] = matched_post.get("topic")
+            h_copy["scheduled_image"] = matched_post.get("image_path")
+        else:
+            h_copy["is_scheduled"] = False
+            h_copy["scheduled_post_id"] = None
+            h_copy["scheduled_status"] = None
+            h_copy["scheduled_date"] = None
+            h_copy["scheduled_time"] = None
+            h_copy["scheduled_topic"] = None
+            h_copy["scheduled_image"] = None
+            
+        enriched.append(h_copy)
+        
+    return {
+        "success": True,
+        "count": len(enriched),
+        "days_ahead": days_ahead,
+        "active_page_id": page_id,
+        "holidays": enriched
+    }
+
+class AutoScheduleAllHolidaysRequest(BaseModel):
+    days_ahead: Optional[int] = 60
+    auto_image: Optional[bool] = True
+
+@app.post("/api/holidays/auto_schedule_all")
+async def auto_schedule_all_holidays_api(request: Request, payload: Optional[AutoScheduleAllHolidaysRequest] = None):
+    """
+    1-Click Auto-Pilot: สร้างเนื้อหาและตั้งเวลาโพสต์วันสำคัญทั้งหมดล่วงหน้าใน 60-90 วันสำหรับเพจ Active
+    """
+    require_auth(request)
+    days_ahead = payload.days_ahead if payload and payload.days_ahead else 60
+    auto_image = payload.auto_image if payload and payload.auto_image is not None else True
+    
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    page_name = active_page.get("brand_name") or active_page.get("name") or "Official"
+    
+    holidays = thai_holidays.get_upcoming_holidays(days_ahead=days_ahead)
+    posts = load_schedule()
+    
+    scheduled_results = []
+    for h in holidays:
+        is_already = any(
+            ((p.get("holiday_id") == h["id"]) or (p.get("date") == h["date"] and p.get("holiday_name") == h["name"]))
+            and (not page_id or not p.get("page_id") or str(p.get("page_id")) == page_id)
+            for p in posts
+        )
+        if not is_already:
+            scheduled_post = auto_schedule_holiday_post(
+                holiday=h,
+                page_id=page_id,
+                page_name=page_name,
+                auto_image=auto_image
+            )
+            if scheduled_post:
+                scheduled_results.append({
+                    "holiday_id": h["id"],
+                    "holiday_name": h["name"],
+                    "date": h["date"],
+                    "post_id": scheduled_post.get("id"),
+                    "status": scheduled_post.get("status")
+                })
+                posts = load_schedule()
+                
+    return {
+        "success": True,
+        "scheduled_count": len(scheduled_results),
+        "days_ahead": days_ahead,
+        "page_id": page_id,
+        "page_name": page_name,
+        "scheduled_holidays": scheduled_results
+    }
+
+class ScheduleSingleHolidayRequest(BaseModel):
+    holiday_id: str
+    auto_image: Optional[bool] = True
+
+@app.post("/api/holidays/schedule_single")
+async def schedule_single_holiday_api(payload: ScheduleSingleHolidayRequest, request: Request):
+    """
+    สั่ง AI สร้างเนื้อหาและตั้งเวลาโพสต์เฉพาะวันสำคัญที่เลือก
+    """
+    require_auth(request)
+    active_page = pages_manager.get_active_page() or {}
+    page_id = str(active_page.get("id", ""))
+    page_name = active_page.get("brand_name") or active_page.get("name") or "Official"
+    
+    holiday = thai_holidays.get_holiday_by_id(payload.holiday_id)
+    if not holiday:
+        raise HTTPException(status_code=404, detail=f"ไม่พบข้อมูลวันสำคัญรหัส: {payload.holiday_id}")
+        
+    scheduled_post = auto_schedule_holiday_post(
+        holiday=holiday,
+        page_id=page_id,
+        page_name=page_name,
+        auto_image=payload.auto_image if payload.auto_image is not None else True
+    )
+    
+    return {
+        "success": True,
+        "holiday": holiday,
+        "post": scheduled_post
+    }
+
 # ================= ENTRY POINT =================
 
 def get_local_ip():

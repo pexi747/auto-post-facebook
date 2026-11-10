@@ -431,3 +431,163 @@ def generate_brand_topics(page_info: Optional[Dict[str, Any]] = None, days: int 
             "category": srv if isinstance(srv, str) else "บริการเด่น"
         })
     return fallback
+
+# ================= THAI HOLIDAYS POST GENERATOR =================
+
+def generate_holiday_post(
+    holiday: Dict[str, Any],
+    page_info: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """
+    สร้างเนื้อหาโพสต์วันสำคัญ Facebook ที่เชื่อมโยงความหมายของวันสำคัญเข้ากับ Brand DNA
+    โดยใช้ Google Gemini AI และมี Rich Professional Fallback Template คุณภาพสูงกรณีไม่มี API Key
+    
+    คืนค่าเป็น:
+    {
+        "topic": topic,
+        "content": content,
+        "hashtags": hashtags,
+        "visual_concept": visual_concept
+    }
+    """
+    ctx = _resolve_brand_context(page_info=page_info)
+    b_name = ctx["brand_name"]
+    b_biz = ctx["business_type"]
+    b_tagline = ctx["tagline"]
+    b_phone = ctx["phone"]
+    b_services = ctx["core_services_str"]
+    b_selling = ctx["selling_points_str"]
+    b_tone = ctx["tone_of_voice"]
+    
+    h_name = holiday.get("name", "วันสำคัญ")
+    h_category = holiday.get("category", "วันสำคัญ")
+    h_desc = holiday.get("description", "")
+    h_greeting = holiday.get("greeting", "")
+    h_visual_theme = holiday.get("visual_theme", "Professional photography")
+    h_tags = holiday.get("suggested_hashtags", [])
+
+    clean_brand = b_name.replace(" ", "").replace("-", "").replace(".", "")
+    base_hashtags = list(h_tags)
+    if f"#{clean_brand}" not in base_hashtags:
+        base_hashtags.append(f"#{clean_brand}")
+    if ctx.get("business_type") and f"#{ctx['business_type'].replace(' ', '')}" not in base_hashtags:
+        base_hashtags.append(f"#{ctx['business_type'].replace(' ', '')}")
+
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if api_key:
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            prompt = f"""
+คุณเป็นผู้เชี่ยวชาญด้าน Copywriting และการตลาดบน Social Media ภาษาไทย
+แบรนด์: "{b_name}" ({b_biz})
+สโลแกน: {b_tagline}
+จุดเด่นของแบรนด์: {b_selling}
+บริการหลัก: {b_services}
+ช่องทางติดต่อ: โทร {b_phone} หรือ Inbox เพจ {ctx['page_name']}
+
+โจทย์: เขียนโพสต์ Facebook อวยพรและระลึกถึงเนื่องใน "{h_name}" ({holiday.get('date', '')})
+ข้อมูลวันสำคัญ: {h_desc}
+แนวทางการอวยพร/ความหมาย: {h_greeting}
+
+ข้อกำหนดเนื้อหา:
+1. ข้อความอวยพร/น้อมรำลึกที่เหมาะสมอย่างยิ่งตามกาลเทศะและประเภท ({h_category}):
+   - วันสำคัญทางศาสนาให้สงบ ปิติ มีสติ
+   - วันรำลึกราชการให้น้อมรำลึกสำนึกในพระมหากรุณาธิคุณอย่างสุภาพสง่างาม
+   - วันเทศกาลให้ร่าเริง สดใส อบอุ่น สนุกสนาน
+   - วันสากล/ครอบครัวให้อบอุ่นหัวใจ ซาบซึ้ง
+2. เชื่อมโยงความหมายของวันสำคัญเข้ากับคุณค่าและการดูแลลูกค้าของแบรนด์ "{b_name}" อย่างแนบเนียน อบอุ่น และเป็นธรรมชาติ (ไม่ขายของยัดเยียดแบบฮาร์ดเซลล์ แต่สร้างความผูกพัน ความเชื่อมั่น และความประทับใจ)
+3. มี Call to Action หรือคำเชิญชวนอย่างสุภาพ หากต้องการคำปรึกษาหรือบริการจากทางแบรนด์ (โทร {b_phone} หรือทัก Inbox)
+4. แฮชแท็กที่เหมาะสม 4-6 แท็ก
+5. สรุปแนวคิดรูปภาพ (visual_concept) เป็นภาษาอังกฤษสั้นๆ เพื่อนำไปสั่ง AI สต็อกภาพต่อ
+
+ให้ตอบกลับเฉพาะ JSON รูปแบบนี้เท่านั้น ห้ามมี markdown อื่น:
+{{
+  "topic": "หัวข้อโพสต์สั้นๆ ที่ประทับใจ ไม่เกิน 40 ตัวอักษร",
+  "content": "เนื้อหาแคปชั่นฉบับเต็มพร้อมอีโมจิและการจัดบรรทัดอ่านง่ายบนมือถือ...",
+  "hashtags": ["#แท็ก1", "#แท็ก2"],
+  "visual_concept": "Creative visual prompt in English..."
+}}
+"""
+            models = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"]
+            for m in models:
+                try:
+                    resp = client.models.generate_content(model=m, contents=prompt)
+                    if resp and resp.text:
+                        raw = resp.text.strip().replace("```json", "").replace("```", "").strip()
+                        match = re.search(r"\{.*\}", raw, re.DOTALL)
+                        if match:
+                            data = json.loads(match.group(0))
+                            return {
+                                "topic": data.get("topic", f"สุขสันต์{h_name} จากใจ {b_name}"),
+                                "content": data.get("content", "").strip(),
+                                "hashtags": data.get("hashtags", base_hashtags),
+                                "visual_concept": data.get("visual_concept", h_visual_theme)
+                            }
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"⚠️ Gemini AI Error on holiday post: {e}")
+
+    # ================= RICH FALLBACK TEMPLATE =================
+    topic = f"สุขสันต์{h_name} ✨ ความปรารถนาดีจาก {b_name}"
+    h_type = holiday.get("type", "")
+
+    if h_type == "buddhist":
+        hook = f"🪷 เนื่องใน{h_name} ขอร่วมอนุโมทนาบุญและส่งมอบความสุขสงบสู่ทุกท่าน 🙏✨"
+        body = (
+            f"{h_greeting}\n\n"
+            f"ในวันพระใหญ่อันเป็นมงคลนี้ ทีมงาน {b_name} ขอร่วมเป็นส่วนหนึ่งในการส่งมอบความปรารถนาดี "
+            f"ขอให้ทุกท่านและครอบครัวประสบแต่ความสุข ความเจริญ มีสุขภาพพลานามัยที่สมบูรณ์แข็งแรง "
+            f"และมีจิตใจที่ผ่องใสในทุกๆ วันครับ\n\n"
+            f"สำหรับทุกความต้องการด้าน {b_biz} พวกเราพร้อมดูแลเคียงข้างคุณเสมอด้วยความซื่อสัตย์และจริงใจ"
+        )
+    elif h_type == "national_holiday" and ("นวมินทร" in h_name or "ปิยมหาราช" in h_name or "จักรี" in h_name or "รัฐธรรมนูญ" in h_name):
+        topic = f"น้อมรำลึกในพระมหากรุณาธิคุณ เนื่องใน{h_name}"
+        hook = f"💛 น้อมรำลึกในพระมหากรุณาธิคุณอันหาที่สุดมิได้ เนื่องใน{h_name}"
+        body = (
+            f"{h_greeting}\n\n"
+            f"ข้าพระพุทธเจ้า ผู้บริหารและทีมงาน {b_name} ขอน้อมรำลึกและสืบสานพระราชปณิธาน "
+            f"มุ่งมั่นพัฒนาคุณภาพการบริการและความซื่อสัตย์ เพื่อส่งต่อประโยชน์สุขและความอุ่นใจให้แก่สังคมและลูกค้าทุกท่านสืบไป"
+        )
+    elif "เฉลิมพระชนมพรรษา" in h_name or "ฉัตรมงคล" in h_name:
+        topic = f"เนื่องในโอกาส{h_name}"
+        hook = f"👑 ขอพระองค์ทรงพระเจริญยิ่งยืนนาน เนื่องในโอกาส{h_name}"
+        body = (
+            f"{h_greeting}\n\n"
+            f"ด้วยเกล้าด้วยกระหม่อม ขอเดชะ\n"
+            f"ข้าพระพุทธเจ้า ผู้บริหารและพนักงาน {b_name}"
+        )
+    elif h_type == "festival" or "สงกรานต์" in h_name or "ลอยกระทง" in h_name or "ปีใหม่" in h_name:
+        hook = f"🎉 สุขสันต์{h_name}! ขอให้เทศกาลนี้เต็มไปด้วยรอยยิ้ม ความอบอุ่น และความสุขล้นใจ 🌟💖"
+        body = (
+            f"{h_greeting}\n\n"
+            f"ในโอกาสแห่งความสุขและเทศกาลพิเศษนี้ ทีมงาน {b_name} ขอขอบพระคุณลูกค้าทุกท่านจากใจจริง "
+            f"ที่ให้ความไว้วางใจให้เราเป็นผู้ช่วยดูแล {b_biz} มาโดยตลอด\n\n"
+            f"ไม่ว่าเทศกาลไหนๆ เรื่อง {b_services} วางใจให้ {b_name} คอยดูแลเคียงข้างคุณได้เสมอครับ!"
+        )
+    elif "แม่" in h_name or "พ่อ" in h_name or "เด็ก" in h_name:
+        hook = f"💙 สุขสันต์{h_name} ร่วมส่งต่อความรักและความห่วงใยให้คนสำคัญในครอบครัว 👨‍👩‍👧‍👦✨"
+        body = (
+            f"{h_greeting}\n\n"
+            f"เพราะ 'บ้านและครอบครัว' คือสิ่งที่สำคัญที่สุด ทีมงาน {b_name} จึงมุ่งมั่นส่งมอบบริการ "
+            f"ที่สะดวก ปลอดภัย และได้มาตรฐาน เพื่อให้ทุกคนในบ้านใช้ชีวิตได้อย่างสบายใจในทุกวันครับ"
+        )
+    else:
+        hook = f"✨ สุขสันต์{h_name} ความสุขและความปรารถนาดีจากใจ {b_name} 🌟"
+        body = (
+            f"{h_greeting}\n\n"
+            f"ทีมงาน {b_name} ขอร่วมส่งมอบกำลังใจและรอยยิ้มให้ทุกท่านในวันพิเศษนี้\n"
+            f"สำหรับเรื่อง {b_biz} ให้เราช่วยดูแลคุณได้ทุกเวลาครับ"
+        )
+
+    cta = f"💬 สนใจสอบถามหรือนัดหมายบริการ ทักแชท Inbox เพจ {ctx['page_name']} หรือโทร {b_phone} ได้ตลอดเวลาครับ"
+    tag_str = " ".join(base_hashtags[:6])
+    full_content = f"{hook}\n\n{body}\n\n{cta}\n\n{tag_str}"
+
+    return {
+        "topic": topic,
+        "content": full_content,
+        "hashtags": base_hashtags,
+        "visual_concept": h_visual_theme
+    }
