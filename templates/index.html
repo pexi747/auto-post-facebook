@@ -540,6 +540,15 @@
                         เลือกจำนวนวันที่ต้องการวางแผนล่วงหน้า ระบบ AI จะคิดหัวข้อและแนวทางการเขียนที่หลากหลายตามบริการของ <strong>{{ active_page.brand_name or active_page.name }}</strong> เพื่อให้คุณเลือกกดบรรจุลงในตารางโพสต์ได้ทันที!
                     </p>
 
+                    <div class="mt-4">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            🎯 แคมเปญหรือหัวข้อที่ต้องการเน้น (Optional Focus Topic)
+                        </label>
+                        <input type="text" id="planner-focus-topic" placeholder="เช่น โปรโมชั่นล้างแอร์รับหน้าร้อน, แคมเปญตรวจเช็คระบบไฟฟ้า, เมนูกล่องจัดเบรกพรีเมียม" 
+                               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#FF5B00] focus:border-[#FF5B00] focus:outline-none bg-slate-50 focus:bg-white transition">
+                        <p class="text-[11px] text-slate-400 mt-1">💡 ปล่อยว่างไว้หากต้องการให้ AI คละหัวข้อบริการทั้งหมดตาม Brand DNA ของเพจ</p>
+                    </div>
+
                     <div class="flex flex-wrap items-center gap-3 mt-5">
                         <button onclick="generatePlan(7)" class="px-5 py-2.5 bg-[#0B3B60] hover:bg-[#082b47] text-white font-medium rounded-xl text-sm transition shadow-sm flex items-center gap-2">
                             <i class="fa-solid fa-calendar-week"></i> วางแผนคอนเทนต์ 7 วัน
@@ -781,6 +790,7 @@
                                 <th class="py-3 px-4 rounded-l-xl">ชื่อผู้ใช้</th>
                                 <th class="py-3 px-4">ชื่อ-นามสกุล / ตำแหน่ง</th>
                                 <th class="py-3 px-4">ระดับสิทธิ์ (Role)</th>
+                                <th class="py-3 px-4">เครดิตคงเหลือ (Credits)</th>
                                 <th class="py-3 px-4 text-right rounded-r-xl">การจัดการ</th>
                             </tr>
                         </thead>
@@ -1272,6 +1282,353 @@
                     <i class="fa-solid fa-floppy-disk"></i>
                     <span>บันทึกการตั้งค่า AI</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 1: EDIT USER (ADMIN) ================= -->
+    <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-5 relative animate-fade-in">
+            <button onclick="closeEditUserModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#0B3B60] flex items-center justify-center text-lg shadow-xs">
+                    <i class="fa-solid fa-user-pen"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">แก้ไขข้อมูลผู้ใช้งาน</h3>
+                    <p class="text-xs text-slate-500">ปรับปรุงชื่อ ตำแหน่ง ระดับสิทธิ์ หรือตั้งรหัสผ่านใหม่</p>
+                </div>
+            </div>
+
+            <form onsubmit="saveUserEdit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">ชื่อผู้ใช้ (Username)</label>
+                    <input type="text" id="edit-user-username" readonly 
+                           class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-sm font-mono cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล / ตำแหน่ง</label>
+                    <input type="text" id="edit-user-name" required placeholder="เช่น คุณสมชาย (เจ้าของเพจ)"
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ระดับสิทธิ์ (Role)</label>
+                    <select id="edit-user-role" class="w-full p-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                        <option value="customer">Customer (ลูกค้าเติมเครดิต)</option>
+                        <option value="owner">Page Owner (เจ้าของเพจ)</option>
+                        <option value="staff">Staff (ทีมงานแอดมิน)</option>
+                        <option value="admin">Admin (ผู้ดูแลระบบสูงสุด)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ตั้งรหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</label>
+                    <input type="password" id="edit-user-password" placeholder="•••••••• (กรอกเฉพาะเมื่อต้องการรีเซ็ต)"
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                </div>
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeEditUserModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 px-4 bg-[#0B3B60] hover:bg-[#082b47] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 2: ADMIN GIVE / ADJUST CREDIT ================= -->
+    <div id="modal-admin-give-credit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-5 relative animate-fade-in">
+            <button onclick="closeAdminGiveCreditModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg shadow-xs">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">เติมเครดิต / ปรับยอดเครดิต</h3>
+                    <p class="text-xs text-slate-500">เพิ่มหรือปรับลดเครดิตให้ผู้ใช้โดยตรง พร้อมบันทึกประวัติ</p>
+                </div>
+            </div>
+
+            <form onsubmit="submitAdminGiveCredit(event)" class="space-y-4">
+                <input type="hidden" id="credit-target-username">
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] text-slate-400 block">บัญชีผู้ใช้งาน</span>
+                        <span id="credit-target-display" class="font-bold text-slate-800 text-sm">-</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[11px] text-slate-400 block">เครดิตปัจจุบัน</span>
+                        <span id="credit-current-balance" class="font-black text-[#FF5B00] text-sm">0 เครดิต</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">เลือกจำนวนเครดิตด่วน (Quick Add)</label>
+                    <div class="grid grid-cols-5 gap-1.5">
+                        <button type="button" onclick="setQuickCreditAmount(10)" class="py-1.5 px-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition">+10</button>
+                        <button type="button" onclick="setQuickCreditAmount(50)" class="py-1.5 px-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition">+50</button>
+                        <button type="button" onclick="setQuickCreditAmount(100)" class="py-1.5 px-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition">+100</button>
+                        <button type="button" onclick="setQuickCreditAmount(500)" class="py-1.5 px-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition">+500</button>
+                        <button type="button" onclick="setQuickCreditAmount(1000)" class="py-1.5 px-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition">+1000</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">จำนวนเครดิตที่ต้องการเพิ่ม (ใส่ค่าลบ เช่น -20 เพื่อหักออก)</label>
+                    <input type="number" id="credit-adjust-amount" required value="100"
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#FF5B00] focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุ / เหตุผลในการให้เครดิต</label>
+                    <input type="text" id="credit-adjust-reason" placeholder="เช่น โบนัสพิเศษสำหรับลูกค้าใหม่, แจ้งโอนผ่านสลิป" value="Admin เติมเครดิตพิเศษให้บัญชี"
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#FF5B00] focus:outline-none">
+                </div>
+
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeAdminGiveCreditModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 px-4 bg-[#FF5B00] hover:bg-[#e05000] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-plus-circle"></i> ยืนยันการปรับยอดเครดิต
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 3: EDIT SCHEDULED POST ================= -->
+    <div id="modal-edit-scheduled-post" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 relative my-8 max-h-[92vh] overflow-y-auto">
+            <button onclick="closeEditPostModal()" class="
+                absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-orange-100 text-[#FF5B00] flex items-center justify-center text-lg shadow-xs">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">แก้ไขโพสต์ที่วางแผนล่วงหน้า</h3>
+                    <p class="text-xs text-slate-500">ปรับเปลี่ยนวันเวลา หัวข้อ เนื้อหาแคปชั่น หรือเปลี่ยนรูปภาพประกอบ</p>
+                </div>
+            </div>
+
+            <form onsubmit="savePostEdit(event)" class="space-y-4">
+                <input type="hidden" id="edit-post-id">
+                <input type="hidden" id="edit-post-image-path">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">📅 วันที่โพสต์</label>
+                        <input type="date" id="edit-post-date" required
+                               class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">⏰ เวลาโพสต์</label>
+                        <input type="time" id="edit-post-time" required
+                               class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">📌 หัวข้อโพสต์ (Topic)</label>
+                    <input type="text" id="edit-post-topic" required placeholder="ระบุหัวข้อโพสต์..."
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700">📝 เนื้อหาแคปชั่น (Content)</label>
+                        <button type="button" onclick="rewritePostCaptionWithAI()" 
+                                class="text-xs px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#FF5B00] font-bold border border-orange-200 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ ให้ AI ช่วยเขียนแคปชั่นใหม่
+                        </button>
+                    </div>
+                    <textarea id="edit-post-content" rows="5" placeholder="เนื้อหาแคปชั่น (หากเว้นว่าง ระบบจะให้ AI เขียนให้อัตโนมัติเมื่อถึงเวลาโพสต์)..."
+                              class="w-full p-3 rounded-xl border border-slate-300 text-sm leading-relaxed focus:ring-2 focus:ring-[#0B3B60] focus:outline-none"></textarea>
+                </div>
+
+                <!-- Image Management in Edit Modal -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-image text-[#0B3B60]"></i> รูปภาพประกอบโพสต์
+                        </span>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <label class="cursor-pointer px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-upload text-blue-600"></i> อัปโหลดรูปใหม่
+                                <input type="file" accept="image/*" class="hidden" onchange="uploadImageForEditPost(event)">
+                            </label>
+                            <button type="button" onclick="generateAIImageForEditPost()"
+                                    class="px-2.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> เจนรูปใหม่ด้วย AI
+                            </button>
+                            <button type="button" onclick="removeEditPostImage()"
+                                    class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> ไม่ใช้รูป
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="edit-post-image-preview-box" class="w-full h-48 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img id="edit-post-image-preview" src="" class="max-h-full max-w-full object-contain hidden">
+                        <span id="edit-post-no-image-text" class="text-xs text-slate-400">ไม่มีรูปภาพประกอบ (โพสต์เฉพาะข้อความ)</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeEditPostModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 px-4 bg-[#0B3B60] hover:bg-[#082b47] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึกการเปลี่ยนแปลงโพสต์
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 4: ADVANCED PLANNER POST DETAIL & IMAGE STUDIO ================= -->
+    <div id="modal-planner-post-detail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 relative my-8 max-h-[92vh] overflow-y-auto">
+            <button onclick="closePlannerScheduleModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0B3B60] to-[#12588f] text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">ปรับแต่งคอนเทนต์ & กำหนดรูปภาพก่อนตั้งเวลา</h3>
+                    <p class="text-xs text-slate-500">ตั้งหัวข้อ แต่งแคปชั่น เลือกรูปเอง เจนรูปตามคำสั่ง หรือเจนรูปตามสไตล์ภาพตัวอย่าง</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <input type="hidden" id="planner-modal-image-path">
+
+                <!-- Date & Time -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">📅 วันที่ต้องการโพสต์</label>
+                        <input type="date" id="planner-modal-date"
+                               class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">⏰ เวลาโพสต์</label>
+                        <input type="time" id="planner-modal-time" value="09:30"
+                               class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Topic -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">📌 หัวข้อโพสต์ (แก้ไขได้ตามต้องการ)</label>
+                    <input type="text" id="planner-modal-topic"
+                           class="w-full p-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:ring-2 focus:ring-[#0B3B60] focus:outline-none">
+                </div>
+
+                <!-- Caption -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700">📝 แคปชั่นโพสต์</label>
+                        <button type="button" onclick="generatePlannerCaption()"
+                                class="text-xs px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#FF5B00] font-bold border border-orange-200 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ สร้างแคปชั่นด้วย AI ตอนนี้
+                        </button>
+                    </div>
+                    <textarea id="planner-modal-caption" rows="4" placeholder="กดปุ่ม 'สร้างแคปชั่นด้วย AI' เพื่อตรวจทานก่อน หรือเว้นว่างไว้ให้ระบบสร้างอัตโนมัติเมื่อถึงเวลาโพสต์..."
+                              class="w-full p-3 rounded-xl border border-slate-300 text-sm leading-relaxed focus:ring-2 focus:ring-[#0B3B60] focus:outline-none"></textarea>
+                </div>
+
+                <!-- 4 Image Modes Selector -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <label class="block text-xs font-bold text-slate-700">🖼️ เลือกรูปแบบการจัดการรูปภาพประกอบ</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button type="button" id="btn-pimg-none" onclick="switchPlannerImageMode('none')"
+                                class="p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-white border-slate-200 text-slate-600">
+                            <i class="fa-solid fa-ban text-base"></i>
+                            <span>ไม่ใช้รูปภาพ</span>
+                        </button>
+                        <button type="button" id="btn-pimg-upload" onclick="switchPlannerImageMode('upload')"
+                                class="p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-white border-slate-200 text-slate-600">
+                            <i class="fa-solid fa-upload text-base text-blue-600"></i>
+                            <span>กำหนดรูปเอง</span>
+                        </button>
+                        <button type="button" id="btn-pimg-prompt" onclick="switchPlannerImageMode('prompt')"
+                                class="p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-blue-50 border-[#0B3B60] text-[#0B3B60]">
+                            <i class="fa-solid fa-wand-magic-sparkles text-base text-purple-600"></i>
+                            <span>เจนรูปตามคำสั่ง</span>
+                        </button>
+                        <button type="button" id="btn-pimg-reference" onclick="switchPlannerImageMode('reference')"
+                                class="p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-white border-slate-200 text-slate-600">
+                            <i class="fa-solid fa-images text-base text-emerald-600"></i>
+                            <span>เจนตามตัวอย่าง</span>
+                        </button>
+                    </div>
+
+                    <!-- Mode Panel: Upload Custom Image -->
+                    <div id="planner-panel-upload" class="hidden space-y-2 pt-2 border-t border-slate-200">
+                        <label class="block text-xs font-semibold text-slate-600">อัปโหลดรูปภาพของคุณ (พร้อมประทับลายน้ำอัตโนมัติ)</label>
+                        <input type="file" accept="image/*" onchange="handlePlannerImageUpload(event)"
+                               class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#0B3B60] file:text-white hover:file:bg-[#082b47]">
+                    </div>
+
+                    <!-- Mode Panel: Generate by Custom Prompt -->
+                    <div id="planner-panel-prompt" class="space-y-2 pt-2 border-t border-slate-200">
+                        <label class="block text-xs font-semibold text-slate-600">คำสั่งสร้างภาพ (Prompt) — เว้นว่างเพื่อให้ AI คิดตามหัวข้ออัตโนมัติ หรือพิมพ์ระบุเองได้</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="planner-custom-prompt" placeholder="เช่น ภาพถ่ายโฆษณาช่างแอร์กำลังล้างแอร์ในห้องนั่งเล่นโมเดิร์น แสงธรรมชาติ..."
+                                   class="flex-1 p-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none bg-white">
+                            <button type="button" onclick="generateAIImageForPlanner('prompt')"
+                                    class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition shrink-0 flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-bolt"></i> เจนรูปทันที
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mode Panel: Generate by Reference Image -->
+                    <div id="planner-panel-reference" class="hidden space-y-3 pt-2 border-t border-slate-200">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">1. อัปโหลดภาพตัวอย่างต้นแบบ (Reference Image) เพื่อให้ AI ถอดสไตล์ แสง และโทนสี</label>
+                            <input type="file" accept="image/*" onchange="handlePlannerReferenceUpload(event)"
+                                   class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">2. คำสั่งสไตล์ภาพที่ AI วิเคราะห์ได้ (แก้ไขเพิ่มเติมได้ก่อนกดเจนรูป)</label>
+                            <textarea id="planner-reference-prompt" rows="2" placeholder="อัปโหลดรูปตัวอย่างด้านบนเพื่อให้ AI ถอดรหัสสไตล์ภาพ..."
+                                      class="w-full p-2.5 rounded-xl border border-slate-300 text-xs bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"></textarea>
+                        </div>
+                        <button type="button" onclick="generateAIImageForPlanner('reference')"
+                                class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> สร้างรูปใหม่ตามสไตล์ภาพตัวอย่างนี้
+                        </button>
+                    </div>
+
+                    <!-- Preview Box -->
+                    <div id="planner-modal-preview-box" class="w-full h-48 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img id="planner-modal-preview-img" src="" class="max-h-full max-w-full object-contain hidden">
+                        <span id="planner-modal-preview-placeholder" class="text-xs text-slate-400">ยังไม่ได้เลือกรูปภาพ (สามารถกดเจนรูปด้านบนได้ทันที)</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closePlannerScheduleModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
+                        ยกเลิก
+                    </button>
+                    <button type="button" onclick="submitPlannerScheduledPost()" class="flex-1 py-2.5 px-4 bg-[#0B3B60] hover:bg-[#082b47] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-calendar-check"></i> 🚀 บันทึกลงตารางโพสต์ล่วงหน้า
+                    </button>
+                </div>
             </div>
         </div>
     </div>

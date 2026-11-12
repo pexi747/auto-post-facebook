@@ -462,8 +462,81 @@ STRICT REQUIREMENTS:
 
     return fallback_prompt
 
-def generate_ai_image(
+def craft_visual_prompt_from_reference_image(
+    image_path: str,
     topic: str,
+    brand_name: str = "",
+    user_config: Optional[Dict[str, Any]] = None
+) -> str:
+    """
+    วิเคราะห์ภาพตัวอย่าง (Reference Image) เพื่อถอดแบบสไตล์ภาพ แสง สี โทน อารมณ์ และมุมกล้อง
+    แล้วสร้าง English Prompt คุณภาพสูงสำหรับสร้างภาพใหม่ในหัวข้อ topic ที่กำหนด
+    """
+    fallback_prompt = f"Professional commercial photography of {topic}, {brand_name}, modern clean studio lighting, award winning product photo, 8k, photorealistic"
+    
+    if not os.path.exists(image_path):
+        return fallback_prompt
+
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if user_config and user_config.get("api_key") and user_config.get("provider") == "gemini":
+        api_key = user_config.get("api_key")
+
+    prompt_maker = f"""You are an elite Commercial Art Director and AI Image Prompt Engineer.
+Look at this reference image carefully and analyze its artistic aesthetic:
+1. Photography lighting (e.g. dramatic shadows, bright softbox studio, warm golden hour, natural cinematic ambient)
+2. Color grading & palette (e.g. warm earth tones, vibrant saturated, cool moody, minimalist pastel)
+3. Composition, camera depth of field, framing, perspective, and background texture.
+
+Now, write a short, highly-detailed English prompt (maximum 40 words) for a BRAND NEW commercial photograph about:
+- Subject / Topic: "{topic}"
+- Brand context: "{brand_name}"
+
+STRICT REQUIREMENTS:
+- The new image must mimic the EXACT photographic style, lighting atmosphere, color palette, and premium aesthetic of this reference image.
+- Do NOT describe what is currently in the reference image. Describe ONLY the new subject matching the topic.
+- High-end commercial advertising photography style, sharp focus, 8k, hyperrealistic.
+- ABSOLUTELY NO text, typography, letters, logos, or watermarks.
+- Return ONLY 1 concise English paragraph without quotes or extra explanation.
+"""
+
+    if api_key:
+        try:
+            from PIL import Image
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            img = Image.open(image_path)
+            
+            models_to_try = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash", "gemini-1.5-flash"]
+            for m in models_to_try:
+                try:
+                    resp = client.models.generate_content(model=m, contents=[prompt_maker, img])
+                    if resp and resp.text:
+                        cleaned = resp.text.strip().replace('"', '').replace('\n', ' ')
+                        cleaned = re.sub(r'^(Prompt:\s*|Here is\s*.*:\s*)', '', cleaned, flags=re.IGNORECASE).strip()
+                        if len(cleaned) > 15:
+                            return cleaned[:300]
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"⚠️ Reference prompt analysis error: {e}")
+
+    try:
+        text_prompt = f"""You are an expert Commercial Art Director.
+Generate a high quality English commercial photography prompt (max 35 words) for Facebook advertising:
+Topic: {topic}
+Brand: {brand_name}
+Style: Photorealistic, cinematic lighting, modern commercial advertising aesthetic, sharp focus, 8k resolution, no text, no watermark.
+Return only the prompt paragraph."""
+        ai_res = ai_client_resolver.call_ai_completion(text_prompt, user_config=user_config)
+        if ai_res and len(ai_res.strip()) > 10:
+            return ai_res.strip().replace('"', '').replace('\n', ' ')[:300]
+    except Exception:
+        pass
+
+    return fallback_prompt
+
+def generate_ai_image(
+    topic: str = "",
     caption: Optional[str] = None,
     brand_name: str = "",
     business_type: str = "",
@@ -472,10 +545,11 @@ def generate_ai_image(
     picture_url: Optional[str] = None,
     logo_path: Optional[str] = None,
     apply_watermark: bool = True,
-    user_config: Optional[Dict[str, Any]] = None
+    user_config: Optional[Dict[str, Any]] = None,
+    prompt: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    สร้างรูปภาพด้วย AI พร้อมแยกแยะวันสำคัญกับโพสต์ธุรกิจอย่างแม่นยำ
+    สร้างรูปภาพด้วย AI พร้อมแยกแยะวันสำคัญกับโพสต์ธุรกิจอย่างแม่นยำ (หรือใช้ Custom Prompt ที่ระบุ)
     """
     holiday = detect_holiday_theme(topic=topic, caption=caption or "")
 
@@ -486,13 +560,16 @@ def generate_ai_image(
         effective_biz = business_type
         style_tags = "hyperrealistic, sharp focus, 8k resolution, commercial advertising style, no text, no watermark"
 
-    english_prompt = craft_visual_prompt_with_gemini(
-        topic=topic,
-        caption=caption,
-        brand_name=brand_name,
-        business_type=effective_biz,
-        user_config=user_config
-    )
+    if prompt and prompt.strip():
+        english_prompt = prompt.strip()
+    else:
+        english_prompt = craft_visual_prompt_with_gemini(
+            topic=topic,
+            caption=caption,
+            brand_name=brand_name,
+            business_type=effective_biz,
+            user_config=user_config
+        )
 
     final_prompt = f"{english_prompt}, {style_tags}"
     encoded_prompt = urllib.parse.quote(final_prompt)

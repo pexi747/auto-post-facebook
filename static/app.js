@@ -518,6 +518,9 @@ async function loadPosts() {
 
                     <!-- Actions -->
                     <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+                        <button onclick="openEditPostModal('${post.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1" title="แก้ไขโพสต์">
+                            <i class="fa-solid fa-pen-to-square text-[#0B3B60]"></i> แก้ไข
+                        </button>
                         ${isPending ? `
                             <button onclick="postSingleNow('${post.id}')" class="px-3.5 py-1.5 bg-[#FF5B00] hover:bg-[#e05000] text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1">
                                 <i class="fa-solid fa-paper-plane"></i> โพสต์ทันที
@@ -709,10 +712,13 @@ async function postSingleNow(postId) {
 // AI Topic Planner Generator
 async function generatePlan(days) {
     const container = document.getElementById('planner-results');
+    const focusInput = document.getElementById('planner-focus-topic');
+    const focusTopic = focusInput ? focusInput.value.trim() : '';
+
     container.innerHTML = `
         <div class="col-span-full text-center py-12">
             <i class="fa-solid fa-spinner fa-spin text-3xl text-[#FF5B00] mb-3"></i>
-            <p class="text-slate-600 font-medium">AI กำลังวิเคราะห์และวางแผนคอนเทนต์ ${days} วันสำหรับ FixPack...</p>
+            <p class="text-slate-600 font-medium">AI กำลังวิเคราะห์และวางแผนคอนเทนต์ ${days} วัน${focusTopic ? ` (เน้นแคมเปญ: ${focusTopic})` : ''}...</p>
         </div>
     `;
 
@@ -720,7 +726,7 @@ async function generatePlan(days) {
         const res = await fetch('/api/ai/plan_topics', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ days: days })
+            body: JSON.stringify({ days: days, focus_topic: focusTopic })
         });
         const data = await res.json();
 
@@ -730,15 +736,21 @@ async function generatePlan(days) {
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-bold px-2 py-0.5 rounded bg-orange-100 text-[#FF5B00]">วันที่ ${idx + 1}</span>
-                            <span class="text-xs text-slate-400">${t.category || 'งานช่าง'}</span>
+                            <span class="text-xs text-slate-400">${t.category || 'คอนเทนต์แนะนำ'}</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm mb-2">${t.topic}</h4>
                         <p class="text-xs text-slate-500 leading-relaxed">${t.brief || ''}</p>
                     </div>
-                    <button onclick="scheduleTopicDirectly('${encodeURIComponent(t.topic)}', ${idx + 1})" 
-                            class="mt-4 w-full py-2 px-3 bg-slate-50 hover:bg-[#0B3B60] hover:text-white text-[#0B3B60] text-xs font-semibold rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-calendar-plus"></i> บรรจุลงตารางวันที่ ${idx + 1}
-                    </button>
+                    <div class="mt-4 flex flex-col gap-2">
+                        <button onclick="openPlannerScheduleModal('${encodeURIComponent(t.topic)}', ${idx + 1})"
+                                class="w-full py-2 px-3 bg-[#0B3B60] hover:bg-[#082b47] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-sliders"></i> ⚙️ ปรับแต่งรูป/แคปชั่น & ตั้งเวลา
+                        </button>
+                        <button onclick="scheduleTopicDirectly('${encodeURIComponent(t.topic)}', ${idx + 1})" 
+                                class="w-full py-1.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[11px] font-semibold rounded-xl border border-slate-200 transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-bolt text-[#FF5B00]"></i> บรรจุลงตารางด่วน (วันที่ ${idx + 1})
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -763,7 +775,7 @@ async function scheduleTopicDirectly(encodedTopic, dayOffset) {
                 time: "09:30",
                 topic: topic,
                 content: "",
-                image_path: "fixpack_ai_banner.png"
+                image_path: ""
             })
         });
         const result = await res.json();
@@ -1133,29 +1145,51 @@ async function loadUsers() {
         const users = await res.json();
 
         tbody.innerHTML = users.map(u => {
-            const roleBadge = u.role === 'admin' 
-                ? '<span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold text-xs">Admin (สูงสุด)</span>'
-                : (u.role === 'owner' 
-                    ? '<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold text-xs">Page Owner (เจ้าของเพจ)</span>'
-                    : '<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold text-xs">Staff (ทีมงาน)</span>');
+            let roleBadge = '';
+            if (u.role === 'admin') {
+                roleBadge = '<span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold text-xs">Admin (สูงสุด)</span>';
+            } else if (u.role === 'owner') {
+                roleBadge = '<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold text-xs">Page Owner (เจ้าของเพจ)</span>';
+            } else if (u.role === 'customer') {
+                roleBadge = '<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold text-xs">Customer (ลูกค้า)</span>';
+            } else {
+                roleBadge = '<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold text-xs">Staff (ทีมงาน)</span>';
+            }
+
+            const creditBadge = u.role === 'admin'
+                ? '<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs inline-flex items-center gap-1"><i class="fa-solid fa-crown text-amber-500"></i> ไม่จำกัด (Unlimited)</span>'
+                : `<span class="px-2.5 py-1 rounded-full bg-orange-50 text-[#FF5B00] border border-orange-200 font-bold text-xs inline-flex items-center gap-1">🪙 ${(u.credits || 0).toLocaleString()} เครดิต</span>`;
+
+            const safeName = (u.name || '').replace(/'/g, "\\'");
 
             return `
                 <tr class="hover:bg-slate-50 transition">
                     <td class="py-3 px-4 font-bold text-slate-800">${u.username}</td>
                     <td class="py-3 px-4 text-slate-600">${u.name}</td>
                     <td class="py-3 px-4">${roleBadge}</td>
+                    <td class="py-3 px-4">${creditBadge}</td>
                     <td class="py-3 px-4 text-right">
-                        ${u.username !== 'admin' ? `
-                            <button onclick="deleteUser('${u.username}')" class="text-red-500 hover:text-red-700 text-xs font-semibold">
-                                <i class="fa-solid fa-trash-can"></i> ลบ
+                        <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                            <button onclick="openAdminGiveCreditModal('${u.username}', ${u.credits || 0})" 
+                                    class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-solid fa-coins"></i> + เติมเครดิต
                             </button>
-                        ` : '<span class="text-slate-400 text-xs">สงวนสิทธิ์</span>'}
+                            <button onclick="openEditUserModal('${u.username}', '${safeName}', '${u.role}')" 
+                                    class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#0B3B60] border border-blue-200 text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-solid fa-user-pen"></i> แก้ไข
+                            </button>
+                            ${u.username !== 'admin' ? `
+                                <button onclick="deleteUser('${u.username}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> ลบ
+                                </button>
+                            ` : ''}
+                        </div>
                     </td>
                 </tr>
             `;
         }).join('');
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-red-500">โหลดผู้ใช้ไม่สำเร็จ</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">โหลดผู้ใช้ไม่สำเร็จ</td></tr>';
     }
 }
 
@@ -2144,6 +2178,608 @@ async function saveUserAISettings() {
         Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
     } finally {
         if (btnSave) btnSave.disabled = false;
+    }
+}
+
+// ================= FEATURE 1: ADMIN USER EDIT & CREDIT MODAL HANDLERS =================
+
+function openEditUserModal(username, name, role) {
+    const modal = document.getElementById('modal-edit-user');
+    if (!modal) return;
+    document.getElementById('edit-user-username').value = username;
+    document.getElementById('edit-user-name').value = name || '';
+    const roleSelect = document.getElementById('edit-user-role');
+    if (roleSelect) {
+        roleSelect.value = role || 'staff';
+        roleSelect.disabled = (username === 'admin');
+    }
+    document.getElementById('edit-user-password').value = '';
+    modal.classList.remove('hidden');
+}
+
+function closeEditUserModal() {
+    const modal = document.getElementById('modal-edit-user');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function saveUserEdit(event) {
+    event.preventDefault();
+    const username = document.getElementById('edit-user-username').value;
+    const name = document.getElementById('edit-user-name').value.trim();
+    const role = document.getElementById('edit-user-role').value;
+    const password = document.getElementById('edit-user-password').value;
+
+    const payload = { name, role };
+    if (password && password.trim()) {
+        payload.password = password.trim();
+    }
+
+    try {
+        const res = await fetch(`/api/admin/users/${encodeURIComponent(username)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeEditUserModal();
+            loadUsers();
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกข้อมูลผู้ใช้สำเร็จ!',
+                text: `อัปเดตบัญชี "${username}" เรียบร้อยแล้ว`,
+                timer: 1800,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถแก้ไขข้อมูลผู้ใช้ได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+function openAdminGiveCreditModal(username, currentCredits) {
+    const modal = document.getElementById('modal-admin-give-credit');
+    if (!modal) return;
+    document.getElementById('credit-target-username').value = username;
+    document.getElementById('credit-target-display').textContent = username;
+    document.getElementById('credit-current-balance').textContent = username === 'admin'
+        ? 'ไม่จำกัด (Unlimited)'
+        : `${Number(currentCredits || 0).toLocaleString()} เครดิต`;
+    document.getElementById('credit-adjust-amount').value = 100;
+    document.getElementById('credit-adjust-reason').value = 'Admin เติมเครดิตพิเศษให้บัญชี';
+    modal.classList.remove('hidden');
+}
+
+function closeAdminGiveCreditModal() {
+    const modal = document.getElementById('modal-admin-give-credit');
+    if (modal) modal.classList.add('hidden');
+}
+
+function setQuickCreditAmount(amt) {
+    const input = document.getElementById('credit-adjust-amount');
+    if (input) input.value = amt;
+}
+
+async function submitAdminGiveCredit(event) {
+    event.preventDefault();
+    const username = document.getElementById('credit-target-username').value;
+    const amount = parseInt(document.getElementById('credit-adjust-amount').value, 10);
+    const reason = document.getElementById('credit-adjust-reason').value.trim();
+
+    if (isNaN(amount) || amount === 0) {
+        Swal.fire('แจ้งเตือน', 'กรุณาระบุจำนวนเครดิตที่ต้องการปรับปรุง (ต้องไม่เป็น 0)', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/credits/admin_adjust', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, amount, reason })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeAdminGiveCreditModal();
+            loadUsers();
+            loadUserCreditBalance();
+            Swal.fire({
+                icon: 'success',
+                title: 'ปรับยอดเครดิตสำเร็จ!',
+                html: `บัญชี <strong>${username}</strong> มียอดเครดิตคงเหลือใหม่: <strong class="text-[#FF5B00]">${Number(data.balance || 0).toLocaleString()} เครดิต</strong>`,
+                confirmButtonColor: '#0B3B60'
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถปรับยอดเครดิตได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+// ================= FEATURE 2: SCHEDULED POST EDITING MODAL HANDLERS =================
+
+function _updateEditPostImagePreview(imagePath) {
+    const hiddenInput = document.getElementById('edit-post-image-path');
+    const previewImg = document.getElementById('edit-post-image-preview');
+    const noImgText = document.getElementById('edit-post-no-image-text');
+
+    if (hiddenInput) hiddenInput.value = imagePath || '';
+
+    if (imagePath && imagePath.trim()) {
+        let imgUrl = imagePath.trim();
+        if (!imgUrl.startsWith('/') && !imgUrl.startsWith('http')) {
+            imgUrl = imgUrl.startsWith('static/') ? '/' + imgUrl : '/static/' + imgUrl;
+        }
+        if (previewImg) {
+            previewImg.src = imgUrl;
+            previewImg.classList.remove('hidden');
+        }
+        if (noImgText) noImgText.classList.add('hidden');
+    } else {
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (noImgText) noImgText.classList.remove('hidden');
+    }
+}
+
+async function openEditPostModal(postId) {
+    try {
+        const res = await fetch(`/api/posts/${encodeURIComponent(postId)}`);
+        const data = await res.json();
+        if (!data.success || !data.post) {
+            Swal.fire('ไม่พบข้อมูล', data.error || 'ไม่พบรายการโพสต์นี้', 'error');
+            return;
+        }
+        const post = data.post;
+        document.getElementById('edit-post-id').value = post.id;
+        document.getElementById('edit-post-date').value = post.date || '';
+        document.getElementById('edit-post-time').value = post.time || '09:30';
+        document.getElementById('edit-post-topic').value = post.topic || '';
+        document.getElementById('edit-post-content').value = post.content || '';
+        _updateEditPostImagePreview(post.image_path || '');
+
+        const modal = document.getElementById('modal-edit-scheduled-post');
+        if (modal) modal.classList.remove('hidden');
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลโพสต์ได้', 'error');
+    }
+}
+
+function closeEditPostModal() {
+    const modal = document.getElementById('modal-edit-scheduled-post');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function savePostEdit(event) {
+    event.preventDefault();
+    const postId = document.getElementById('edit-post-id').value;
+    const payload = {
+        date: document.getElementById('edit-post-date').value,
+        time: document.getElementById('edit-post-time').value,
+        topic: document.getElementById('edit-post-topic').value.trim(),
+        content: document.getElementById('edit-post-content').value.trim(),
+        image_path: document.getElementById('edit-post-image-path').value.trim()
+    };
+
+    try {
+        const res = await fetch(`/api/posts/${encodeURIComponent(postId)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeEditPostModal();
+            loadPosts();
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกการแก้ไขโพสต์แล้ว!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถบันทึกโพสต์ได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function rewritePostCaptionWithAI() {
+    const topic = document.getElementById('edit-post-topic').value.trim();
+    if (!topic) {
+        Swal.fire('แจ้งเตือน', 'กรุณาระบุหัวข้อโพสต์ก่อนให้ AI เขียนแคปชั่น', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: '✨ AI กำลังเขียนแคปชั่นใหม่...',
+        text: `หัวข้อ: "${topic}"`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/generate_caption', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success && data.caption) {
+            document.getElementById('edit-post-content').value = data.caption;
+            loadUserCreditBalance();
+        } else {
+            Swal.fire('ข้อผิดพลาด', data.error || 'ไม่สามารถสร้างแคปชั่นได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function uploadImageForEditPost(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('watermark', 'true');
+
+    Swal.fire({
+        title: 'กำลังอัปโหลดรูปภาพ...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/upload_image', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            _updateEditPostImagePreview(data.image_path);
+        } else {
+            Swal.fire('อัปโหลดล้มเหลว', data.error || 'ไม่สามารถอัปโหลดรูปได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function generateAIImageForEditPost() {
+    const topic = document.getElementById('edit-post-topic').value.trim() || 'บริการคุณภาพ';
+    const caption = document.getElementById('edit-post-content').value.trim();
+
+    Swal.fire({
+        title: '🎨 AI กำลังวาดรูปประกอบใหม่...',
+        text: `หัวข้อ: "${topic}"`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/generate_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic, caption, apply_watermark: true })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success && data.image_path) {
+            _updateEditPostImagePreview(data.image_path);
+            loadUserCreditBalance();
+        } else {
+            Swal.fire('สร้างภาพไม่สำเร็จ', data.error || 'ไม่สามารถเจนรูปภาพได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+function removeEditPostImage() {
+    _updateEditPostImagePreview('');
+}
+
+// ================= FEATURE 3: ADVANCED PLANNER DETAIL & IMAGE STUDIO HANDLERS =================
+
+let currentPlannerImageMode = 'prompt';
+
+function _updatePlannerPreviewImage(imagePath) {
+    const hiddenInput = document.getElementById('planner-modal-image-path');
+    const previewImg = document.getElementById('planner-modal-preview-img');
+    const placeholder = document.getElementById('planner-modal-preview-placeholder');
+
+    if (hiddenInput) hiddenInput.value = imagePath || '';
+
+    if (imagePath && imagePath.trim()) {
+        let imgUrl = imagePath.trim();
+        if (!imgUrl.startsWith('/') && !imgUrl.startsWith('http')) {
+            imgUrl = imgUrl.startsWith('static/') ? '/' + imgUrl : '/static/' + imgUrl;
+        }
+        if (previewImg) {
+            previewImg.src = imgUrl;
+            previewImg.classList.remove('hidden');
+        }
+        if (placeholder) placeholder.classList.add('hidden');
+    } else {
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (placeholder) placeholder.classList.remove('hidden');
+    }
+}
+
+function openPlannerScheduleModal(encodedTopic, dayOffset) {
+    const topic = decodeURIComponent(encodedTopic);
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + (dayOffset || 1));
+    const dateStr = targetDate.toISOString().split('T')[0];
+
+    document.getElementById('planner-modal-date').value = dateStr;
+    document.getElementById('planner-modal-time').value = '09:30';
+    document.getElementById('planner-modal-topic').value = topic;
+    document.getElementById('planner-modal-caption').value = '';
+    document.getElementById('planner-custom-prompt').value = '';
+    document.getElementById('planner-reference-prompt').value = '';
+    _updatePlannerPreviewImage('');
+    switchPlannerImageMode('prompt');
+
+    const modal = document.getElementById('modal-planner-post-detail');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closePlannerScheduleModal() {
+    const modal = document.getElementById('modal-planner-post-detail');
+    if (modal) modal.classList.add('hidden');
+}
+
+function switchPlannerImageMode(mode) {
+    currentPlannerImageMode = mode;
+    const modes = ['none', 'upload', 'prompt', 'reference'];
+    modes.forEach(m => {
+        const btn = document.getElementById(`btn-pimg-${m}`);
+        if (btn) {
+            if (m === mode) {
+                btn.className = 'p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-blue-50 border-[#0B3B60] text-[#0B3B60] shadow-xs';
+            } else {
+                btn.className = 'p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center gap-1 bg-white border-slate-200 text-slate-600 hover:bg-slate-50';
+            }
+        }
+    });
+
+    const panelUpload = document.getElementById('planner-panel-upload');
+    const panelPrompt = document.getElementById('planner-panel-prompt');
+    const panelReference = document.getElementById('planner-panel-reference');
+
+    if (panelUpload) panelUpload.classList.toggle('hidden', mode !== 'upload');
+    if (panelPrompt) panelPrompt.classList.toggle('hidden', mode !== 'prompt');
+    if (panelReference) panelReference.classList.toggle('hidden', mode !== 'reference');
+
+    if (mode === 'none') {
+        _updatePlannerPreviewImage('');
+    }
+}
+
+async function generatePlannerCaption() {
+    const topic = document.getElementById('planner-modal-topic').value.trim();
+    if (!topic) {
+        Swal.fire('แจ้งเตือน', 'กรุณาระบุหัวข้อโพสต์ก่อนสร้างแคปชั่น', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: '✨ AI กำลังแต่งแคปชั่น...',
+        text: `หัวข้อ: "${topic}"`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/generate_caption', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success && data.caption) {
+            document.getElementById('planner-modal-caption').value = data.caption;
+            loadUserCreditBalance();
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถสร้างแคปชั่นได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function handlePlannerImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('watermark', 'true');
+
+    Swal.fire({
+        title: 'กำลังอัปโหลดรูปภาพ...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/upload_image', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success) {
+            _updatePlannerPreviewImage(data.image_path);
+        } else {
+            Swal.fire('อัปโหลดล้มเหลว', data.error || 'ไม่สามารถอัปโหลดรูปได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function handlePlannerReferenceUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const topic = document.getElementById('planner-modal-topic').value.trim() || 'บริการแนะนำ';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('watermark', 'false');
+
+    Swal.fire({
+        title: '🔍 AI กำลังวิเคราะห์สไตล์ภาพตัวอย่าง...',
+        text: 'กำลังถอดรหัสโทนสี การจัดแสง และองค์ประกอบภาพ...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const upRes = await fetch('/api/upload_image', {
+            method: 'POST',
+            body: formData
+        });
+        const upData = await upRes.json();
+        if (!upData.success) {
+            Swal.fire('ผิดพลาด', upData.error || 'อัปโหลดรูปตัวอย่างไม่สำเร็จ', 'error');
+            return;
+        }
+
+        const refRes = await fetch('/api/ai/prompt_from_reference', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image_path: upData.image_path,
+                topic: topic
+            })
+        });
+        const refData = await refRes.json();
+        Swal.close();
+
+        if (refData.success && refData.prompt) {
+            document.getElementById('planner-reference-prompt').value = refData.prompt;
+            Swal.fire({
+                icon: 'success',
+                title: 'ถอดรหัสสไตล์ภาพสำเร็จ!',
+                text: 'กดปุ่ม "สร้างรูปใหม่ตามสไตล์ภาพตัวอย่างนี้" เพื่อเจนภาพได้เลย',
+                timer: 1800,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire('ผิดพลาด', refData.error || 'ไม่สามารถวิเคราะห์สไตล์ภาพได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function generateAIImageForPlanner(sourceMode) {
+    const topic = document.getElementById('planner-modal-topic').value.trim() || 'บริการคุณภาพ';
+    const caption = document.getElementById('planner-modal-caption').value.trim();
+    let customPrompt = '';
+
+    if (sourceMode === 'reference') {
+        customPrompt = document.getElementById('planner-reference-prompt').value.trim();
+        if (!customPrompt) {
+            Swal.fire('แจ้งเตือน', 'กรุณาอัปโหลดภาพตัวอย่าง หรือระบุคำสั่งสไตล์ภาพก่อนกดเจนรูป', 'warning');
+            return;
+        }
+    } else {
+        customPrompt = document.getElementById('planner-custom-prompt').value.trim();
+    }
+
+    Swal.fire({
+        title: '🎨 AI กำลังสร้างรูปภาพประกอบ...',
+        text: customPrompt ? 'กำลังวาดภาพตามคำสั่งเฉพาะของคุณ...' : `สำหรับหัวข้อ: "${topic}"`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const res = await fetch('/api/ai/generate_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                topic: topic,
+                caption: caption,
+                prompt: customPrompt || null,
+                apply_watermark: true
+            })
+        });
+        const data = await res.json();
+        Swal.close();
+
+        if (data.success && data.image_path) {
+            _updatePlannerPreviewImage(data.image_path);
+            loadUserCreditBalance();
+        } else {
+            Swal.fire('สร้างภาพไม่สำเร็จ', data.error || 'ไม่สามารถสร้างรูปภาพได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
+    }
+}
+
+async function submitPlannerScheduledPost() {
+    const date = document.getElementById('planner-modal-date').value;
+    const time = document.getElementById('planner-modal-time').value || '09:30';
+    const topic = document.getElementById('planner-modal-topic').value.trim();
+    const content = document.getElementById('planner-modal-caption').value.trim();
+    const image_path = currentPlannerImageMode === 'none'
+        ? ''
+        : document.getElementById('planner-modal-image-path').value.trim();
+
+    if (!date || !topic) {
+        Swal.fire('แจ้งเตือน', 'กรุณาระบุวันที่และหัวข้อโพสต์ให้ครบถ้วน', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date,
+                time,
+                topic,
+                content,
+                image_path
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            closePlannerScheduleModal();
+            loadPosts();
+            Swal.fire({
+                icon: 'success',
+                title: 'บรรจุลงตารางโพสต์สำเร็จ!',
+                text: `กำหนดโพสต์วันที่ ${date} เวลา ${time} น. เรียบร้อยแล้ว`,
+                confirmButtonColor: '#0B3B60'
+            });
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด', result.error || 'ไม่สามารถบันทึกโพสต์ได้', 'error');
+        }
+    } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว', 'error');
     }
 }
 

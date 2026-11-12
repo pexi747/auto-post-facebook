@@ -400,13 +400,16 @@ def create_facebook_post_content(
 def generate_brand_topics(
     page_info: Optional[Dict[str, Any]] = None,
     days: int = 7,
-    user_config: Optional[Dict[str, Any]] = None
+    user_config: Optional[Dict[str, Any]] = None,
+    focus_topic: Optional[str] = None
 ) -> List[Dict[str, str]]:
     """
-    สร้างแผนหัวข้อคอนเทนต์ตาม Brand DNA สำหรับ N วัน (รองรับโหมดฟรี และ BYO AI)
+    สร้างแผนหัวข้อคอนเทนต์ตาม Brand DNA สำหรับ N วัน (รองรับโหมดฟรี, BYO AI และแคมเปญเฉพาะเจาะจง)
     """
     ctx = _resolve_brand_context(page_info=page_info)
     days = min(max(days, 3), 30)
+
+    focus_line = f"- แคมเปญ/หัวข้อเฉพาะที่ต้องการเน้น: \"{focus_topic.strip()}\" กรุณาคิดแผนหัวข้อโพสต์โดยเน้นหัวข้อหรือบริการนี้เป็นหลัก\n" if focus_topic and focus_topic.strip() else ""
 
     prompt = f"""คุณเป็นผู้เชี่ยวชาญการวางแผนคอนเทนต์ Facebook สำหรับแบรนด์ "{ctx['brand_name']}"
 - ประเภทธุรกิจ: {ctx['business_type']}
@@ -415,7 +418,7 @@ def generate_brand_topics(
 - บริการหรือสินค้าหลัก: {ctx['core_services_str']}
 - จุดขาย: {ctx['selling_points_str']}
 - โทนเสียง: {ctx['tone_of_voice']}
-
+{focus_line}
 กรุณาวางแผนหัวข้อโพสต์จำนวน {days} วัน ในรูปแบบ JSON Array:
 [
   {{"topic": "ชื่อหัวข้อโพสต์ที่น่าสนใจและหยุดนิ้วโป้ง", "brief": "แนวทางการเล่าสั้นๆ 1 บรรทัด", "category": "หมวดหมู่เนื้อหา"}}

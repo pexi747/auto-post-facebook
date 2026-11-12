@@ -413,6 +413,47 @@ async def post_item_now(post_id: str, request: Request):
     save_schedule(posts)
     return {"success": success, "error": target_post.get("error")}
 
+class PostUpdateRequest(BaseModel):
+    date: Optional[str] = None
+    time: Optional[str] = None
+    topic: Optional[str] = None
+    content: Optional[str] = None
+    image_path: Optional[str] = None
+
+@app.get("/api/posts/{post_id}")
+async def get_single_post_api(post_id: str, request: Request):
+    """ดึงข้อมูลโพสต์เดี่ยวสำหรับนำมาแสดงใน Modal แก้ไข"""
+    require_auth(request)
+    posts = load_schedule()
+    target_post = next((p for p in posts if p.get("id") == post_id), None)
+    if not target_post:
+        return {"success": False, "error": f"ไม่พบรายการโพสต์รหัส {post_id}"}
+    return {"success": True, "post": target_post}
+
+@app.put("/api/posts/{post_id}")
+@app.post("/api/posts/{post_id}/update")
+async def update_post_api(post_id: str, payload: PostUpdateRequest, request: Request):
+    """แก้ไขข้อมูลโพสต์ที่วางแผนล่วงหน้า (วัน, เวลา, หัวข้อ, แคปชั่น, รูปภาพ)"""
+    require_auth(request)
+    posts = load_schedule()
+    target_post = next((p for p in posts if p.get("id") == post_id), None)
+    if not target_post:
+        return {"success": False, "error": f"ไม่พบรายการโพสต์รหัส {post_id}"}
+    
+    if payload.date is not None and payload.date.strip():
+        target_post["date"] = payload.date.strip()
+    if payload.time is not None and payload.time.strip():
+        target_post["time"] = payload.time.strip()
+    if payload.topic is not None:
+        target_post["topic"] = payload.topic.strip()
+    if payload.content is not None:
+        target_post["content"] = payload.content.strip()
+    if payload.image_path is not None:
+        target_post["image_path"] = payload.image_path.strip() if payload.image_path.strip() else None
+    
+    save_schedule(posts)
+    return {"success": True, "post": target_post}
+
 # ================= IMAGE UPLOAD & AI BRANDING APIS =================
 
 @app.post("/api/upload_image")
@@ -454,6 +495,7 @@ class GenerateImageRequest(BaseModel):
     topic: Optional[str] = ""
     caption: Optional[str] = ""
     apply_watermark: Optional[bool] = True
+    prompt: Optional[str] = None
 
 @app.post("/api/ai/generate_image")
 async def generate_image_api(payload: GenerateImageRequest, request: Request):
@@ -484,7 +526,8 @@ async def generate_image_api(payload: GenerateImageRequest, request: Request):
         page_id=active_page.get("id"),
         picture_url=active_page.get("picture_url"),
         apply_watermark=payload.apply_watermark if payload.apply_watermark is not None else True,
-        user_config=user_ai_cfg
+        user_config=user_ai_cfg,
+        prompt=payload.prompt
     )
     return result
 
@@ -663,6 +706,7 @@ async def api_generate_caption(payload: GenerateCaptionRequest, request: Request
 
 class PlanTopicsRequest(BaseModel):
     days: int = 7
+    focus_topic: Optional[str] = None
 
 @app.post("/api/ai/plan_topics")
 async def api_plan_topics(payload: PlanTopicsRequest, request: Request):
@@ -673,8 +717,41 @@ async def api_plan_topics(payload: PlanTopicsRequest, request: Request):
     active_page = pages_manager.get_active_page() or {}
 
     from content_generator import generate_brand_topics
-    topics_data = generate_brand_topics(page_info=active_page, days=days, user_config=user_ai_cfg)
+    topics_data = generate_brand_topics(
+        page_info=active_page,
+        days=days,
+        user_config=user_ai_cfg,
+        focus_topic=payload.focus_topic
+    )
     return {"success": True, "topics": topics_data}
+
+class PromptFromReferenceRequest(BaseModel):
+    image_path: str
+    topic: str
+
+@app.post("/api/ai/prompt_from_reference")
+async def api_prompt_from_reference(payload: PromptFromReferenceRequest, request: Request):
+    """วิเคราะห์รูปภาพตัวอย่างและสร้าง Prompt สำหรับเจนรูปใหม่ในสไตล์เดียวกัน"""
+    user = require_auth(request)
+    username = user.get("username")
+    user_ai_cfg = ai_client_resolver.get_user_ai_config(username)
+    
+    from scheduler_engine import resolve_image_path
+    actual_path = resolve_image_path(payload.image_path)
+    if not actual_path or not os.path.exists(actual_path):
+        return {"success": False, "error": f"ไม่พบไฟล์รูปภาพ: {payload.image_path}"}
+    
+    active_page = pages_manager.get_active_page() or {}
+    brand_name = active_page.get("brand_name") or active_page.get("name") or "Official"
+    
+    import image_service
+    prompt = image_service.craft_visual_prompt_from_reference_image(
+        image_path=actual_path,
+        topic=payload.topic,
+        brand_name=brand_name,
+        user_config=user_ai_cfg
+    )
+    return {"success": True, "prompt": prompt}
 
 @app.post("/api/brand/learn_now")
 async def api_brand_learn_now(request: Request):
@@ -942,14 +1019,27 @@ async def analyze_brand_documents_api(request: Request):
 async def get_users_api(request: Request):
     require_admin(request)
     users = load_users()
-    # ซ่อน password_hash เพื่อความปลอดภัย
-    return [{"username": u["username"], "name": u["name"], "role": u["role"]} for u in users]
+    # ซ่อน password_hash เพื่อความปลอดภัย พร้อมแสดงยอดเครดิตคงเหลือ
+    return [
+        {
+            "username": u["username"],
+            "name": u["name"],
+            "role": u["role"],
+            "credits": credit_service.get_user_credit(u["username"])
+        }
+        for u in users
+    ]
 
 class UserAddRequest(BaseModel):
     username: str
     name: str
     password: str
     role: str
+
+class UserUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None
 
 @app.post("/api/admin/users")
 async def add_user_api(payload: UserAddRequest, request: Request):
@@ -962,12 +1052,47 @@ async def add_user_api(payload: UserAddRequest, request: Request):
         "username": payload.username,
         "name": payload.name,
         "password_hash": hash_password(payload.password),
-        "role": payload.role if payload.role in ["admin", "owner", "staff"] else "staff",
+        "role": payload.role if payload.role in ["admin", "owner", "customer", "staff"] else "staff",
+        "credits": 100 if payload.role in ["owner", "customer"] else 0,
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     users.append(new_user)
     save_users(users)
     return {"success": True}
+
+@app.put("/api/admin/users/{username}")
+@app.post("/api/admin/users/{username}/update")
+async def update_user_api(username: str, payload: UserUpdateRequest, request: Request):
+    require_admin(request)
+    users = load_users()
+    target_user = next((u for u in users if u.get("username") == username), None)
+    if not target_user:
+        return {"success": False, "error": f"ไม่พบผู้ใช้งาน '{username}' ในระบบ"}
+
+    if username == "admin" and payload.role and payload.role != "admin":
+        return {"success": False, "error": "ไม่อนุญาตให้เปลี่ยนสิทธิ์ผู้ดูแลระบบหลัก (admin)"}
+
+    if payload.name is not None and payload.name.strip():
+        target_user["name"] = payload.name.strip()
+
+    if payload.role is not None:
+        valid_roles = ["admin", "owner", "customer", "staff"]
+        if payload.role in valid_roles:
+            target_user["role"] = payload.role
+        else:
+            return {"success": False, "error": f"ระดับสิทธิ์ไม่ถูกต้อง (ต้องเป็น {', '.join(valid_roles)})"}
+
+    if payload.password is not None and payload.password.strip():
+        target_user["password_hash"] = hash_password(payload.password.strip())
+
+    save_users(users)
+    sanitized = {
+        "username": target_user["username"],
+        "name": target_user.get("name", ""),
+        "role": target_user.get("role", "staff"),
+        "credits": credit_service.get_user_credit(target_user["username"])
+    }
+    return {"success": True, "user": sanitized}
 
 @app.delete("/api/admin/users/{username}")
 async def delete_user_api(username: str, request: Request):
