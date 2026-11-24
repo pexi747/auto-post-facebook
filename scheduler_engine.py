@@ -240,30 +240,48 @@ def auto_schedule_holiday_post(
     content = holiday_content.get("content") or ""
     visual_concept = holiday_content.get("visual_concept") or holiday.get("visual_theme") or topic
 
-    # 4. สร้างรูปภาพประกอบวันสำคัญแท้จริง (ไม่ส่ง business_type เพื่อไม่ให้มีช่างหรือเครื่องมือ)
+    # 4. สร้างรูปภาพประกอบวันสำคัญ
     image_path = None
     if auto_image:
         try:
-            import image_service
-            phone = target_page_info.get("phone") or (target_page_info.get("brand_dna", {}) or {}).get("phone")
-            pic_url = target_page_info.get("picture_url")
+            # 4.1 ถ้าเป็นวันสำคัญทางการ / พระราชพิธี (เช่น วันปิยมหาราช, วันนวมินทรฯ) ให้ใช้รูปแบบกราฟิกทางการสมพระเกียรติ
+            import royal_holiday_generator
+            if royal_holiday_generator.is_royal_or_memorial_holiday(holiday):
+                os.makedirs("static/uploads", exist_ok=True)
+                royal_filename = f"royal_holiday_{h_id}_{int(time.time())}.jpg"
+                royal_out = os.path.join("static", "uploads", royal_filename)
+                
+                print(f"👑 [Royal Holiday Poster] สร้างภาพทางการสมพระเกียรติสำหรับ {h_name} เพจ: {display_page_name}...")
+                ok = royal_holiday_generator.render_customized_royal_banner(
+                    holiday=holiday,
+                    page_name=display_page_name,
+                    output_path=royal_out
+                )
+                if ok and os.path.exists(royal_out):
+                    image_path = royal_out
 
-            print(f"🎨 [Thai Holiday AI Image] กำลังสร้างภาพประกอบวัฒนธรรมสำหรับ {h_name}...")
-            img_res = image_service.generate_ai_image(
-                topic=topic,
-                caption=visual_concept,
-                brand_name=display_page_name,
-                business_type="",  # ห้ามส่ง business_type สำหรับวันสำคัญ
-                phone=phone,
-                page_id=target_pid,
-                picture_url=pic_url,
-                apply_watermark=True,
-                user_config=user_config
-            )
-            if img_res.get("success") and img_res.get("image_path"):
-                image_path = img_res["image_path"]
+            # 4.2 ถ้าไม่ใช่วันสำคัญราชพิธี หรือสร้างแบบทางการไม่สำเร็จ ให้ใช้ AI Gen ปกติ (ไม่ส่ง business_type)
+            if not image_path:
+                import image_service
+                phone = target_page_info.get("phone") or (target_page_info.get("brand_dna", {}) or {}).get("phone")
+                pic_url = target_page_info.get("picture_url")
+
+                print(f"🎨 [Thai Holiday AI Image] กำลังสร้างภาพประกอบวัฒนธรรมสำหรับ {h_name}...")
+                img_res = image_service.generate_ai_image(
+                    topic=topic,
+                    caption=visual_concept,
+                    brand_name=display_page_name,
+                    business_type="",  # ห้ามส่ง business_type สำหรับวันสำคัญ
+                    phone=phone,
+                    page_id=target_pid,
+                    picture_url=pic_url,
+                    apply_watermark=True,
+                    user_config=user_config
+                )
+                if img_res.get("success") and img_res.get("image_path"):
+                    image_path = img_res["image_path"]
         except Exception as e:
-            print(f"⚠️ เกิดข้อผิดพลาดในการสร้างภาพ AI วันสำคัญ: {e}")
+            print(f"⚠️ เกิดข้อผิดพลาดในการสร้างภาพวันสำคัญ: {e}")
 
     # หมายเหตุ: นำ fallback fixpack_ai_banner.png ออก เพื่อไม่ให้ติดภาพช่างซ่อมในวันสำคัญ
 
